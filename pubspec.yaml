@@ -1,0 +1,49 @@
+name: krishidoc
+description: A multilingual generative AI mobile app for agricultural advisory.
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # UI & Fonts
+  cupertino_icons: ^1.0.8
+  google_fonts: ^6.1.0
+
+  # Firebase Core + Auth + Firestore
+  firebase_core: ^2.27.0
+  firebase_auth: ^4.18.0
+  cloud_firestore: ^4.15.3
+
+
+
+  # Media
+  image_picker: ^1.0.7
+
+  # API communication
+  http: ^1.2.1
+
+  # State management
+  provider: ^6.1.2
+
+  # Voice
+  flutter_tts: ^4.0.2
+  # speech_to_text: ^6.6.2
+
+  # Multilingual/Internationalization
+  intl: ^0.19.0
+
+  flutter_markdown: ^0.6.11
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
