@@ -16,9 +16,9 @@ dependencies:
   google_fonts: ^6.1.0
 
   # Firebase Core + Auth + Firestore
-  firebase_core: ^2.27.0
-  firebase_auth: ^4.18.0
-  cloud_firestore: ^4.15.3
+  firebase_core: ^4.0.0
+  firebase_auth: ^6.0.0
+  cloud_firestore: ^6.0.0
 
 
 
@@ -36,14 +36,17 @@ dependencies:
   # speech_to_text: ^6.6.2
 
   # Multilingual/Internationalization
-  intl: ^0.19.0
+  intl: ^0.20.2
 
-  flutter_markdown: ^0.6.11
+  flutter_markdown: ^0.7.7+1
+  nb_utils: ^7.0.7
+  fluttertoast: ^8.2.9
+  flutter_mobx: ^2.3.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
 flutter:
   uses-material-design: true

@@ -1,5 +1,9 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:krishidoc/locale/app_localizations.dart';
+import 'package:krishidoc/utils/colors.dart';
 import 'package:provider/provider.dart';
+import 'package:nb_utils/nb_utils.dart';
 
 // Providers
 import 'providers/auth_provider.dart';
@@ -20,7 +24,8 @@ import 'utils/constants.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await Firebase.initializeApp();
+  await initialize(); // Initialize nb_utils
+  await Firebase.initializeApp(); // Uncomment if using Firebase
   runApp(const KrishiDocApp());
 }
 
@@ -36,24 +41,39 @@ class KrishiDocApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ChatProvider()),
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
       ],
-      child: MaterialApp(
-        title: AppStrings.appName,
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primaryColor: AppColors.primary,
-          colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
-          useMaterial3: true,
-          fontFamily: 'Roboto',
-        ),
-        initialRoute: '/',
-        routes: {
-  '/': (_) => const HomePage(),
-  '/classifying': (_) => throw UnimplementedError(), // not used if you push via MaterialPageRoute
-  '/diseaseResult': (_) => const DiseaseResultPage(),
-          '/llmChat': (context) => const LlmChatPage(),
-          '/history': (context) => const HistoryPage(),
-          '/login': (context) => const LoginPage(),
-          '/settings': (context) => const SettingsPage(),
+      child: Consumer<SettingsProvider>(
+        builder: (context, settings, child) {
+          return MaterialApp(
+            title: AppStrings.appName,
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              primaryColor: primaryColor,
+              colorScheme: ColorScheme.fromSeed(seedColor: primaryColor),
+              useMaterial3: true,
+              fontFamily: 'Roboto',
+            ),
+            locale: Locale(settings.language, ''),
+            localizationsDelegates: const [
+              AppLocalizations(), // Only custom delegate
+            ],
+            supportedLocales: const [
+              Locale('en', ''),
+              Locale('np', ''),
+              Locale('hi', ''),
+              Locale('ar', ''),
+              Locale('fr', ''),
+              Locale('de', ''),
+            ],
+            initialRoute: '/',
+            routes: {
+              '/': (_) => const HomePage(),
+              '/diseaseResult': (_) => const DiseaseResultPage(),
+              '/llmChat': (context) => const LlmChatPage(),
+              '/history': (context) => const HistoryPage(),
+              '/login': (context) => const LoginPage(),
+              '/settings': (context) => const SettingsPage(),
+            },
+          );
         },
       ),
     );

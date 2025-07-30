@@ -3,7 +3,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/disease_model.dart';
-import '../utils/localization.dart';  // ← for SupportedLanguages
+import '../locale/localization.dart';  // ← for SupportedLanguages
 
 /// REST endpoints and API key constants
 const String PLANT_API_URL =

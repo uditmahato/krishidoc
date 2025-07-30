@@ -1,11 +1,5 @@
-import 'package:flutter/material.dart';
 
-class AppColors {
-  static const primary = Color(0xFF388E3C); // Green
-  static const accent = Color(0xFFFBC02D);  // Yellow
-  static const background = Color(0xFFF5F5F5);
-  static const text = Color(0xFF212121);
-}
+
 
 class AppStrings {
   static const appName = 'KrishiDoc';
@@ -19,3 +13,5 @@ class AppStrings {
   static const logout = 'Logout';
   static const language = 'Language';
 }
+
+
