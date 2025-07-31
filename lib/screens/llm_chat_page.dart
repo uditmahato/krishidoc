@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:krishidoc/locale/base_language_key.dart';
-import 'package:krishidoc/locale/localization.dart';
 import 'package:krishidoc/locale/language_ar.dart';
 import '../providers/chat_provider.dart';
 

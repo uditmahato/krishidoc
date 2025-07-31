@@ -2,8 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:krishidoc/locale/base_language_key.dart';
-import 'package:krishidoc/locale/localization.dart';
-import 'package:krishidoc/locale/language_ar.dart';
+
 import '../providers/auth_provider.dart';
 import '../services/firestore_service.dart';
 import '../models/history_model.dart';

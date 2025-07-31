@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:krishidoc/locale/base_language_key.dart';
 import 'package:krishidoc/locale/language_ar.dart';
-import 'package:krishidoc/locale/localization.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
 import '../providers/settings_provider.dart';
