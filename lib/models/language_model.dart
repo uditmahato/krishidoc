@@ -17,7 +17,7 @@ class Language {
       Language(2, 'Hindi', 'hi', flagsIcIndia),
       Language(3, 'German', 'de', flagsIcGermany),
       Language(4, 'French', 'fr', flagsIcFrench),
-      Language(5, 'Nepali', 'np', flagsIcNp)
+      Language(5, 'Nepali', 'ne', flagsIcNp)
     ];
   }
 

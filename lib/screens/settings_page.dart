@@ -7,7 +7,6 @@ import '../providers/settings_provider.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/language_selector.dart';
-import '../locale/app_localizations.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -31,10 +30,10 @@ class SettingsPage extends StatelessWidget {
               children: [
                 Text(
                   '${lang.language}:',
-                  style: boldTextStyle(size: 18), // Using nb_utils text style
+                  style: boldTextStyle(size: 18),
                   textDirection: lang is LanguageAr ? TextDirection.rtl : TextDirection.ltr,
                 ),
-                12.width, // Using nb_utils spacing utility
+                12.width,
                 LanguageSelector(
                   selected: settings.language,
                   onChanged: (langCode) => settings.setLanguage(langCode),
@@ -45,7 +44,7 @@ class SettingsPage extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  'Voice Output:', // Not in AppStrings; kept as static or add to BaseLanguage
+                  lang.voiceOutput, // Use localized string
                   style: boldTextStyle(size: 18),
                   textDirection: lang is LanguageAr ? TextDirection.rtl : TextDirection.ltr,
                 ),

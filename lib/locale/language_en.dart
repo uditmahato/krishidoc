@@ -30,4 +30,21 @@ class LanguageEn extends BaseLanguage {
 
   @override
   String get language => 'Language';
+
+  @override
+String get voiceOutput => 'Voice Output';
+
+@override
+  String get capturePhoto => 'Capture Photo';
+  @override
+  String get selectFromGallery => 'Select from Gallery';
+
+  @override
+  String get chatTitle => 'AgriBot Chat';
+  @override
+  String get chatInputHint => 'Ask about crop, disease, etc.';
+  @override
+  String get loginPrompt => 'Login to view your history.';
+  @override
+  String get noHistory => 'No history yet.';
 }

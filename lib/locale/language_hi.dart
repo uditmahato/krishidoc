@@ -30,4 +30,21 @@ class LanguageHi extends BaseLanguage {
 
   @override
   String get language => 'भाषा';
+
+  @override
+  String get voiceOutput => 'आवाज आउटपुट';
+
+  @override
+  String get capturePhoto => 'फोटो खींचें';
+  @override
+  String get selectFromGallery => 'गैलरी से चयन करें';
+
+  @override
+  String get chatTitle => 'एग्रीबोट चैट';
+  @override
+  String get chatInputHint => 'फसल, रोग आदि के बारे में पूछें';
+  @override
+  String get loginPrompt => 'अपना इतिहास देखने के लिए लॉगिन करें';
+  @override
+  String get noHistory => 'अभी तक कोई इतिहास नहीं';
 }

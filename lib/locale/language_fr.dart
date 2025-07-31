@@ -30,4 +30,21 @@ class LanguageFr extends BaseLanguage {
 
   @override
   String get language => 'Langue';
+
+  @override
+  String get voiceOutput => 'Sortie vocale';
+
+  @override
+  String get capturePhoto => 'Prendre une photo';
+  @override
+  String get selectFromGallery => 'Sélectionner depuis la galerie';
+
+  @override
+  String get chatTitle => 'Chat AgriBot';
+  @override
+  String get chatInputHint => 'Posez des questions sur les cultures, maladies, etc.';
+  @override
+  String get loginPrompt => 'Connectez-vous pour voir votre historique';
+  @override
+  String get noHistory => 'Aucun historique pour l’instant';
 }

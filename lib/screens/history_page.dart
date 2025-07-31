@@ -1,5 +1,9 @@
+// history_page.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:krishidoc/locale/base_language_key.dart';
+import 'package:krishidoc/locale/localization.dart';
+import 'package:krishidoc/locale/language_ar.dart';
 import '../providers/auth_provider.dart';
 import '../services/firestore_service.dart';
 import '../models/history_model.dart';
@@ -10,13 +14,22 @@ class HistoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<AuthProvider>(context).user;
+    final BaseLanguage lang = BaseLanguage.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('History'),
+        title: Text(
+          lang.history,
+          
+        ),
       ),
       body: user == null
-          ? const Center(child: Text('Login to view your history.'))
+          ? Center(
+              child: Text(
+                lang.loginPrompt,
+                
+              ),
+            )
           : FutureBuilder<List<HistoryEntry>>(
               future: FirestoreService().getHistory(user.uid),
               builder: (context, snapshot) {
@@ -24,7 +37,12 @@ class HistoryPage extends StatelessWidget {
                   return const Center(child: CircularProgressIndicator());
                 }
                 if (snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No history yet.'));
+                  return Center(
+                    child: Text(
+                      lang.noHistory,
+                      
+                    ),
+                  );
                 }
                 return ListView.builder(
                   itemCount: snapshot.data!.length,
@@ -34,8 +52,14 @@ class HistoryPage extends StatelessWidget {
                       leading: entry.imageUrl.isNotEmpty
                           ? Image.network(entry.imageUrl, width: 56, height: 56, fit: BoxFit.cover)
                           : const Icon(Icons.image),
-                      title: Text(entry.diseaseName),
-                      subtitle: Text(entry.timestamp.toString()),
+                      title: Text(
+                        entry.diseaseName,
+                        
+                      ),
+                      subtitle: Text(
+                        entry.timestamp.toString(),
+                        
+                      ),
                     );
                   },
                 );

@@ -41,7 +41,7 @@ const errorTextColor = Colors.red;
 const successBackGroundColor = Color(0xFF242232);
 const successTextColor = Colors.green;
 
-const selectedColorDarkMode = Color(0xF4B4A4A);
+const selectedColorDarkMode = Color(0x0f4b4a4a);
 Color selectedColorLightMode = getColorFromHex('#e6ecfa');
 
 Color shimmerPrimaryBaseColor = primaryColor.withOpacity(0.4);

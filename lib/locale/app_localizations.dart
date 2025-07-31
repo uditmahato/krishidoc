@@ -11,6 +11,7 @@ import 'package:krishidoc/locale/localization.dart';
 
 class AppLocalizations extends LocalizationsDelegate<BaseLanguage> {
   const AppLocalizations();
+  
 
   @override
   Future<BaseLanguage> load(Locale locale) async {
@@ -25,7 +26,7 @@ class AppLocalizations extends LocalizationsDelegate<BaseLanguage> {
         return LanguageFr();
       case 'de':
         return LanguageDe();
-      case 'np':
+      case 'ne':
         return LanguageNp();
       default:
         return LanguageEn();

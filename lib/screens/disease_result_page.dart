@@ -6,8 +6,6 @@ import 'package:provider/provider.dart';
 import '../providers/disease_provider.dart';
 import '../providers/chat_provider.dart';
 import '../providers/settings_provider.dart';         // ← import settings
-import '../models/disease_model.dart';
-import '../utils/constants.dart';
 import '../widgets/custom_button.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 

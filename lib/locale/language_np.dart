@@ -15,6 +15,9 @@ class LanguageNp extends BaseLanguage {
   String get diagnoseButton => 'बिरुवाको रोगको निदान गर्नुहोस्';
 
   @override
+String get voiceOutput => 'आवाज आउटपुट';
+
+  @override
   String get askButton => 'एग्रीबोटलाई सोध्नुहोस्';
 
   @override
@@ -31,4 +34,18 @@ class LanguageNp extends BaseLanguage {
 
   @override
   String get language => 'भाषा';
+
+  @override
+  String get capturePhoto => 'फोटो खिच्नुहोस्';
+  @override
+  String get selectFromGallery => 'ग्यालरीबाट चयन गर्नुहोस्';
+
+  @override
+  String get chatTitle => 'एग्रीबोट च्याट';
+  @override
+  String get chatInputHint => 'बाली, रोग, आदि बारे सोध्नुहोस्';
+  @override
+  String get loginPrompt => 'तपाईंको इतिहास हेर्न लगइन गर्नुहोस्';
+  @override
+  String get noHistory => 'अहिलेसम्म कुनै इतिहास छैन';
 }

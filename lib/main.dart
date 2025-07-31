@@ -1,9 +1,11 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:krishidoc/locale/app_localizations.dart';
+import 'package:krishidoc/locale/base_language_key.dart';
+import 'package:krishidoc/screens/language_screen.dart';
 import 'package:krishidoc/utils/colors.dart';
 import 'package:provider/provider.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 // Providers
 import 'providers/auth_provider.dart';
@@ -19,13 +21,10 @@ import 'screens/history_page.dart';
 import 'screens/login_page.dart';
 import 'screens/settings_page.dart';
 
-// Utils
-import 'utils/constants.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initialize(); // Initialize nb_utils
-  await Firebase.initializeApp(); // Uncomment if using Firebase
+  // await Firebase.initializeApp(); // Uncomment if using Firebase
   runApp(const KrishiDocApp());
 }
 
@@ -44,34 +43,45 @@ class KrishiDocApp extends StatelessWidget {
       child: Consumer<SettingsProvider>(
         builder: (context, settings, child) {
           return MaterialApp(
-            title: AppStrings.appName,
             debugShowCheckedModeBanner: false,
-            theme: ThemeData(
-              primaryColor: primaryColor,
-              colorScheme: ColorScheme.fromSeed(seedColor: primaryColor),
-              useMaterial3: true,
-              fontFamily: 'Roboto',
-            ),
-            locale: Locale(settings.language, ''),
-            localizationsDelegates: const [
-              AppLocalizations(), // Only custom delegate
-            ],
-            supportedLocales: const [
-              Locale('en', ''),
-              Locale('np', ''),
-              Locale('hi', ''),
-              Locale('ar', ''),
-              Locale('fr', ''),
-              Locale('de', ''),
-            ],
-            initialRoute: '/',
-            routes: {
-              '/': (_) => const HomePage(),
-              '/diseaseResult': (_) => const DiseaseResultPage(),
-              '/llmChat': (context) => const LlmChatPage(),
-              '/history': (context) => const HistoryPage(),
-              '/login': (context) => const LoginPage(),
-              '/settings': (context) => const SettingsPage(),
+            // Use a builder to access BaseLanguage for the title
+            builder: (context, child) {
+              final BaseLanguage lang = BaseLanguage.of(context);
+              return MaterialApp(
+                title: lang.appName, // Use localized appName
+                debugShowCheckedModeBanner: false,
+                theme: ThemeData(
+                  primaryColor: primaryColor,
+                  colorScheme: ColorScheme.fromSeed(seedColor: primaryColor),
+                  useMaterial3: true,
+                  fontFamily: 'Roboto',
+                ),
+                locale: Locale(settings.language, ''),
+                localizationsDelegates: const [
+                  AppLocalizations(),
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                supportedLocales: const [
+                  Locale('en', ''),
+                  Locale('ne', ''),
+                  Locale('hi', ''),
+                  Locale('ar', ''),
+                  Locale('fr', ''),
+                  Locale('de', ''),
+                ],
+                initialRoute: '/',
+                routes: {
+                  '/': (context) => const HomePage(),
+                  '/diseaseResult': (context) => const DiseaseResultPage(),
+                  '/llmChat': (context) => const LlmChatPage(),
+                  '/history': (context) => const HistoryPage(),
+                  '/login': (context) => const LoginPage(),
+                  '/settings': (context) => const SettingsPage(),
+                  '/language': (context) => const LanguageScreen(),
+                },
+              );
             },
           );
         },

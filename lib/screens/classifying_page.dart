@@ -6,7 +6,7 @@ import '../providers/disease_provider.dart';
 
 class ClassifyingPage extends StatefulWidget {
   final String imagePath;
-  const ClassifyingPage({required this.imagePath, Key? key}) : super(key: key);
+  const ClassifyingPage({required this.imagePath, super.key});
 
   @override
   State<ClassifyingPage> createState() => _ClassifyingPageState();

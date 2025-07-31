@@ -1,9 +1,11 @@
+// llm_chat_page.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-
+import 'package:krishidoc/locale/base_language_key.dart';
+import 'package:krishidoc/locale/localization.dart';
+import 'package:krishidoc/locale/language_ar.dart';
 import '../providers/chat_provider.dart';
-import '../utils/constants.dart';
 
 class LlmChatPage extends StatefulWidget {
   const LlmChatPage({super.key});
@@ -20,6 +22,7 @@ class _LlmChatPageState extends State<LlmChatPage> {
   Widget build(BuildContext context) {
     final chatProvider = Provider.of<ChatProvider>(context);
     final theme = Theme.of(context);
+    final BaseLanguage lang = BaseLanguage.of(context);
 
     // Flatten into a list of chat items: user question then AI reply
     final raw = chatProvider.chats;
@@ -30,9 +33,9 @@ class _LlmChatPageState extends State<LlmChatPage> {
     }
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.background,
+      backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
-        title: const Text('AgriBot Chat'),
+        title: Text(lang.chatTitle),
         backgroundColor: theme.colorScheme.primary,
         elevation: 2,
       ),
@@ -48,7 +51,7 @@ class _LlmChatPageState extends State<LlmChatPage> {
               itemBuilder: (context, idx) {
                 // reverse the flat list so newest at bottom
                 final item = items[items.length - 1 - idx];
-                return _buildBubble(item, theme);
+                return _buildBubble(item, theme, lang);
               },
             ),
           ),
@@ -57,7 +60,9 @@ class _LlmChatPageState extends State<LlmChatPage> {
           if (chatProvider.isLoading)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
-              child: CircularProgressIndicator(color: theme.colorScheme.primary),
+              child: CircularProgressIndicator(
+                color: theme.colorScheme.primary,
+              ),
             ),
 
           // ─── Input Row ────────────────────────────────────────
@@ -74,9 +79,12 @@ class _LlmChatPageState extends State<LlmChatPage> {
                 Expanded(
                   child: TextField(
                     controller: _controller,
-                    decoration: const InputDecoration(
-                      hintText: 'Ask about crop, disease, etc.',
+                    decoration: InputDecoration(
+                      hintText: lang.chatInputHint,
                       border: InputBorder.none,
+                      hintStyle: TextStyle(
+                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                      ),
                     ),
                   ),
                 ),
@@ -85,7 +93,10 @@ class _LlmChatPageState extends State<LlmChatPage> {
                   onPressed: () {
                     final text = _controller.text.trim();
                     if (text.isNotEmpty) {
-                      chatProvider.sendMessage(text, 'en');
+                      chatProvider.sendMessage(
+                        text,
+                        lang is LanguageAr ? 'ar' : 'en',
+                      );
                       _controller.clear();
                       // scroll to bottom
                       Future.delayed(const Duration(milliseconds: 100), () {
@@ -106,10 +117,10 @@ class _LlmChatPageState extends State<LlmChatPage> {
     );
   }
 
-  Widget _buildBubble(_ChatItem item, ThemeData theme) {
+  Widget _buildBubble(_ChatItem item, ThemeData theme, BaseLanguage lang) {
     final bgColor = item.isUser
         ? theme.colorScheme.primary
-        : theme.colorScheme.surfaceVariant;
+        : theme.colorScheme.surfaceContainerHighest;
     final textColor = item.isUser
         ? theme.colorScheme.onPrimary
         : theme.colorScheme.onSurfaceVariant;
@@ -131,14 +142,18 @@ class _LlmChatPageState extends State<LlmChatPage> {
             bottomRight: const Radius.circular(12),
           ),
           boxShadow: const [
-            BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 4,
+              offset: Offset(0, 2),
+            ),
           ],
         ),
         child: MarkdownBody(
           data: item.text,
-          styleSheet: MarkdownStyleSheet.fromTheme(theme).copyWith(
-            p: theme.textTheme.bodyMedium?.copyWith(color: textColor),
-          ),
+          styleSheet: MarkdownStyleSheet.fromTheme(
+            theme,
+          ).copyWith(p: theme.textTheme.bodyMedium?.copyWith(color: textColor)),
         ),
       ),
     );

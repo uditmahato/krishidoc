@@ -1,6 +1,6 @@
 class SupportedLanguages {
   static const english = 'en';
-  static const nepali = 'np'; // Changed from 'ne' to match app_localizations.dart
+  static const nepali = 'ne'; // Changed from 'ne' to match app_localizations.dart
   static const hindi = 'hi';
   static const arabic = 'ar';
   static const french = 'fr';

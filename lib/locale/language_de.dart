@@ -30,4 +30,21 @@ class LanguageDe extends BaseLanguage {
 
   @override
   String get language => 'Sprache';
+
+  @override
+  String get voiceOutput => 'Sprachausgabe';
+
+  @override
+  String get capturePhoto => 'Foto aufnehmen';
+  @override
+  String get selectFromGallery => 'Aus Galerie auswählen';
+
+  @override
+  String get chatTitle => 'AgriBot-Chat';
+  @override
+  String get chatInputHint => 'Fragen Sie nach Pflanzen, Krankheiten usw.';
+  @override
+  String get loginPrompt => 'Melden Sie sich an, um Ihren Verlauf zu sehen';
+  @override
+  String get noHistory => 'Noch kein Verlauf';
 }
