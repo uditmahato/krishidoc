@@ -52,3 +52,10 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/flags/
+    - assets/icons/krishi_logo.png
+    
+  # assets:
+  #   - /images/flags
+  #   - /images/icons/krishi_logo.png

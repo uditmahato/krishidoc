@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:krishidoc/locale/base_language_key.dart';
 import 'package:krishidoc/locale/language_ar.dart';
+import 'package:krishidoc/utils/colors.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
 import '../providers/settings_provider.dart';
@@ -18,8 +19,13 @@ class SettingsPage extends StatelessWidget {
     final BaseLanguage lang = BaseLanguage.of(context);
 
     return Scaffold(
+      backgroundColor: background, // Use background from colors.dart
       appBar: AppBar(
-        title: Text(lang.settings),
+        backgroundColor: primaryColor, // Use primaryColor from colors.dart
+        title: Text(
+          lang.settings,
+          style: TextStyle(color: textPrimaryDarkColor), // White text for contrast
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(24),
@@ -30,7 +36,9 @@ class SettingsPage extends StatelessWidget {
               children: [
                 Text(
                   '${lang.language}:',
-                  style: boldTextStyle(size: 18),
+                  style: boldTextStyle(size: 18).copyWith(
+                    color: textPrimaryLightColor, // Use textPrimaryLightColor from colors.dart
+                  ),
                   textDirection: lang is LanguageAr ? TextDirection.rtl : TextDirection.ltr,
                 ),
                 12.width,
@@ -45,11 +53,15 @@ class SettingsPage extends StatelessWidget {
               children: [
                 Text(
                   lang.voiceOutput, // Use localized string
-                  style: boldTextStyle(size: 18),
+                  style: boldTextStyle(size: 18).copyWith(
+                    color: textPrimaryLightColor, // Use textPrimaryLightColor from colors.dart
+                  ),
                   textDirection: lang is LanguageAr ? TextDirection.rtl : TextDirection.ltr,
                 ),
                 Switch(
                   value: settings.ttsEnabled,
+                  activeTrackColor: primaryColor, // Use primaryColor from colors.dart
+                  activeColor: accent, // Use accent from colors.dart
                   onChanged: (val) => settings.toggleTTS(),
                 ),
               ],
@@ -59,6 +71,8 @@ class SettingsPage extends StatelessWidget {
                 ? CustomButton(
                     label: lang.logout,
                     icon: Icons.logout,
+                    color: primaryColor, // Use primaryColor from colors.dart
+                    textColor: textPrimaryDarkColor, // White text for contrast
                     onPressed: () async {
                       await authProvider.signOut();
                       Navigator.popUntil(context, (route) => route.isFirst);
@@ -67,6 +81,8 @@ class SettingsPage extends StatelessWidget {
                 : CustomButton(
                     label: lang.login,
                     icon: Icons.login,
+                    color: primaryColor, // Use primaryColor from colors.dart
+                    textColor: textPrimaryDarkColor, // White text for contrast
                     onPressed: () {
                       Navigator.pushNamed(context, '/login');
                     },

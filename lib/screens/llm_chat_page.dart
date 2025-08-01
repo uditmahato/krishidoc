@@ -1,9 +1,9 @@
-// llm_chat_page.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:krishidoc/locale/base_language_key.dart';
 import 'package:krishidoc/locale/language_ar.dart';
+import 'package:krishidoc/utils/colors.dart';
 import '../providers/chat_provider.dart';
 
 class LlmChatPage extends StatefulWidget {
@@ -23,7 +23,6 @@ class _LlmChatPageState extends State<LlmChatPage> {
     final theme = Theme.of(context);
     final BaseLanguage lang = BaseLanguage.of(context);
 
-    // Flatten into a list of chat items: user question then AI reply
     final raw = chatProvider.chats;
     final items = <_ChatItem>[];
     for (final chat in raw) {
@@ -32,15 +31,19 @@ class _LlmChatPageState extends State<LlmChatPage> {
     }
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: background, // Use background from colors.dart
       appBar: AppBar(
-        title: Text(lang.chatTitle),
-        backgroundColor: theme.colorScheme.primary,
+        title: Text(
+          lang.chatTitle,
+          style: TextStyle(
+            color: textPrimaryDarkColor,
+          ), // White text for contrast
+        ),
+        backgroundColor: primaryColor, // Use primaryColor from colors.dart
         elevation: 2,
       ),
       body: Column(
         children: [
-          // ─── Chat List ─────────────────────────────────────────
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
@@ -48,30 +51,30 @@ class _LlmChatPageState extends State<LlmChatPage> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               itemCount: items.length,
               itemBuilder: (context, idx) {
-                // reverse the flat list so newest at bottom
                 final item = items[items.length - 1 - idx];
                 return _buildBubble(item, theme, lang);
               },
             ),
           ),
 
-          // ─── Loading Indicator ───────────────────────────────
           if (chatProvider.isLoading)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: CircularProgressIndicator(
-                color: theme.colorScheme.primary,
+                color: progressIndicatorColor, // Use progressIndicatorColor
               ),
             ),
 
-          // ─── Input Row ────────────────────────────────────────
           Container(
             margin: const EdgeInsets.all(16),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
-              color: theme.colorScheme.surface,
+              color: cardColor, // Use cardColor from colors.dart
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: theme.colorScheme.primary, width: 1),
+              border: Border.all(
+                color: borderColor,
+                width: 1,
+              ), // Use borderColor
             ),
             child: Row(
               children: [
@@ -82,13 +85,17 @@ class _LlmChatPageState extends State<LlmChatPage> {
                       hintText: lang.chatInputHint,
                       border: InputBorder.none,
                       hintStyle: TextStyle(
-                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                        color:
+                            textSecondaryLightColor, // Use textSecondaryLightColor
                       ),
                     ),
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.send, color: theme.colorScheme.primary),
+                  icon: Icon(
+                    Icons.send,
+                    color: primaryColor,
+                  ), // Use primaryColor
                   onPressed: () {
                     final text = _controller.text.trim();
                     if (text.isNotEmpty) {
@@ -97,7 +104,6 @@ class _LlmChatPageState extends State<LlmChatPage> {
                         lang is LanguageAr ? 'ar' : 'en',
                       );
                       _controller.clear();
-                      // scroll to bottom
                       Future.delayed(const Duration(milliseconds: 100), () {
                         _scrollController.animateTo(
                           0.0,
@@ -118,11 +124,11 @@ class _LlmChatPageState extends State<LlmChatPage> {
 
   Widget _buildBubble(_ChatItem item, ThemeData theme, BaseLanguage lang) {
     final bgColor = item.isUser
-        ? theme.colorScheme.primary
-        : theme.colorScheme.surfaceContainerHighest;
+        ? primaryColor
+        : cardColor; // Use primaryColor and cardColor
     final textColor = item.isUser
-        ? theme.colorScheme.onPrimary
-        : theme.colorScheme.onSurfaceVariant;
+        ? textPrimaryDarkColor
+        : textPrimaryLightColor; // Use text colors
 
     return Align(
       alignment: item.isUser ? Alignment.centerRight : Alignment.centerLeft,

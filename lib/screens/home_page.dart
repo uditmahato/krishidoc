@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:krishidoc/locale/base_language_key.dart';
 import 'package:krishidoc/screens/classifying_page.dart';
+import 'package:krishidoc/utils/colors.dart'; // Already imported
 import '../widgets/language_selector.dart';
 import '../providers/settings_provider.dart';
 import 'package:provider/provider.dart';
@@ -26,7 +27,9 @@ class HomePage extends StatelessWidget {
                 title: Text(lang.capturePhoto), // Localized "Capture Photo"
                 onTap: () async {
                   Navigator.pop(context);
-                  final picked = await picker.pickImage(source: ImageSource.camera);
+                  final picked = await picker.pickImage(
+                    source: ImageSource.camera,
+                  );
                   if (picked != null) {
                     Navigator.push(
                       context,
@@ -39,10 +42,14 @@ class HomePage extends StatelessWidget {
               ),
               ListTile(
                 leading: const Icon(Icons.photo_library),
-                title: Text(lang.selectFromGallery), // Localized "Select from Gallery"
+                title: Text(
+                  lang.selectFromGallery,
+                ), // Localized "Select from Gallery"
                 onTap: () async {
                   Navigator.pop(context);
-                  final picked = await picker.pickImage(source: ImageSource.gallery);
+                  final picked = await picker.pickImage(
+                    source: ImageSource.gallery,
+                  );
                   if (picked != null) {
                     Navigator.push(
                       context,
@@ -73,8 +80,10 @@ class HomePage extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              theme.colorScheme.primary.withOpacity(0.2),
-              theme.scaffoldBackgroundColor,
+              primaryColor.withOpacity(
+                0.2,
+              ), // Use primaryColor from colors.dart
+              background, // Use background from colors.dart
             ],
           ),
         ),
@@ -90,7 +99,7 @@ class HomePage extends StatelessWidget {
                   lang.welcome,
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.primary,
+                    color: primaryColor, // Use primaryColor from colors.dart
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -98,7 +107,8 @@ class HomePage extends StatelessWidget {
                 Text(
                   lang.welcomeSubtitle,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    color:
+                        textSecondaryLightColor, // Use textSecondaryLightColor from colors.dart
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -113,16 +123,30 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, SettingsProvider settings, BaseLanguage lang) {
+  Widget _buildHeader(
+    BuildContext context,
+    SettingsProvider settings,
+    BaseLanguage lang,
+  ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+        Padding(
+          padding: const EdgeInsets.only(right: 8.0),
+          child: Image.asset(
+            'assets/icons/krishi_logo.png',
+            height: 80,
+            fit: BoxFit.contain,
+          ),
+        ),
         Text(
           lang.appName,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.primary,
-              ),
+            fontWeight: FontWeight.bold,
+            color: primaryColor.withOpacity(
+              0.8,
+            ), // Use primaryColor from colors.dart
+          ),
         ),
         LanguageSelector(
           selected: settings.language,
@@ -143,7 +167,7 @@ class HomePage extends StatelessWidget {
                 label: lang.diagnoseButton,
                 icon: Icons.camera_alt_rounded,
                 onTap: () => _pickImageAndDetect(context),
-                color: Theme.of(context).colorScheme.primary,
+                color: primaryColor, // Use primaryColor for Diagnose button
               ),
             ),
             const SizedBox(width: 16),
@@ -153,7 +177,8 @@ class HomePage extends StatelessWidget {
                 label: lang.askButton,
                 icon: Icons.chat_bubble_outline,
                 onTap: () => Navigator.pushNamed(context, '/llmChat'),
-                color: Theme.of(context).colorScheme.secondary,
+                color:
+                    appSecondaryColor, // Use appSecondaryColor for Ask button
               ),
             ),
           ],
@@ -167,7 +192,7 @@ class HomePage extends StatelessWidget {
                 label: lang.history,
                 icon: Icons.history,
                 onTap: () => Navigator.pushNamed(context, '/history'),
-                color: Theme.of(context).colorScheme.tertiary,
+                color: accent, // Use accent for History button
               ),
             ),
             const SizedBox(width: 16),
@@ -177,7 +202,8 @@ class HomePage extends StatelessWidget {
                 label: lang.settings,
                 icon: Icons.settings,
                 onTap: () => Navigator.pushNamed(context, '/settings'),
-                color: Theme.of(context).colorScheme.tertiary,
+                color:
+                    secondaryTxtColor, // Use secondaryTxtColor for Settings button
               ),
             ),
           ],
@@ -198,11 +224,14 @@ class HomePage extends StatelessWidget {
       duration: const Duration(milliseconds: 200),
       height: _buttonHeight,
       child: Card(
-        color: theme.colorScheme.surface,
+        color: cardColor, // Use cardColor from colors.dart
         elevation: 4,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: color.withOpacity(0.3), width: 1),
+          side: BorderSide(
+            color: borderColor,
+            width: 1,
+          ), // Use borderColor from colors.dart
         ),
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
