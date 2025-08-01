@@ -129,13 +129,13 @@ class HomePage extends StatelessWidget {
     BaseLanguage lang,
   ) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Padding(
           padding: const EdgeInsets.only(right: 8.0),
           child: Image.asset(
             'assets/icons/krishi_logo.png',
-            height: 80,
+            height: 50,
             fit: BoxFit.contain,
           ),
         ),
@@ -148,6 +148,8 @@ class HomePage extends StatelessWidget {
             ), // Use primaryColor from colors.dart
           ),
         ),
+        const Spacer(),
+        const SizedBox(width: 16),
         LanguageSelector(
           selected: settings.language,
           onChanged: (lang) => settings.setLanguage(lang),

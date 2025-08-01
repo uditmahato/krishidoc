@@ -3,7 +3,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/disease_model.dart';
-import '../locale/localization.dart';  // ← for SupportedLanguages
+import '../locale/localization.dart'; // ← for SupportedLanguages
 
 /// REST endpoints and API key constants
 const String PLANT_API_URL =
@@ -31,15 +31,15 @@ class ApiService {
     try {
       print('[ApiService] Sending image for classification: $imagePath');
 
-      final request =
-          http.MultipartRequest('POST', Uri.parse(PLANT_API_URL))
-            ..files.add(await http.MultipartFile.fromPath('file', imagePath));
+      final request = http.MultipartRequest('POST', Uri.parse(PLANT_API_URL))
+        ..files.add(await http.MultipartFile.fromPath('file', imagePath));
 
       final streamed = await request.send();
       final response = await http.Response.fromStream(streamed);
 
       print(
-          '[ApiService] Classifier response ${response.statusCode}: ${response.body}');
+        '[ApiService] Classifier response ${response.statusCode}: ${response.body}',
+      );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body) as Map<String, dynamic>;
@@ -75,10 +75,10 @@ class ApiService {
         'contents': [
           {
             'parts': [
-              {'text': fullPrompt.toString()}
-            ]
-          }
-        ]
+              {'text': fullPrompt.toString()},
+            ],
+          },
+        ],
       };
 
       final uri = Uri.parse('$GEMINI_API_URL?key=$GOOGLE_API_KEY');
@@ -88,14 +88,15 @@ class ApiService {
         body: json.encode(payload),
       );
 
-      print('[ApiService] LLM response ${response.statusCode}: ${response.body}');
+      print(
+        '[ApiService] LLM response ${response.statusCode}: ${response.body}',
+      );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body) as Map<String, dynamic>;
         final candidates = data['candidates'] as List<dynamic>?;
         if (candidates != null && candidates.isNotEmpty) {
-          final parts =
-              candidates[0]['content']['parts'] as List<dynamic>?;
+          final parts = candidates[0]['content']['parts'] as List<dynamic>?;
           if (parts != null && parts.isNotEmpty) {
             return parts[0]['text'] as String? ?? 'No reply text.';
           }
