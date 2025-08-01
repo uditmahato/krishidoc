@@ -25,10 +25,18 @@ abstract class BaseLanguage {
   String get logout;
   String get language;
   String get voiceOutput;
-  String get capturePhoto; // For "Capture Photo"
+  String get capturePhoto;
   String get selectFromGallery;
   String get chatTitle;
   String get chatInputHint;
   String get loginPrompt;
   String get noHistory;
+
+  // 🔽 Newly added
+  String get classifyingDisease;
+  String get pleaseWait;
+  String get symptoms;
+  String get treatments;
+  String get backToHome;
+  String get diagnosisResult;
 }

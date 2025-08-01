@@ -8,7 +8,8 @@ class LanguageHi extends BaseLanguage {
   String get welcome => 'कृषिडक में आपका स्वागत है!';
 
   @override
-  String get welcomeSubtitle => 'तुरंत पौधों की बीमारियों का निदान करें और अपनी भाषा में विशेषज्ञ सलाह प्राप्त करें।';
+  String get welcomeSubtitle =>
+      'तुरंत पौधों की बीमारियों का निदान करें और अपनी भाषा में विशेषज्ञ सलाह प्राप्त करें।';
 
   @override
   String get diagnoseButton => 'पौधों की बीमारी का निदान करें';
@@ -36,15 +37,38 @@ class LanguageHi extends BaseLanguage {
 
   @override
   String get capturePhoto => 'फोटो खींचें';
+
   @override
   String get selectFromGallery => 'गैलरी से चयन करें';
 
   @override
   String get chatTitle => 'एग्रीबोट चैट';
+
   @override
   String get chatInputHint => 'फसल, रोग आदि के बारे में पूछें';
+
   @override
   String get loginPrompt => 'अपना इतिहास देखने के लिए लॉगिन करें';
+
   @override
   String get noHistory => 'अभी तक कोई इतिहास नहीं';
+
+  // 🆕 Newly added keys
+  @override
+  String get classifyingDisease => 'रोग वर्गीकृत किया जा रहा है';
+
+  @override
+  String get pleaseWait => 'कृपया प्रतीक्षा करें...';
+
+  @override
+  String get symptoms => 'लक्षण';
+
+  @override
+  String get treatments => 'उपचार';
+
+  @override
+  String get backToHome => 'मुख पृष्ठ पर जाएं';
+
+  @override
+  String get diagnosisResult => 'निदान परिणाम';
 }

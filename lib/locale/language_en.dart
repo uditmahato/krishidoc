@@ -8,7 +8,8 @@ class LanguageEn extends BaseLanguage {
   String get welcome => 'Welcome to KrishiDoc!';
 
   @override
-  String get welcomeSubtitle => 'Diagnose plant disease instantly and get expert advice in your language.';
+  String get welcomeSubtitle =>
+      'Diagnose plant disease instantly and get expert advice in your language.';
 
   @override
   String get diagnoseButton => 'Diagnose Plant Disease';
@@ -32,19 +33,42 @@ class LanguageEn extends BaseLanguage {
   String get language => 'Language';
 
   @override
-String get voiceOutput => 'Voice Output';
+  String get voiceOutput => 'Voice Output';
 
-@override
+  @override
   String get capturePhoto => 'Capture Photo';
+
   @override
   String get selectFromGallery => 'Select from Gallery';
 
   @override
   String get chatTitle => 'AgriBot Chat';
+
   @override
   String get chatInputHint => 'Ask about crop, disease, etc.';
+
   @override
   String get loginPrompt => 'Login to view your history.';
+
   @override
   String get noHistory => 'No history yet.';
+
+  // 🔽 Newly added
+  @override
+  String get classifyingDisease => 'Classifying Disease';
+
+  @override
+  String get pleaseWait => 'Please wait...';
+
+  @override
+  String get symptoms => 'Symptoms';
+
+  @override
+  String get treatments => 'Treatments';
+
+  @override
+  String get backToHome => 'Back to Home';
+
+  @override
+  String get diagnosisResult => 'Diagnosis Result';
 }

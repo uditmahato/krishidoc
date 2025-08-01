@@ -36,6 +36,7 @@ class LanguageAr extends BaseLanguage {
 
   @override
   String get capturePhoto => 'التقاط صورة';
+
   @override
   String get selectFromGallery => 'اختيار من المعرض';
 
@@ -47,7 +48,26 @@ class LanguageAr extends BaseLanguage {
 
   @override
   String get loginPrompt => 'تسجيل الدخول لعرض سجلك';
-  
+
   @override
   String get noHistory => 'لا يوجد سجل بعد';
+
+  // 🔽 Newly added keys
+  @override
+  String get classifyingDisease => 'جاري تصنيف المرض';
+
+  @override
+  String get pleaseWait => 'يرجى الانتظار...';
+
+  @override
+  String get symptoms => 'الأعراض';
+
+  @override
+  String get treatments => 'العلاجات';
+
+  @override
+  String get backToHome => 'العودة إلى الصفحة الرئيسية';
+
+  @override
+  String get diagnosisResult => 'نتيجة التشخيص';
 }
