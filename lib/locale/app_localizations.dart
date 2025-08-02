@@ -6,12 +6,12 @@ import 'package:krishidoc/locale/language_en.dart';
 import 'package:krishidoc/locale/language_fr.dart';
 import 'package:krishidoc/locale/language_hi.dart';
 import 'package:krishidoc/locale/language_np.dart';
-
 import 'package:krishidoc/locale/localization.dart';
 
 class AppLocalizations extends LocalizationsDelegate<BaseLanguage> {
   const AppLocalizations();
-  
+
+  static const AppLocalizations delegate = AppLocalizations();
 
   @override
   Future<BaseLanguage> load(Locale locale) async {
@@ -34,8 +34,20 @@ class AppLocalizations extends LocalizationsDelegate<BaseLanguage> {
   }
 
   @override
-  bool isSupported(Locale locale) => SupportedLanguages.codes.contains(locale.languageCode);
+  bool isSupported(Locale locale) =>
+      SupportedLanguages.codes.contains(locale.languageCode);
 
   @override
   bool shouldReload(LocalizationsDelegate<BaseLanguage> old) => false;
+
+  static BaseLanguage of(BuildContext context) {
+    final localizations = Localizations.of<BaseLanguage>(context, BaseLanguage);
+    if (localizations == null) {
+      print(
+        'AppLocalizations: BaseLanguage is null, falling back to LanguageEn',
+      );
+      return LanguageEn();
+    }
+    return localizations;
+  }
 }

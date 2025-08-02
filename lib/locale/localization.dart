@@ -16,9 +16,21 @@ class SupportedLanguages {
     german: 'Deutsch',
   };
 
+  static const Map<String, String> langnames = {
+    english: 'English',
+    nepali: 'Nepali',
+    hindi: 'Hindi',
+    arabic: 'Arabic',
+    french: 'French',
+    german: 'German',
+  };
+
   /// List of all supported language codes
   static List<String> get codes => names.keys.toList();
 
+  static List<String> get langCodes => langnames.keys.toList();
+
   /// Turn code ('np') into display name ('नेपाली')
   static String getName(String code) => names[code] ?? code;
+  static String getLangName(String code) => langnames[code] ?? code;
 }

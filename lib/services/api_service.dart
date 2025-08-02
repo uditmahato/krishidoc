@@ -56,20 +56,24 @@ class ApiService {
 
   /// Sends [message] with the user’s [languageCode] to the LLM API (Gemini),
   /// prepending system instructions and an assistant greeting, then returns the reply.
-  Future<String> sendChatMessage(String message, String languageCode) async {
+  Future<String> sendChatMessage(String message, String langName) async {
     try {
-      // Convert code ('ne') → name ('Nepali') for the prompt
-      final languageName = SupportedLanguages.getName(languageCode);
+      final languageName = SupportedLanguages.getLangName(langName);
+      print(
+        '[ApiService] Language code: $langName, Language name: $languageName',
+      );
+      print('[ApiService] User message: $message');
 
-      // Build the full prompt: system instructions, assistant greeting, then user query
       final fullPrompt = StringBuffer()
         ..writeln(_systemPrompt.trim())
         ..writeln()
         ..writeln(_assistantGreeting.trim())
         ..writeln()
-        ..writeln('User: "$message"')
+        ..writeln('User (in $languageName): "$message"')
         ..writeln('Please respond in $languageName.')
         ..writeln();
+
+      print('[ApiService] Full prompt sent to LLM: ${fullPrompt.toString()}');
 
       final payload = {
         'contents': [
@@ -80,7 +84,6 @@ class ApiService {
           },
         ],
       };
-
       final uri = Uri.parse('$GEMINI_API_URL?key=$GOOGLE_API_KEY');
       final response = await http.post(
         uri,

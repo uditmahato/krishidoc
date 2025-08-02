@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:krishidoc/locale/app_localizations.dart';
 import 'package:krishidoc/locale/base_language_key.dart';
+import 'package:krishidoc/locale/language_en.dart';
 import 'package:krishidoc/screens/language_screen.dart';
 import 'package:krishidoc/utils/colors.dart';
 import 'package:provider/provider.dart';
@@ -44,44 +45,42 @@ class KrishiDocApp extends StatelessWidget {
         builder: (context, settings, child) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            // Use a builder to access BaseLanguage for the title
+            locale: Locale(settings.language, ''),
+            localizationsDelegates: const [
+              AppLocalizations(),
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en', ''),
+              Locale('ne', ''),
+              Locale('hi', ''),
+              Locale('ar', ''),
+              Locale('fr', ''),
+              Locale('de', ''),
+            ],
             builder: (context, child) {
-              final BaseLanguage lang = BaseLanguage.of(context);
-              return MaterialApp(
-                title: lang.appName, // Use localized appName
-                debugShowCheckedModeBanner: false,
-                theme: ThemeData(
-                  primaryColor: primaryColor,
-                  colorScheme: ColorScheme.fromSeed(seedColor: primaryColor),
-                  useMaterial3: true,
-                  fontFamily: 'Roboto',
-                ),
-                locale: Locale(settings.language, ''),
-                localizationsDelegates: const [
-                  AppLocalizations(),
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                supportedLocales: const [
-                  Locale('en', ''),
-                  Locale('ne', ''),
-                  Locale('hi', ''),
-                  Locale('ar', ''),
-                  Locale('fr', ''),
-                  Locale('de', ''),
-                ],
-                initialRoute: '/',
-                routes: {
-                  '/': (context) => const HomePage(),
-                  '/diseaseResult': (context) => const DiseaseResultPage(),
-                  '/llmChat': (context) => const LlmChatPage(),
-                  '/history': (context) => const HistoryPage(),
-                  '/login': (context) => const LoginPage(),
-                  '/settings': (context) => const SettingsPage(),
-                  '/language': (context) => const LanguageScreen(),
-                },
-              );
+              // Ensure BaseLanguage is available for title
+              BaseLanguage.of(context);
+              return Material(child: child);
+            },
+            title: 'KrishiDoc', // Fallback title
+            theme: ThemeData(
+              primaryColor: primaryColor,
+              colorScheme: ColorScheme.fromSeed(seedColor: primaryColor),
+              useMaterial3: true,
+              fontFamily: 'Roboto',
+            ),
+            initialRoute: '/',
+            routes: {
+              '/': (context) => const HomePage(),
+              '/diseaseResult': (context) => const DiseaseResultPage(),
+              '/llmChat': (context) => const LlmChatPage(),
+              '/history': (context) => const HistoryPage(),
+              '/login': (context) => const LoginPage(),
+              '/settings': (context) => const SettingsPage(),
+              '/language': (context) => const LanguageScreen(),
             },
           );
         },

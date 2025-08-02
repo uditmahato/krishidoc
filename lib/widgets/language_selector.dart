@@ -1,6 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:krishidoc/locale/localization.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:provider/provider.dart'; // Add provider for state management
+
+// Provider to manage selected language
+class LanguageProvider extends ChangeNotifier {
+  String _selectedLanguage = 'en';
+
+  String get selectedLanguage => _selectedLanguage;
+
+  void setLanguage(String languageCode, BuildContext context) {
+    _selectedLanguage = languageCode;
+    // Update app's locale
+    // Assuming you have a method to update locale in your app
+    // You may need to integrate with your localization system
+    notifyListeners();
+  }
+}
 
 class LanguageSelector extends StatelessWidget {
   final String selected;
@@ -49,6 +65,32 @@ class LanguageSelector extends StatelessWidget {
       dropdownColor: context.cardColor,
       borderRadius: BorderRadius.circular(8),
       underline: Container(),
+    );
+  }
+}
+
+class LanguageScreen2 extends StatefulWidget {
+  @override
+  _LanguageScreen2State createState() => _LanguageScreen2State();
+}
+
+class _LanguageScreen2State extends State<LanguageScreen2> {
+  @override
+  Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
+    String selected = languageProvider.selectedLanguage;
+
+    return Scaffold(
+      appBar: AppBar(title: Text('Language Selection')),
+      body: Center(
+        child: LanguageSelector(
+          selected: selected,
+          onChanged: (String newSelected) {
+            languageProvider.setLanguage(newSelected, context);
+            print('Selected language: $newSelected');
+          },
+        ),
+      ),
     );
   }
 }

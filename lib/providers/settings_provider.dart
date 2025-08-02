@@ -9,17 +9,19 @@ class SettingsProvider with ChangeNotifier {
   String get language => _language;
   bool get ttsEnabled => _ttsEnabled;
 
-  void setLanguage(String langCode) async {
-    if (SupportedLanguages.codes.contains(langCode)) {
-      await setValue('selected_language', langCode);
+  void setLanguage(String langCode) {
+    if (SupportedLanguages.codes.contains(langCode) && _language != langCode) {
       _language = langCode;
+      setValue('selected_language', langCode);
+      print('SettingsProvider: Language set to $langCode');
       notifyListeners();
     }
   }
 
-  void toggleTTS() async {
+  void toggleTTS() {
     _ttsEnabled = !_ttsEnabled;
-    await setValue('tts_enabled', _ttsEnabled);
+    setValue('tts_enabled', _ttsEnabled);
+    print('SettingsProvider: TTS enabled: $_ttsEnabled');
     notifyListeners();
   }
 }

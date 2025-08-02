@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:krishidoc/locale/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:krishidoc/locale/base_language_key.dart';
-import 'package:krishidoc/locale/language_ar.dart';
 import 'package:krishidoc/utils/colors.dart';
 import '../providers/chat_provider.dart';
+import '../providers/settings_provider.dart';
 
 class LlmChatPage extends StatefulWidget {
   const LlmChatPage({super.key});
@@ -16,12 +17,14 @@ class LlmChatPage extends StatefulWidget {
 class _LlmChatPageState extends State<LlmChatPage> {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  final FocusNode _focusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
     final chatProvider = Provider.of<ChatProvider>(context);
+    final settingsProvider = Provider.of<SettingsProvider>(context);
     final theme = Theme.of(context);
-    final BaseLanguage lang = BaseLanguage.of(context);
+    final BaseLanguage lang = AppLocalizations.of(context);
 
     final raw = chatProvider.chats;
     final items = <_ChatItem>[];
@@ -31,15 +34,13 @@ class _LlmChatPageState extends State<LlmChatPage> {
     }
 
     return Scaffold(
-      backgroundColor: background, // Use background from colors.dart
+      backgroundColor: background,
       appBar: AppBar(
         title: Text(
-          lang.chatTitle,
-          style: TextStyle(
-            color: textPrimaryDarkColor,
-          ), // White text for contrast
+          lang.appName,
+          style: TextStyle(color: textPrimaryDarkColor),
         ),
-        backgroundColor: primaryColor, // Use primaryColor from colors.dart
+        backgroundColor: primaryColor,
         elevation: 2,
       ),
       body: Column(
@@ -56,63 +57,37 @@ class _LlmChatPageState extends State<LlmChatPage> {
               },
             ),
           ),
-
           if (chatProvider.isLoading)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
-              child: CircularProgressIndicator(
-                color: progressIndicatorColor, // Use progressIndicatorColor
-              ),
+              child: CircularProgressIndicator(color: progressIndicatorColor),
             ),
-
           Container(
             margin: const EdgeInsets.all(16),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
-              color: cardColor, // Use cardColor from colors.dart
+              color: cardColor,
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(
-                color: borderColor,
-                width: 1,
-              ), // Use borderColor
+              border: Border.all(color: borderColor, width: 1),
             ),
             child: Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: _controller,
+                    focusNode: _focusNode,
                     decoration: InputDecoration(
                       hintText: lang.chatInputHint,
                       border: InputBorder.none,
-                      hintStyle: TextStyle(
-                        color:
-                            textSecondaryLightColor, // Use textSecondaryLightColor
-                      ),
+                      hintStyle: TextStyle(color: textSecondaryLightColor),
                     ),
+                    onSubmitted: (_) =>
+                        _sendMessage(chatProvider, settingsProvider),
                   ),
                 ),
                 IconButton(
-                  icon: Icon(
-                    Icons.send,
-                    color: primaryColor,
-                  ), // Use primaryColor
-                  onPressed: () {
-                    final text = _controller.text.trim();
-                    if (text.isNotEmpty) {
-                      chatProvider.sendMessage(
-                        text,
-                        lang is LanguageAr ? 'ar' : 'en',
-                      );
-                      _controller.clear();
-                      Future.delayed(const Duration(milliseconds: 100), () {
-                        _scrollController.animateTo(
-                          0.0,
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeOut,
-                        );
-                      });
-                    }
-                  },
+                  icon: Icon(Icons.send, color: primaryColor),
+                  onPressed: () => _sendMessage(chatProvider, settingsProvider),
                 ),
               ],
             ),
@@ -123,12 +98,10 @@ class _LlmChatPageState extends State<LlmChatPage> {
   }
 
   Widget _buildBubble(_ChatItem item, ThemeData theme, BaseLanguage lang) {
-    final bgColor = item.isUser
-        ? primaryColor
-        : cardColor; // Use primaryColor and cardColor
+    final bgColor = item.isUser ? primaryColor : cardColor;
     final textColor = item.isUser
         ? textPrimaryDarkColor
-        : textPrimaryLightColor; // Use text colors
+        : textPrimaryLightColor;
 
     return Align(
       alignment: item.isUser ? Alignment.centerRight : Alignment.centerLeft,
@@ -162,6 +135,45 @@ class _LlmChatPageState extends State<LlmChatPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _sendMessage(
+    ChatProvider chatProvider,
+    SettingsProvider settingsProvider,
+  ) async {
+    final text = _controller.text.trim();
+    if (text.isNotEmpty) {
+      print(
+        'LlmChatPage: Sending message in language ${settingsProvider.language}',
+      );
+      await chatProvider.sendMessage(text, settingsProvider.language);
+      _controller.clear();
+      _focusNode.requestFocus();
+      Future.delayed(const Duration(milliseconds: 100), () {
+        _scrollController.animateTo(
+          0.0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future.delayed(const Duration(milliseconds: 100));
+      _focusNode.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _scrollController.dispose();
+    _focusNode.dispose();
+    super.dispose();
   }
 }
 
