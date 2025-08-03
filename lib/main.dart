@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:krishidoc/locale/app_localizations.dart';
 import 'package:krishidoc/locale/base_language_key.dart';
-import 'package:krishidoc/locale/language_en.dart';
+
 import 'package:krishidoc/screens/language_screen.dart';
 import 'package:krishidoc/utils/colors.dart';
 import 'package:provider/provider.dart';
