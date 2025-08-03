@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:krishidoc/utils/colors.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/custom_button.dart';
-import '../utils/constants.dart';
+import '../locale/base_language_key.dart'; // ← Import BaseLanguage
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -22,6 +22,9 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final authProvider = Provider.of<AuthProvider>(context);
+    final BaseLanguage lang = BaseLanguage.of(
+      context,
+    ); // ← Get localized strings
 
     return Scaffold(
       backgroundColor: background, // Use background from colors.dart
@@ -52,7 +55,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      AppStrings.appName,
+                      lang.appName, // ← Use localized appName
                       style: theme.textTheme.headlineMedium?.copyWith(
                         color:
                             primaryColor, // Use primaryColor from colors.dart
@@ -73,32 +76,24 @@ class _LoginPageState extends State<LoginPage> {
                           Icons.email,
                           color: iconColor,
                         ), // Use iconColor
-                        labelText: 'Email',
+                        labelText:
+                            lang.emailLabel, // ← Use localized emailLabel
                         labelStyle: TextStyle(
                           color: textSecondaryLightColor,
                         ), // Use textSecondaryLightColor
                         filled: true,
-                        fillColor: primaryColor.withOpacity(
-                          0.1,
-                        ), // Use primaryColor
+                        fillColor: primaryColor.withOpacity(0.1),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: borderColor,
-                          ), // Use borderColor
+                          borderSide: BorderSide(color: borderColor),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: borderColor,
-                          ), // Use borderColor
+                          borderSide: BorderSide(color: borderColor),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: primaryColor,
-                            width: 2,
-                          ), // Use primaryColor
+                          borderSide: BorderSide(color: primaryColor, width: 2),
                         ),
                       ),
                     ),
@@ -116,32 +111,24 @@ class _LoginPageState extends State<LoginPage> {
                           Icons.lock,
                           color: iconColor,
                         ), // Use iconColor
-                        labelText: 'Password',
+                        labelText:
+                            lang.passwordLabel, // ← Use localized passwordLabel
                         labelStyle: TextStyle(
                           color: textSecondaryLightColor,
                         ), // Use textSecondaryLightColor
                         filled: true,
-                        fillColor: primaryColor.withOpacity(
-                          0.1,
-                        ), // Use primaryColor
+                        fillColor: primaryColor.withOpacity(0.1),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: borderColor,
-                          ), // Use borderColor
+                          borderSide: BorderSide(color: borderColor),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: borderColor,
-                          ), // Use borderColor
+                          borderSide: BorderSide(color: borderColor),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: primaryColor,
-                            width: 2,
-                          ), // Use primaryColor
+                          borderSide: BorderSide(color: primaryColor, width: 2),
                         ),
                       ),
                     ),
@@ -176,7 +163,8 @@ class _LoginPageState extends State<LoginPage> {
                             color: progressIndicatorColor,
                           ) // Use progressIndicatorColor
                         : CustomButton(
-                            label: 'Login',
+                            label:
+                                lang.loginButton, // ← Use localized loginButton
                             icon: Icons.login,
                             color: primaryColor, // Use primaryColor
                             textColor: textPrimaryDarkColor, // White text/icon
@@ -190,8 +178,8 @@ class _LoginPageState extends State<LoginPage> {
                                 Navigator.pop(context);
                               } catch (_) {
                                 setState(
-                                  () => _error =
-                                      'Login failed. Check credentials.',
+                                  () => _error = lang
+                                      .loginFailed, // ← Use localized loginFailed
                                 );
                               }
                               setState(() => _isLoading = false);
@@ -203,11 +191,10 @@ class _LoginPageState extends State<LoginPage> {
                     // Forgot Password Button
                     TextButton(
                       onPressed: () {
-                        // TODO: Implement forgot password logic
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
-                              'Forgot Password feature is not implemented yet.',
+                              lang.forgotPasswordNotImplemented, // ← Use localized forgotPasswordNotImplemented
                               style: TextStyle(color: textPrimaryDarkColor),
                             ),
                             backgroundColor: accent, // Use accent
@@ -215,7 +202,7 @@ class _LoginPageState extends State<LoginPage> {
                         );
                       },
                       child: Text(
-                        'Forgot Password?',
+                        lang.forgotPassword, // ← Use localized forgotPassword
                         style: TextStyle(
                           color: accent, // Use accent
                           fontWeight: FontWeight.w600,

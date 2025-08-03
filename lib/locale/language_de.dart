@@ -72,7 +72,18 @@ class LanguageDe extends BaseLanguage {
 @override String get pleaseWait => 'Bitte warten...';
 @override String get treatments => 'Behandlungen';
 
-
+@override
+  String get emailLabel => 'E-Mail';
+  @override
+  String get passwordLabel => 'Passwort';
+  @override
+  String get loginButton => 'Anmelden';
+  @override
+  String get forgotPassword => 'Passwort vergessen?';
+  @override
+  String get loginFailed => 'Anmeldung fehlgeschlagen. Überprüfen Sie Ihre Anmeldedaten.';
+  @override
+  String get forgotPasswordNotImplemented => 'Die Funktion "Passwort vergessen" ist noch nicht implementiert.';
 
 
 }

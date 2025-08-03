@@ -73,5 +73,16 @@ class LanguageEn extends BaseLanguage {
 @override String get treatments => 'Treatments';
 
 
-
+@override
+  String get emailLabel => 'Email';
+  @override
+  String get passwordLabel => 'Password';
+  @override
+  String get loginButton => 'Login';
+  @override
+  String get forgotPassword => 'Forgot Password?';
+  @override
+  String get loginFailed => 'Login failed. Check credentials.';
+  @override
+  String get forgotPasswordNotImplemented => 'Forgot Password feature is not implemented yet.';
 }

@@ -48,4 +48,12 @@ abstract class BaseLanguage {
   String get treatmentPrompt;
   String get treatmentInstruction;
   String get symptomInstruction;
+
+  
+  String get emailLabel;
+  String get passwordLabel;
+  String get loginButton;
+  String get forgotPassword;
+  String get loginFailed;
+  String get forgotPasswordNotImplemented;
 }

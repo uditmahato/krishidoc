@@ -126,7 +126,7 @@ class DiseaseResultPage extends StatelessWidget {
   ) {
     final reply = chatProvider.chats.isNotEmpty
         ? chatProvider.chats.last.reply
-        : 'No response.'; // Consider localizing this fallback text if needed
+        : 'No response.'; // Consider localizing this fallback text if neededgit
     final BaseLanguage lang = BaseLanguage.of(
       context,
     ); // ← Get localized strings for dialog

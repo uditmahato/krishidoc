@@ -73,6 +73,17 @@ class LanguageFr extends BaseLanguage {
 @override String get treatments => 'Traitements';
 
 
-
+@override
+  String get emailLabel => 'E-mail';
+  @override
+  String get passwordLabel => 'Mot de passe';
+  @override
+  String get loginButton => 'Connexion';
+  @override
+  String get forgotPassword => 'Mot de passe oublié ?';
+  @override
+  String get loginFailed => 'Échec de la connexion. Vérifiez vos identifiants.';
+  @override
+  String get forgotPasswordNotImplemented => 'La fonctionnalité de mot de passe oublié n\'est pas encore implémentée.';
 
 }

@@ -72,7 +72,18 @@ class LanguageNp extends BaseLanguage {
 @override String get pleaseWait => 'कृपया पर्खनुहोस्...';
 @override String get treatments => 'उपचारहरू';
 
-
+@override
+  String get emailLabel => 'इमेल';
+  @override
+  String get passwordLabel => 'पासवर्ड';
+  @override
+  String get loginButton => 'लगइन';
+  @override
+  String get forgotPassword => 'पासवर्ड बिर्सनुभयो?';
+  @override
+  String get loginFailed => 'लगइन असफल। प्रमाणहरू जाँच गर्नुहोस्।';
+  @override
+  String get forgotPasswordNotImplemented => 'पासवर्ड बिर्सने सुविधा अझै लागू गरिएको छैन।';
 
 
 }

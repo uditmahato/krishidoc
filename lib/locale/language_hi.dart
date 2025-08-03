@@ -73,6 +73,17 @@ class LanguageHi extends BaseLanguage {
 @override String get treatments => 'उपचार';
 
 
-
+@override
+  String get emailLabel => 'ईमेल';
+  @override
+  String get passwordLabel => 'पासवर्ड';
+  @override
+  String get loginButton => 'लॉगिन';
+  @override
+  String get forgotPassword => 'पासवर्ड भूल गए?';
+  @override
+  String get loginFailed => 'लॉगिन विफल। क्रेडेंशियल्स जांचें।';
+  @override
+  String get forgotPasswordNotImplemented => 'पासवर्ड भूलने की सुविधा अभी लागू नहीं की गई है।';
 
 }

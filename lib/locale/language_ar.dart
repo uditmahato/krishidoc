@@ -72,6 +72,17 @@ class LanguageAr extends BaseLanguage {
 @override String get treatments => 'العلاجات';
 
 
-
+@override
+  String get emailLabel => 'البريد الإلكتروني';
+  @override
+  String get passwordLabel => 'كلمة المرور';
+  @override
+  String get loginButton => 'تسجيل الدخول';
+  @override
+  String get forgotPassword => 'هل نسيت كلمة المرور؟';
+  @override
+  String get loginFailed => 'فشل تسجيل الدخول. تحقق من بيانات الاعتماد.';
+  @override
+  String get forgotPasswordNotImplemented => 'ميزة نسيان كلمة المرور لم يتم تنفيذها بعد.';
 
 }
