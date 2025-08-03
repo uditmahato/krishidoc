@@ -39,4 +39,13 @@ abstract class BaseLanguage {
   String get treatments;
   String get backToHome;
   String get diagnosisResult;
+  String get confidence;
+  String get treatment;
+
+  String get ofDiagnosis;
+  String get ok;
+  String get symptomPrompt;
+  String get treatmentPrompt;
+  String get treatmentInstruction;
+  String get symptomInstruction;
 }

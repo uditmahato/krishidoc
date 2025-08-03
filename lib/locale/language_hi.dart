@@ -54,21 +54,25 @@ class LanguageHi extends BaseLanguage {
   String get noHistory => 'अभी तक कोई इतिहास नहीं';
 
   // 🆕 Newly added keys
-  @override
-  String get classifyingDisease => 'रोग वर्गीकृत किया जा रहा है';
+  @override String get diagnosisResult => 'निदान परिणाम';
+@override String get confidence => 'विश्वास स्तर';
+@override String get symptoms => 'लक्षण';
+@override String get treatment => 'उपचार';
+@override String get backToHome => 'होम पर वापस जाएं';
+@override String get ofDiagnosis => 'का निदान';
+@override String get ok => 'ठीक है';
 
-  @override
-  String get pleaseWait => 'कृपया प्रतीक्षा करें...';
+@override String get symptomPrompt => '{disease} के 5–10 सामान्य और महत्वपूर्ण लक्षणों की एक सूची प्रदान करें।';
+@override String get symptomInstruction => 'प्रत्येक पंक्ति में केवल एक लक्षण लिखें।';
 
-  @override
-  String get symptoms => 'लक्षण';
+@override String get treatmentPrompt => '{disease} के लिए 5–10 प्रभावी उपचार योजनाएं प्रदान करें।';
+@override String get treatmentInstruction => 'स्थानीय कृषि परिस्थितियों के अनुसार। प्रत्येक योजना को एक अलग पंक्ति में लिखें।';
 
-  @override
-  String get treatments => 'उपचार';
+ @override String get classifyingDisease => 'रोग का वर्गीकरण हो रहा है...';
+@override String get pleaseWait => 'कृपया प्रतीक्षा करें...';
+@override String get treatments => 'उपचार';
 
-  @override
-  String get backToHome => 'मुख पृष्ठ पर जाएं';
 
-  @override
-  String get diagnosisResult => 'निदान परिणाम';
+
+
 }

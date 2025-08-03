@@ -54,21 +54,25 @@ class LanguageFr extends BaseLanguage {
   String get noHistory => 'Aucun historique pour l’instant';
 
   // 🔽 Newly added translations
-  @override
-  String get classifyingDisease => 'Classification de la maladie';
+  @override String get diagnosisResult => 'Résultat du diagnostic';
+@override String get confidence => 'Confiance';
+@override String get symptoms => 'Symptômes';
+@override String get treatment => 'Traitement';
+@override String get backToHome => 'Retour à l\'accueil';
+@override String get ofDiagnosis => 'du diagnostic';
+@override String get ok => 'OK';
 
-  @override
-  String get pleaseWait => 'Veuillez patienter...';
+@override String get symptomPrompt => 'Fournissez une liste concise de 5 à 10 symptômes courants et significatifs de {disease}.';
+@override String get symptomInstruction => 'Listez uniquement les descriptions de symptômes (une par ligne).';
 
-  @override
-  String get symptoms => 'Symptômes';
+@override String get treatmentPrompt => 'Fournissez 5 à 10 plans de traitement efficaces pour {disease}.';
+@override String get treatmentInstruction => 'Adaptés aux conditions agricoles locales. Un plan par ligne.';
 
-  @override
-  String get treatments => 'Traitements';
+  @override String get classifyingDisease => 'Classification de la maladie...';
+@override String get pleaseWait => 'Veuillez patienter...';
+@override String get treatments => 'Traitements';
 
-  @override
-  String get backToHome => 'Retour à l’accueil';
 
-  @override
-  String get diagnosisResult => 'Résultat du diagnostic';
+
+
 }

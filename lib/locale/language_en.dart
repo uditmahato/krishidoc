@@ -54,21 +54,24 @@ class LanguageEn extends BaseLanguage {
   String get noHistory => 'No history yet.';
 
   // 🔽 Newly added
-  @override
-  String get classifyingDisease => 'Classifying Disease';
+  @override String get diagnosisResult => 'Diagnosis Result';
+@override String get confidence => 'Confidence';
+@override String get symptoms => 'Symptoms';
+@override String get treatment => 'Treatment';
+@override String get backToHome => 'Back to Home';
+@override String get ofDiagnosis => 'of Diagnosis';
+@override String get ok => 'OK';
 
-  @override
-  String get pleaseWait => 'Please wait...';
+@override String get symptomPrompt => 'Provide a concise list of 5–10 common and significant symptoms of {disease}.';
+@override String get symptomInstruction => 'List only the symptom descriptions (one per line).';
 
-  @override
-  String get symptoms => 'Symptoms';
+@override String get treatmentPrompt => 'Provide 5–10 effective treatment plans for {disease}.';
+@override String get treatmentInstruction => 'Tailored to local farming conditions. List each plan on its own line.';
 
-  @override
-  String get treatments => 'Treatments';
+ @override String get classifyingDisease => 'Classifying disease...';
+@override String get pleaseWait => 'Please wait...';
+@override String get treatments => 'Treatments';
 
-  @override
-  String get backToHome => 'Back to Home';
 
-  @override
-  String get diagnosisResult => 'Diagnosis Result';
+
 }

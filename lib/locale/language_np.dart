@@ -54,21 +54,25 @@ class LanguageNp extends BaseLanguage {
   String get noHistory => 'अहिलेसम्म कुनै इतिहास छैन';
 
   // 🔽 New translations
-  @override
-  String get classifyingDisease => 'रोगको निदान हुँदैछ...';
+  @override String get diagnosisResult => 'रोगको नतिजा';
+@override String get confidence => 'विश्वास स्तर';
+@override String get symptoms => 'लक्षणहरू';
+@override String get treatment => 'उपचार';
+@override String get backToHome => 'मुख्य पृष्ठमा फर्कनुहोस्';
+@override String get ofDiagnosis => 'को निदान';
+@override String get ok => 'ठीक छ';
 
-  @override
-  String get pleaseWait => 'कृपया पर्खनुहोस्...';
+@override String get symptomPrompt => 'कृपया {disease} का ५–१० साधारण र महत्वपूर्ण लक्षणहरूको सूची दिनुहोस्।';
+@override String get symptomInstruction => 'प्रत्येक लाइनमा एक लक्षण मात्र लेख्नुहोस्।';
 
-  @override
-  String get symptoms => 'लक्षणहरू';
+@override String get treatmentPrompt => '{disease} को लागि ५–१० प्रभावकारी उपचार योजना दिनुहोस्।';
+@override String get treatmentInstruction => 'स्थानीय कृषि सन्दर्भ अनुसार प्रत्येक योजना छुट्याएर लेख्नुहोस्।';
 
-  @override
-  String get treatments => 'उपचारहरू';
+  @override String get classifyingDisease => 'रोग वर्गीकरण हुँदैछ...';
+@override String get pleaseWait => 'कृपया पर्खनुहोस्...';
+@override String get treatments => 'उपचारहरू';
 
-  @override
-  String get backToHome => 'गृहपृष्ठमा फर्कनुहोस्';
 
-  @override
-  String get diagnosisResult => 'निदान नतिजा';
+
+
 }

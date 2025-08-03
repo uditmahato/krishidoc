@@ -1,13 +1,12 @@
-// lib/screens/disease_result_page.dart
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/disease_provider.dart';
 import '../providers/chat_provider.dart';
-import '../providers/settings_provider.dart';         // ← import settings
+import '../providers/settings_provider.dart';
 import '../widgets/custom_button.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import '../locale/base_language_key.dart'; // ← Import BaseLanguage
 
 class DiseaseResultPage extends StatelessWidget {
   const DiseaseResultPage({super.key});
@@ -16,26 +15,31 @@ class DiseaseResultPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final diseaseProvider = Provider.of<DiseaseProvider>(context);
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
-    final settings    = Provider.of<SettingsProvider>(context, listen: false);  // ← grab language code
-    final disease     = diseaseProvider.currentDisease;
-    final imagePath   = diseaseProvider.lastImagePath;
+    final settings = Provider.of<SettingsProvider>(context, listen: false);
+    final BaseLanguage lang = BaseLanguage.of(
+      context,
+    ); // ← Get localized strings
+    final disease = diseaseProvider.currentDisease;
+    final imagePath = diseaseProvider.lastImagePath;
 
     if (diseaseProvider.isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     if (disease == null) {
-      return const Scaffold(
-        body: Center(child: Text('No disease detected.')),
+      return Scaffold(
+        body: Center(
+          child: Text(lang.noHistory),
+        ), // ← Use localized 'noHistory'
       );
     }
 
-    // get the code, e.g. 'en', 'ne', or 'hi'
+    // Get the language code, e.g., 'en', 'ne', or 'hi'
     final langCode = settings.language;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Diagnosis Result')),
+      appBar: AppBar(
+        title: Text(lang.diagnosisResult),
+      ), // ← Use localized 'diagnosisResult'
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -48,10 +52,13 @@ class DiseaseResultPage extends StatelessWidget {
               Image.network(disease.imageUrl, height: 180, fit: BoxFit.cover),
 
             const SizedBox(height: 24),
-            Text(disease.name, style: Theme.of(context).textTheme.headlineSmall),
+            Text(
+              disease.name,
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
             const SizedBox(height: 8),
             Text(
-              'Confidence: ${(disease.confidence * 100).toStringAsFixed(2)}%',
+              '${lang.confidence}: ${(disease.confidence * 100).toStringAsFixed(2)}%', // ← Use localized 'confidence'
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 16),
@@ -61,26 +68,34 @@ class DiseaseResultPage extends StatelessWidget {
               children: [
                 Expanded(
                   child: CustomButton(
-                    label: 'Symptoms',
+                    label: lang.symptoms, // ← Use localized 'symptoms'
                     icon: Icons.info_outline,
                     onPressed: () async {
-                      final prompt = 
-"Provide a concise list of 5–10 common and significant symptoms of ${disease.name}. List only the symptom descriptions (one per line).";
+                      final prompt =
+                          "${lang.symptomPrompt} ${disease.name}. ${lang.symptomInstruction}"; // ← Use localized prompts
                       await chatProvider.sendMessage(prompt, langCode);
-                      _showResponse(context, 'Symptoms', chatProvider);
+                      _showResponse(
+                        context,
+                        lang.symptoms,
+                        chatProvider,
+                      ); // ← Pass localized title
                     },
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: CustomButton(
-                    label: 'Treatment',
+                    label: lang.treatment, // ← Use localized 'treatment'
                     icon: Icons.local_hospital,
                     onPressed: () async {
                       final prompt =
-"Provide 5–10 effective treatment plans for ${disease.name}, tailored to local farming conditions. List each plan on its own line.";
+                          "${lang.treatmentPrompt} ${disease.name}, ${lang.treatmentInstruction}"; // ← Use localized prompts
                       await chatProvider.sendMessage(prompt, langCode);
-                      _showResponse(context, 'Treatment', chatProvider);
+                      _showResponse(
+                        context,
+                        lang.treatment,
+                        chatProvider,
+                      ); // ← Pass localized title
                     },
                   ),
                 ),
@@ -91,7 +106,7 @@ class DiseaseResultPage extends StatelessWidget {
 
             // ─── Back Button ───────────────────────────────────────
             CustomButton(
-              label: 'Back to Home',
+              label: lang.backToHome, // ← Use localized 'backToHome'
               icon: Icons.home,
               onPressed: () {
                 diseaseProvider.clearDisease();
@@ -105,26 +120,32 @@ class DiseaseResultPage extends StatelessWidget {
   }
 
   void _showResponse(
-      BuildContext context, String title, ChatProvider chatProvider) {
+    BuildContext context,
+    String title,
+    ChatProvider chatProvider,
+  ) {
     final reply = chatProvider.chats.isNotEmpty
         ? chatProvider.chats.last.reply
-        : 'No response.';
+        : 'No response.'; // Consider localizing this fallback text if needed
+    final BaseLanguage lang = BaseLanguage.of(
+      context,
+    ); // ← Get localized strings for dialog
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         scrollable: true,
-        title: Text('$title of Diagnosis'),
+        title: Text(
+          '$title ${lang.ofDiagnosis}',
+        ), // ← Use localized 'ofDiagnosis'
         content: SizedBox(
           width: double.maxFinite,
           height: MediaQuery.of(context).size.height * 0.5,
-          child: SingleChildScrollView(
-            child: MarkdownBody(data: reply),
-          ),
+          child: SingleChildScrollView(child: MarkdownBody(data: reply)),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('OK'),
+            child: Text(lang.ok), // ← Use localized 'ok'
           ),
         ],
       ),

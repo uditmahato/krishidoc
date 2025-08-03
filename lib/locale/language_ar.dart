@@ -53,21 +53,25 @@ class LanguageAr extends BaseLanguage {
   String get noHistory => 'لا يوجد سجل بعد';
 
   // 🔽 Newly added keys
-  @override
-  String get classifyingDisease => 'جاري تصنيف المرض';
+  @override String get diagnosisResult => 'نتيجة التشخيص';
+@override String get confidence => 'نسبة الثقة';
+@override String get symptoms => 'الأعراض';
+@override String get treatment => 'العلاج';
+@override String get backToHome => 'العودة إلى الصفحة الرئيسية';
+@override String get ofDiagnosis => 'للتشخيص';
+@override String get ok => 'موافق';
 
-  @override
-  String get pleaseWait => 'يرجى الانتظار...';
+@override String get symptomPrompt => 'قدم قائمة مختصرة بـ 5 إلى 10 أعراض شائعة وهامة لـ {disease}.';
+@override String get symptomInstruction => 'اكتب كل عرض في سطر منفصل.';
 
-  @override
-  String get symptoms => 'الأعراض';
+@override String get treatmentPrompt => 'قدم 5 إلى 10 خطط علاج فعالة لـ {disease}.';
+@override String get treatmentInstruction => 'مخصصة للظروف الزراعية المحلية. اكتب كل خطة في سطر منفصل.';
 
-  @override
-  String get treatments => 'العلاجات';
+ @override String get classifyingDisease => 'جارٍ تصنيف المرض...';
+@override String get pleaseWait => 'يرجى الانتظار...';
+@override String get treatments => 'العلاجات';
 
-  @override
-  String get backToHome => 'العودة إلى الصفحة الرئيسية';
 
-  @override
-  String get diagnosisResult => 'نتيجة التشخيص';
+
+
 }

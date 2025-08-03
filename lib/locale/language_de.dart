@@ -54,21 +54,25 @@ class LanguageDe extends BaseLanguage {
   String get noHistory => 'Noch kein Verlauf';
 
   // 🔽 Newly added keys
-  @override
-  String get classifyingDisease => 'Krankheit wird klassifiziert';
+  @override String get diagnosisResult => 'Diagnoseergebnis';
+@override String get confidence => 'Vertrauensgrad';
+@override String get symptoms => 'Symptome';
+@override String get treatment => 'Behandlung';
+@override String get backToHome => 'Zurück zur Startseite';
+@override String get ofDiagnosis => 'der Diagnose';
+@override String get ok => 'OK';
 
-  @override
-  String get pleaseWait => 'Bitte warten...';
+@override String get symptomPrompt => 'Geben Sie eine kurze Liste von 5–10 häufigen und bedeutenden Symptomen von {disease}.';
+@override String get symptomInstruction => 'Listen Sie nur die Symptombeschreibungen auf (jeweils eine pro Zeile).';
 
-  @override
-  String get symptoms => 'Symptome';
+@override String get treatmentPrompt => 'Geben Sie 5–10 wirksame Behandlungspläne für {disease} an.';
+@override String get treatmentInstruction => 'An lokale landwirtschaftliche Bedingungen angepasst. Jede Zeile ein Plan.';
 
-  @override
-  String get treatments => 'Behandlungen';
+  @override String get classifyingDisease => 'Krankheit wird klassifiziert...';
+@override String get pleaseWait => 'Bitte warten...';
+@override String get treatments => 'Behandlungen';
 
-  @override
-  String get backToHome => 'Zurück zur Startseite';
 
-  @override
-  String get diagnosisResult => 'Diagnoseergebnis';
+
+
 }
