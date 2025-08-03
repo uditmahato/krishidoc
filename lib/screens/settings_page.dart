@@ -24,7 +24,9 @@ class SettingsPage extends StatelessWidget {
         backgroundColor: primaryColor, // Use primaryColor from colors.dart
         title: Text(
           lang.settings,
-          style: TextStyle(color: textPrimaryDarkColor), // White text for contrast
+          style: TextStyle(
+            color: textPrimaryDarkColor,
+          ), // White text for contrast
         ),
       ),
       body: Padding(
@@ -37,9 +39,12 @@ class SettingsPage extends StatelessWidget {
                 Text(
                   '${lang.language}:',
                   style: boldTextStyle(size: 18).copyWith(
-                    color: textPrimaryLightColor, // Use textPrimaryLightColor from colors.dart
+                    color:
+                        textPrimaryLightColor, // Use textPrimaryLightColor from colors.dart
                   ),
-                  textDirection: lang is LanguageAr ? TextDirection.rtl : TextDirection.ltr,
+                  textDirection: lang is LanguageAr
+                      ? TextDirection.rtl
+                      : TextDirection.ltr,
                 ),
                 12.width,
                 LanguageSelector(
@@ -54,13 +59,17 @@ class SettingsPage extends StatelessWidget {
                 Text(
                   lang.voiceOutput, // Use localized string
                   style: boldTextStyle(size: 18).copyWith(
-                    color: textPrimaryLightColor, // Use textPrimaryLightColor from colors.dart
+                    color:
+                        textPrimaryLightColor, // Use textPrimaryLightColor from colors.dart
                   ),
-                  textDirection: lang is LanguageAr ? TextDirection.rtl : TextDirection.ltr,
+                  textDirection: lang is LanguageAr
+                      ? TextDirection.rtl
+                      : TextDirection.ltr,
                 ),
                 Switch(
                   value: settings.ttsEnabled,
-                  activeTrackColor: primaryColor, // Use primaryColor from colors.dart
+                  activeTrackColor:
+                      primaryColor, // Use primaryColor from colors.dart
                   activeColor: accent, // Use accent from colors.dart
                   onChanged: (val) => settings.toggleTTS(),
                 ),
@@ -84,7 +93,7 @@ class SettingsPage extends StatelessWidget {
                     color: primaryColor, // Use primaryColor from colors.dart
                     textColor: textPrimaryDarkColor, // White text for contrast
                     onPressed: () {
-                      Navigator.pushNamed(context, '/login');
+                      Navigator.pushNamed(context, '/signup');
                     },
                   ),
           ],

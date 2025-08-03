@@ -84,6 +84,36 @@ class LanguageDe extends BaseLanguage {
   String get loginFailed => 'Anmeldung fehlgeschlagen. Überprüfen Sie Ihre Anmeldedaten.';
   @override
   String get forgotPasswordNotImplemented => 'Die Funktion "Passwort vergessen" ist noch nicht implementiert.';
+@override
+  String get signupButton => 'Registrieren';
+  @override
+  String get nameLabel => 'Name';
+  @override
+  String get confirmPasswordLabel => 'Passwort bestätigen';
+  @override
+  String get invalidEmail => 'Ungültige E-Mail-Adresse. Muss @ und eine Domain enthalten.';
+  @override
+  String get invalidPassword => 'Das Passwort muss mindestens 8 Zeichen lang sein und Großbuchstaben, Kleinbuchstaben, Zahlen und Sonderzeichen enthalten.';
+  @override
+  String get passwordsDoNotMatch => 'Die Passwörter stimmen nicht überein.';
+  @override
+  String get signupFailed => 'Registrierung fehlgeschlagen. Bitte überprüfen Sie Ihre Angaben.';
+  @override
+  String get signupSuccess => 'Registrierung erfolgreich! Bitte melden Sie sich an.';
+  @override
+  String get alreadyHaveAccount => 'Haben Sie schon ein Konto? Anmelden';
+  @override
+  String get resetPasswordButton => 'Passwort zurücksetzen';
+  @override
+  String get verificationCodeLabel => 'Verifizierungscode';
+  @override
+  String get newPasswordLabel => 'Neues Passwort';
+  @override
+  String get passwordResetSuccess => 'Passwort zurücksetzen erfolgreich! Bitte melden Sie sich an.';
+  @override
+  String get invalidVerificationCode => 'Ungültiger Verifizierungscode.';
 
+  @override
+  String get dontHaveAccount => 'Kein Konto? Registrieren';
 
 }

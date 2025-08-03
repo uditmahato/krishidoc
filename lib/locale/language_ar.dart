@@ -85,4 +85,36 @@ class LanguageAr extends BaseLanguage {
   @override
   String get forgotPasswordNotImplemented => 'ميزة نسيان كلمة المرور لم يتم تنفيذها بعد.';
 
+    @override
+  String get signupButton => 'التسجيل';
+  @override
+  String get nameLabel => 'الاسم';
+  @override
+  String get confirmPasswordLabel => 'تأكيد كلمة المرور';
+  @override
+  String get invalidEmail => 'عنوان بريد إلكتروني غير صالح. يجب أن يحتوي على @ ونطاق.';
+  @override
+  String get invalidPassword => 'يجب أن تتكون كلمة المرور من 8 أحرف على الأقل، مع أحرف كبيرة وصغيرة وأرقام وأحرف خاصة.';
+  @override
+  String get passwordsDoNotMatch => 'كلمات المرور غير متطابقة.';
+  @override
+  String get signupFailed => 'فشل التسجيل. يرجى التحقق من التفاصيل الخاصة بك.';
+  @override
+  String get signupSuccess => 'تم التسجيل بنجاح! يرجى تسجيل الدخول.';
+  @override
+  String get alreadyHaveAccount => 'هل لديك حساب بالفعل؟ تسجيل الدخول';
+  @override
+  String get resetPasswordButton => 'إعادة تعيين كلمة المرور';
+  @override
+  String get verificationCodeLabel => 'رمز التحقق';
+  @override
+  String get newPasswordLabel => 'كلمة المرور الجديدة';
+  @override
+  String get passwordResetSuccess => 'تم إعادة تعيين كلمة المرور بنجاح! يرجى تسجيل الدخول.';
+  @override
+  String get invalidVerificationCode => 'رمز التحقق غير صالح.';
+
+  @override
+  String get dontHaveAccount => 'ليس لديك حساب؟ التسجيل';
+
 }

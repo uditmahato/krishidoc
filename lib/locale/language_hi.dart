@@ -86,4 +86,35 @@ class LanguageHi extends BaseLanguage {
   @override
   String get forgotPasswordNotImplemented => 'पासवर्ड भूलने की सुविधा अभी लागू नहीं की गई है।';
 
+@override
+  String get signupButton => 'साइन अप';
+  @override
+  String get nameLabel => 'नाम';
+  @override
+  String get confirmPasswordLabel => 'पासवर्ड की पुष्टि करें';
+  @override
+  String get invalidEmail => 'अमान्य ईमेल पता। इसमें @ और डोमेन होना चाहिए।';
+  @override
+  String get invalidPassword => 'पासवर्ड में कम से कम 8 अक्षर, बड़े अक्षर, छोटे अक्षर, अंक और विशेष अक्षर होने चाहिए।';
+  @override
+  String get passwordsDoNotMatch => 'पासवर्ड मेल नहीं खाते।';
+  @override
+  String get signupFailed => 'साइन अप विफल। कृपया अपने विवरण जांचें।';
+  @override
+  String get signupSuccess => 'साइन अप सफल! कृपया लॉगिन करें।';
+  @override
+  String get alreadyHaveAccount => 'पहले से खाता है? लॉगिन करें';
+  @override
+  String get resetPasswordButton => 'पासवर्ड रीसेट करें';
+  @override
+  String get verificationCodeLabel => 'सत्यापन कोड';
+  @override
+  String get newPasswordLabel => 'नया पासवर्ड';
+  @override
+  String get passwordResetSuccess => 'पासवर्ड रीसेट सफल! कृपया लॉगिन करें।';
+  @override
+  String get invalidVerificationCode => 'अमान्य सत्यापन कोड।';
+  @override
+  String get dontHaveAccount => 'खाता नहीं है? साइन अप करें';
+
 }

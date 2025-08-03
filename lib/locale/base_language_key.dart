@@ -56,4 +56,20 @@ abstract class BaseLanguage {
   String get forgotPassword;
   String get loginFailed;
   String get forgotPasswordNotImplemented;
+
+  String get signupButton;
+  String get nameLabel;
+  String get confirmPasswordLabel;
+  String get invalidEmail;
+  String get invalidPassword;
+  String get passwordsDoNotMatch;
+  String get signupFailed;
+  String get signupSuccess;
+  String get alreadyHaveAccount;
+  String get resetPasswordButton;
+  String get verificationCodeLabel;
+  String get newPasswordLabel;
+  String get passwordResetSuccess;
+  String get invalidVerificationCode;
+  String get dontHaveAccount;
 }

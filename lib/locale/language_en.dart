@@ -85,4 +85,36 @@ class LanguageEn extends BaseLanguage {
   String get loginFailed => 'Login failed. Check credentials.';
   @override
   String get forgotPasswordNotImplemented => 'Forgot Password feature is not implemented yet.';
+
+ 
+  @override
+  String get signupButton => 'Sign Up';
+  @override
+  String get nameLabel => 'Name';
+  @override
+  String get confirmPasswordLabel => 'Confirm Password';
+  @override
+  String get invalidEmail => 'Invalid email address. Must contain @ and a domain.';
+  @override
+  String get invalidPassword => 'Password must be at least 8 characters, with uppercase, lowercase, numbers, and special characters.';
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match.';
+  @override
+  String get signupFailed => 'Sign up failed. Please check your details.';
+  @override
+  String get signupSuccess => 'Sign up successful! Please log in.';
+  @override
+  String get alreadyHaveAccount => 'Already have an account? Login';
+  @override
+  String get resetPasswordButton => 'Reset Password';
+  @override
+  String get verificationCodeLabel => 'Verification Code';
+  @override
+  String get newPasswordLabel => 'New Password';
+  @override
+  String get passwordResetSuccess => 'Password reset successful! Please log in.';
+  @override
+  String get invalidVerificationCode => 'Invalid verification code.';
+  @override
+  String get dontHaveAccount => 'Don\'t have an account? Sign up';
 }

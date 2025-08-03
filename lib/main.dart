@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:krishidoc/locale/app_localizations.dart';
 import 'package:krishidoc/locale/base_language_key.dart';
+import 'package:krishidoc/screens/forgot_password_page.dart';
 
 import 'package:krishidoc/screens/language_screen.dart';
+import 'package:krishidoc/screens/signup_page.dart';
 import 'package:krishidoc/utils/colors.dart';
 import 'package:provider/provider.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -79,6 +81,8 @@ class KrishiDocApp extends StatelessWidget {
               '/llmChat': (context) => const LlmChatPage(),
               '/history': (context) => const HistoryPage(),
               '/login': (context) => const LoginPage(),
+              '/signup': (context) => const SignupPage(),
+              '/forgot_password': (context) => const ForgotPasswordPage(),
               '/settings': (context) => const SettingsPage(),
               '/language': (context) => const LanguageScreen(),
             },

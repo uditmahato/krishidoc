@@ -86,4 +86,34 @@ class LanguageFr extends BaseLanguage {
   @override
   String get forgotPasswordNotImplemented => 'La fonctionnalité de mot de passe oublié n\'est pas encore implémentée.';
 
+@override
+  String get signupButton => 'S\'inscrire';
+  @override
+  String get nameLabel => 'Nom';
+  @override
+  String get confirmPasswordLabel => 'Confirmer le mot de passe';
+  @override
+  String get invalidEmail => 'Adresse e-mail invalide. Doit contenir @ et un domaine.';
+  @override
+  String get invalidPassword => 'Le mot de passe doit comporter au moins 8 caractères, avec des majuscules, des minuscules, des chiffres et des caractères spéciaux.';
+  @override
+  String get passwordsDoNotMatch => 'Les mots de passe ne correspondent pas.';
+  @override
+  String get signupFailed => 'Échec de l\'inscription. Veuillez vérifier vos informations.';
+  @override
+  String get signupSuccess => 'Inscription réussie ! Veuillez vous connecter.';
+  @override
+  String get alreadyHaveAccount => 'Vous avez déjà un compte ? Connectez-vous';
+  @override
+  String get resetPasswordButton => 'Réinitialiser le mot de passe';
+  @override
+  String get verificationCodeLabel => 'Code de vérification';
+  @override
+  String get newPasswordLabel => 'Nouveau mot de passe';
+  @override
+  String get passwordResetSuccess => 'Réinitialisation du mot de passe réussie ! Veuillez vous connecter.';
+  @override
+  String get invalidVerificationCode => 'Code de vérification invalide.';
+  @override
+  String get dontHaveAccount => 'Vous n\'avez pas de compte ? Inscrivez-vous';
 }

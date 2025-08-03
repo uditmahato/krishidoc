@@ -85,5 +85,36 @@ class LanguageNp extends BaseLanguage {
   @override
   String get forgotPasswordNotImplemented => 'पासवर्ड बिर्सने सुविधा अझै लागू गरिएको छैन।';
 
+@override
+  String get signupButton => 'साइन अप';
+  @override
+  String get nameLabel => 'नाम';
+  @override
+  String get confirmPasswordLabel => 'पासवर्ड पुष्टि गर्नुहोस्';
+  @override
+  String get invalidEmail => 'अमान्य इमेल ठेगाना। @ र डोमेन समावेश हुनुपर्छ।';
+  @override
+  String get invalidPassword => 'पासवर्ड कम्तीमा 8 अक्षरको हुनुपर्छ, ठूला अक्षर, साना अक्षर, अंक र विशेष अक्षरहरू समावेश गर्नुपर्छ।';
+  @override
+  String get passwordsDoNotMatch => 'पासवर्डहरू मेल खाँदैनन्।';
+  @override
+  String get signupFailed => 'साइन अप असफल। कृपया तपाईंको विवरण जाँच गर्नुहोस्।';
+  @override
+  String get signupSuccess => 'साइन अप सफल! कृपया लगइन गर्नुहोस्।';
+  @override
+  String get alreadyHaveAccount => 'पहिले नै खाता छ? लगइन गर्नुहोस्';
+  @override
+  String get resetPasswordButton => 'पासवर्ड रिसेट गर्नुहोस्';
+  @override
+  String get verificationCodeLabel => 'प्रमाणीकरण कोड';
+  @override
+  String get newPasswordLabel => 'नयाँ पासवर्ड';
+  @override
+  String get passwordResetSuccess => 'पासवर्ड रिसेट सफल! कृपया लगइन गर्नुहोस्।';
+  @override
+  String get invalidVerificationCode => 'अमान्य प्रमाणीकरण कोड।';
+
+  @override
+  String get dontHaveAccount => 'खाता छैन? साइन अप गर्नुहोस्';
 
 }
