@@ -16,6 +16,9 @@ service-account*.json
 # --- Dart / Flutter ---
 .dart_tool/
 app/lib/l10n/gen/
+# Generated code is rebuilt locally and in CI, never committed (same policy as l10n)
+*.g.dart
+*.drift.dart
 .packages
 build/
 **/build/
