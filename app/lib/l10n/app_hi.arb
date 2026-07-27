@@ -1,0 +1,17 @@
+{
+  "@@locale": "hi",
+  "appTitle": "KrishiDoc",
+  "homeTagline": "फसल रोग पहचान और सलाह, आपकी अपनी भाषा में।",
+  "tileDiagnose": "रोग पहचानें",
+  "tileAsk": "सवाल पूछें",
+  "tileHistory": "इतिहास",
+  "tileSettings": "सेटिंग",
+  "comingSoon": "जल्द आ रहा है।",
+  "languageMenuTooltip": "भाषा",
+  "certaintyVeryLikely": "अधिक संभावना",
+  "resultUncertainTitle": "हम निश्चित नहीं हैं",
+  "escalateToClinic": "नज़दीकी फसल विशेषज्ञ से पूछें",
+  "resultOutOfScopeGuidance": "इस तस्वीर से पहचान नहीं हो सकी। अच्छी रोशनी में एक प्रभावित पत्ते की पास से तस्वीर लें।",
+  "retryCapture": "फिर से तस्वीर लें",
+  "devPreviewTitle": "UI preview"
+}

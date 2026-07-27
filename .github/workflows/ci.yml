@@ -38,24 +38,34 @@ jobs:
       - name: Living Project Memory exists
         run: test -s docs/PROJECT_MEMORY.md
 
-  dart:
-    name: dart (format, analyze, purity, test)
+  flutter:
+    name: flutter (format, analyze, purity, tests)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dart-lang/setup-dart@v1
+      - uses: subosito/flutter-action@v2
         with:
-          sdk: "3.8.1"
-      - run: dart pub get
-      - run: dart format --output=none --set-exit-if-changed packages
-      - run: dart analyze --fatal-infos
+          flutter-version: "3.32.7"
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter gen-l10n
+        working-directory: app
+      - run: dart format --output=none --set-exit-if-changed packages app/lib/src app/lib/main.dart app/test
+      - run: flutter analyze --fatal-infos
       - name: no Flutter imports in pure core packages (D-42)
         run: |
           if grep -rn "package:flutter" packages/core_domain/lib packages/core_domain/test; then
             echo "core packages must stay Flutter-free (D-42)"; exit 1
           fi
+      - name: INTERNET permission in MAIN manifest (V1 regression guard)
+        run: grep -q 'android.permission.INTERNET' app/android/app/src/main/AndroidManifest.xml
       - run: dart test
         working-directory: packages/core_domain
+      - run: flutter test
+        working-directory: packages/design_system
+      - run: flutter test
+        working-directory: app
 
   python:
     name: python (ruff, mypy, pytest)

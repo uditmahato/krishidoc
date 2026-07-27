@@ -4,3 +4,5 @@ environment:
   sdk: ^3.8.0
 workspace:
   - packages/core_domain
+  - packages/design_system
+  - app

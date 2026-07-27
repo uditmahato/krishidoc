@@ -15,6 +15,7 @@ service-account*.json
 
 # --- Dart / Flutter ---
 .dart_tool/
+app/lib/l10n/gen/
 .packages
 build/
 **/build/

@@ -1,0 +1,17 @@
+{
+  "@@locale": "en",
+  "appTitle": "KrishiDoc",
+  "homeTagline": "Crop disease identification and advice, in your own language.",
+  "tileDiagnose": "Identify disease",
+  "tileAsk": "Ask a question",
+  "tileHistory": "History",
+  "tileSettings": "Settings",
+  "comingSoon": "Coming soon.",
+  "languageMenuTooltip": "Language",
+  "certaintyVeryLikely": "Very likely",
+  "resultUncertainTitle": "We are not sure",
+  "escalateToClinic": "Ask a nearby crop expert",
+  "resultOutOfScopeGuidance": "We could not identify anything from this photo. Take a closer photo of one affected leaf in good light.",
+  "retryCapture": "Take another photo",
+  "devPreviewTitle": "UI preview"
+}
