@@ -1,0 +1,60 @@
+# --- Secrets and local config (never committed) ---
+.env
+.env.*
+*.pem
+*.p12
+*.jks
+*.keystore
+key.properties
+google-services.json
+GoogleService-Info.plist
+firebase_options.dart
+service-account*.json
+*.tfvars
+!example.tfvars
+
+# --- Dart / Flutter ---
+.dart_tool/
+.packages
+build/
+**/build/
+.flutter-plugins
+.flutter-plugins-dependencies
+*.g.dart.bak
+coverage/
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/ephemeral/
+**/ios/Flutter/flutter_export_environment.sh
+**/GeneratedPluginRegistrant.*
+**/android/local.properties
+**/android/.gradle/
+**/*.iml
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+htmlcov/
+dist/
+*.egg-info/
+
+# --- Terraform ---
+**/.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+
+# --- IDE / OS ---
+.idea/
+.vscode/
+!.vscode/settings.shared.json
+.DS_Store
+Thumbs.db
+
+# --- Reports and artifacts (V1 committed these; V2 never will) ---
+**/reports/
+*.log

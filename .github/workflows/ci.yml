@@ -1,0 +1,43 @@
+name: ci
+
+on:
+  push:
+    branches: [v2]
+  pull_request:
+    branches: [v2]
+
+permissions:
+  contents: read
+
+jobs:
+  secret-scan:
+    name: secret scan (gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  repo-hygiene:
+    name: repo hygiene
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: forbid tracked artifacts and secret-shaped files
+        run: |
+          set -e
+          violations=$(git ls-files | grep -E '(^|/)(build|\.dart_tool|__pycache__|\.terraform)(/|$)|\.(jks|keystore|pem|p12|tfstate)$|(^|/)(\.env(\..*)?|key\.properties|google-services\.json|GoogleService-Info\.plist)$' || true)
+          if [ -n "$violations" ]; then
+            echo "Forbidden files tracked in git:"; echo "$violations"; exit 1
+          fi
+      - name: ADR index exists and is non-empty
+        run: test -s docs/adr/ADR-INDEX.md
+      - name: Living Project Memory exists
+        run: test -s docs/PROJECT_MEMORY.md
+
+# Toolchain jobs (dart analyze/test, ruff/mypy/pytest, OpenAPI diff, budgets)
+# are added by Module 2 when the code they check exists. This file starts
+# minimal on purpose: every job here must be meaningful on day one.
