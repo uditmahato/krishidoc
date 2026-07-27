@@ -38,6 +38,44 @@ jobs:
       - name: Living Project Memory exists
         run: test -s docs/PROJECT_MEMORY.md
 
-# Toolchain jobs (dart analyze/test, ruff/mypy/pytest, OpenAPI diff, budgets)
-# are added by Module 2 when the code they check exists. This file starts
-# minimal on purpose: every job here must be meaningful on day one.
+  dart:
+    name: dart (format, analyze, purity, test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: "3.8.1"
+      - run: dart pub get
+      - run: dart format --output=none --set-exit-if-changed packages
+      - run: dart analyze --fatal-infos
+      - name: no Flutter imports in pure core packages (D-42)
+        run: |
+          if grep -rn "package:flutter" packages/core_domain/lib packages/core_domain/test; then
+            echo "core packages must stay Flutter-free (D-42)"; exit 1
+          fi
+      - run: dart test
+        working-directory: packages/core_domain
+
+  python:
+    name: python (ruff, mypy, pytest)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: uv sync --frozen
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run pytest -q
+
+# OpenAPI diff, budget, and eval-harness jobs are added by the modules that
+# create the artifacts they check.
