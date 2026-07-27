@@ -13,5 +13,8 @@
   "escalateToClinic": "नजिकको कृषि विशेषज्ञलाई सोध्नुहोस्",
   "resultOutOfScopeGuidance": "यो तस्बिरबाट पहिचान गर्न सकिएन। राम्रो उज्यालोमा एउटा रोगी पातको नजिकबाट तस्बिर लिनुहोस्।",
   "retryCapture": "फेरि तस्बिर लिनुहोस्",
+  "historyEmpty": "अहिलेसम्म कुनै रोग पहिचान छैन। नतिजाहरू यहाँ देखिनेछन्।",
+  "historyNoIdentification": "पहिचान भएन",
+  "errorGeneric": "केही गडबड भयो।",
   "devPreviewTitle": "UI preview"
 }

@@ -13,5 +13,8 @@
   "escalateToClinic": "नज़दीकी फसल विशेषज्ञ से पूछें",
   "resultOutOfScopeGuidance": "इस तस्वीर से पहचान नहीं हो सकी। अच्छी रोशनी में एक प्रभावित पत्ते की पास से तस्वीर लें।",
   "retryCapture": "फिर से तस्वीर लें",
+  "historyEmpty": "अभी तक कोई रोग पहचान नहीं। नतीजे यहाँ दिखेंगे।",
+  "historyNoIdentification": "पहचान नहीं हो सकी",
+  "errorGeneric": "कुछ गड़बड़ हो गई।",
   "devPreviewTitle": "UI preview"
 }

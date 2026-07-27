@@ -1,27 +1,40 @@
+import 'dart:async';
+
+import 'package:core_domain/core_domain.dart';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'l10n/gen/app_localizations.dart';
+import 'src/app_services.dart';
 import 'src/locale_scope.dart';
+import 'src/providers.dart';
 import 'src/router.dart';
 
-void main() {
-  runApp(const KrishiDocApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final services = await AppServices.open();
+  runApp(
+    ProviderScope(
+      overrides: [servicesProvider.overrideWithValue(services)],
+      child: const KrishiDocApp(),
+    ),
+  );
 }
 
-class KrishiDocApp extends StatefulWidget {
+class KrishiDocApp extends ConsumerStatefulWidget {
   const KrishiDocApp({this.initialLocale, super.key});
 
-  /// Test seam; production launch resolves the persisted choice once the
-  /// settings store exists (M2) and falls back to the device locale.
+  /// Explicit override (tests). When null, the persisted choice is restored
+  /// from the settings store; absent that, the device locale applies.
   final Locale? initialLocale;
 
   @override
-  State<KrishiDocApp> createState() => _KrishiDocAppState();
+  ConsumerState<KrishiDocApp> createState() => _KrishiDocAppState();
 }
 
-class _KrishiDocAppState extends State<KrishiDocApp> {
+class _KrishiDocAppState extends ConsumerState<KrishiDocApp> {
   Locale? _locale;
   late final GoRouter _router;
 
@@ -30,6 +43,19 @@ class _KrishiDocAppState extends State<KrishiDocApp> {
     super.initState();
     _locale = widget.initialLocale;
     _router = createAppRouter();
+    if (_locale == null) {
+      unawaited(_restorePersistedLocale());
+    }
+  }
+
+  Future<void> _restorePersistedLocale() async {
+    final store = ref.read(servicesProvider).settingsStore;
+    final saved = AppLanguage.fromCode(
+      await store.read(SettingsKeys.selectedLanguage),
+    );
+    if (saved != null && mounted && _locale == null) {
+      setState(() => _locale = Locale(saved.code));
+    }
   }
 
   @override
@@ -38,7 +64,11 @@ class _KrishiDocAppState extends State<KrishiDocApp> {
     super.dispose();
   }
 
-  void _setLocale(Locale locale) => setState(() => _locale = locale);
+  void _setLocale(Locale locale) {
+    setState(() => _locale = locale);
+    final store = ref.read(servicesProvider).settingsStore;
+    unawaited(store.write(SettingsKeys.selectedLanguage, locale.languageCode));
+  }
 
   @override
   Widget build(BuildContext context) {

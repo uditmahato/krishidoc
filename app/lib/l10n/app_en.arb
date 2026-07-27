@@ -13,5 +13,8 @@
   "escalateToClinic": "Ask a nearby crop expert",
   "resultOutOfScopeGuidance": "We could not identify anything from this photo. Take a closer photo of one affected leaf in good light.",
   "retryCapture": "Take another photo",
+  "historyEmpty": "No diagnoses yet. Your results will appear here.",
+  "historyNoIdentification": "Could not identify",
+  "errorGeneric": "Something went wrong.",
   "devPreviewTitle": "UI preview"
 }

@@ -56,7 +56,11 @@ class HomeScreen extends StatelessWidget {
                 label: l10n.tileDiagnose,
               ),
               _HomeTile(icon: Icons.chat_bubble_outline, label: l10n.tileAsk),
-              _HomeTile(icon: Icons.history, label: l10n.tileHistory),
+              _HomeTile(
+                icon: Icons.history,
+                label: l10n.tileHistory,
+                onTap: (context) => context.push(AppRoutes.history),
+              ),
               _HomeTile(
                 icon: Icons.settings_outlined,
                 label: l10n.tileSettings,
@@ -75,10 +79,13 @@ class HomeScreen extends StatelessWidget {
 }
 
 class _HomeTile extends StatelessWidget {
-  const _HomeTile({required this.icon, required this.label});
+  const _HomeTile({required this.icon, required this.label, this.onTap});
 
   final IconData icon;
   final String label;
+
+  /// Defaults to the honest "coming soon" notice until the feature exists.
+  final void Function(BuildContext context)? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -87,9 +94,11 @@ class _HomeTile extends StatelessWidget {
     return Card(
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onTap: () => ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(SnackBar(content: Text(l10n.comingSoon))),
+        onTap: onTap != null
+            ? () => onTap!(context)
+            : () => ScaffoldMessenger.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(SnackBar(content: Text(l10n.comingSoon))),
         child: Padding(
           padding: const EdgeInsets.all(KdSpacing.md),
           child: Column(
