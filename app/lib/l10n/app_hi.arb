@@ -16,5 +16,17 @@
   "historyEmpty": "अभी तक कोई रोग पहचान नहीं। नतीजे यहाँ दिखेंगे।",
   "historyNoIdentification": "पहचान नहीं हो सकी",
   "errorGeneric": "कुछ गड़बड़ हो गई।",
+  "captureTitle": "तस्वीर लें",
+  "cameraUnavailable": "कैमरा नहीं चला। फ़ोन की सेटिंग में कैमरे की अनुमति दें।",
+  "shutterLabel": "तस्वीर खींचें",
+  "cropLabel": "फसल",
+  "cropTomato": "टमाटर",
+  "cropPotato": "आलू",
+  "cropMaize": "मक्का",
+  "coachReady": "तैयार है",
+  "coachHoldStill": "कैमरा स्थिर रखें",
+  "coachTooDark": "थोड़ी ज़्यादा रोशनी में जाएँ",
+  "coachTooBright": "सीधी धूप से हटकर खड़े हों",
+  "coachTooBlurry": "पत्ते के पास जाएँ और हाथ स्थिर रखें",
   "devPreviewTitle": "UI preview"
 }

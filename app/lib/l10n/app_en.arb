@@ -16,5 +16,17 @@
   "historyEmpty": "No diagnoses yet. Your results will appear here.",
   "historyNoIdentification": "Could not identify",
   "errorGeneric": "Something went wrong.",
+  "captureTitle": "Take a photo",
+  "cameraUnavailable": "The camera could not start. Allow camera access in your phone settings.",
+  "shutterLabel": "Take photo",
+  "cropLabel": "Crop",
+  "cropTomato": "Tomato",
+  "cropPotato": "Potato",
+  "cropMaize": "Maize",
+  "coachReady": "Ready",
+  "coachHoldStill": "Hold the camera steady",
+  "coachTooDark": "Move somewhere brighter",
+  "coachTooBright": "Step out of direct sunlight",
+  "coachTooBlurry": "Move closer to the leaf and hold steady",
   "devPreviewTitle": "UI preview"
 }

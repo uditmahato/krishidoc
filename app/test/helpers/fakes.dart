@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:core_domain/core_domain.dart';
+import 'package:flutter/widgets.dart';
+import 'package:krishidoc_app/src/capture/camera_session.dart';
 
 /// Plain in-memory [DiagnosisStore]. Widget tests fake the ports; the real
 /// drift implementations are covered by core_data's pure-Dart suite, where
@@ -35,6 +38,54 @@ final class FakeDiagnosisStore implements DiagnosisStore {
     yield _snapshot(limit);
     yield* _changes.stream.map((_) => _snapshot(limit));
   }
+}
+
+/// Scriptable [CameraSession]: the test drives frames and failures, so the
+/// screen's coaching and gating are exercised without a device.
+final class FakeCameraSession implements CameraSession {
+  FakeCameraSession({this.failOnStart = false});
+
+  final bool failOnStart;
+  final StreamController<LumaFrame> _frames =
+      StreamController<LumaFrame>.broadcast();
+
+  bool didStart = false;
+  bool didStop = false;
+  int captureCount = 0;
+
+  /// Bytes handed back by [capturePhoto]; tests override the preparation
+  /// step, so they need not be a real image.
+  Uint8List photoBytes = Uint8List.fromList(List<int>.filled(64, 7));
+
+  bool get hasListener => _frames.hasListener;
+
+  void emit(LumaFrame frame) => _frames.add(frame);
+
+  Future<void> close() => _frames.close();
+
+  @override
+  Future<void> start() async {
+    if (failOnStart) {
+      throw StateError('camera unavailable');
+    }
+    didStart = true;
+  }
+
+  @override
+  Stream<LumaFrame> get frames => _frames.stream;
+
+  @override
+  Future<Uint8List> capturePhoto() async {
+    captureCount++;
+    return photoBytes;
+  }
+
+  @override
+  Future<void> stop() async => didStop = true;
+
+  @override
+  Widget buildPreview(BuildContext context) =>
+      const ColoredBox(color: Color(0xFF000000));
 }
 
 /// Plain in-memory [SettingsStore].

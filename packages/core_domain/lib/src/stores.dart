@@ -29,4 +29,8 @@ abstract interface class SettingsStore {
 /// Well-known settings keys. Additions only; renames are a data migration.
 abstract final class SettingsKeys {
   static const String selectedLanguage = 'selected_language';
+
+  /// Last crop the farmer diagnosed: the remembered default that keeps the
+  /// capture flow to one tap (D-16).
+  static const String selectedCrop = 'selected_crop';
 }

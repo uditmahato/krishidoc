@@ -2,6 +2,7 @@
 library;
 
 export 'src/consent.dart';
+export 'src/crop.dart';
 export 'src/diagnosis.dart';
 export 'src/jurisdiction.dart';
 export 'src/language.dart';
