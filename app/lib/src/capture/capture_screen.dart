@@ -73,6 +73,7 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
       frame.luminance,
       width: frame.width,
       height: frame.height,
+      bytesPerRow: frame.bytesPerRow,
     );
     if (mounted) setState(() => _quality = quality);
   }

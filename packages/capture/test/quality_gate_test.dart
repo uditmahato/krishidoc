@@ -132,6 +132,95 @@ void main() {
     });
   });
 
+  group('padded rows (Android YUV stride)', () {
+    /// Builds a frame whose rows are padded to [bytesPerRow], filling the
+    /// padding with a value that would wreck the reading if it were treated
+    /// as image data.
+    Uint8List padded(
+      int width,
+      int height, {
+      required int bytesPerRow,
+      required int dark,
+      required int light,
+      int fill = 255,
+    }) {
+      final plane = Uint8List(bytesPerRow * height)
+        ..fillRange(0, bytesPerRow * height, fill);
+      for (var y = 0; y < height; y++) {
+        for (var x = 0; x < width; x++) {
+          plane[y * bytesPerRow + x] = (x + y).isEven ? dark : light;
+        }
+      }
+      return plane;
+    }
+
+    test('a padded frame reads the same as a tightly packed one', () {
+      final tight = checkerboard(64, 64, dark: 90, light: 200);
+      final withPadding = padded(64, 64, bytesPerRow: 96, dark: 90, light: 200);
+
+      final expected = gate.assess(tight, width: 64, height: 64);
+      final actual = gate.assess(
+        withPadding,
+        width: 64,
+        height: 64,
+        bytesPerRow: 96,
+      );
+
+      expect(actual.meanLuminance, closeTo(expected.meanLuminance, 1e-9));
+      expect(actual.edgeEnergy, closeTo(expected.edgeEnergy, 1e-9));
+      expect(actual.issues, expected.issues);
+    });
+
+    test(
+      'ignoring the stride corrupts the reading, which is why it exists',
+      () {
+        final withPadding = padded(
+          64,
+          64,
+          bytesPerRow: 96,
+          dark: 90,
+          light: 200,
+        );
+
+        // Same bytes, read as though rows were tightly packed: the padding is
+        // swallowed as image data and every row lands shifted.
+        final misread = gate.assess(withPadding, width: 64, height: 64);
+        final correct = gate.assess(
+          withPadding,
+          width: 64,
+          height: 64,
+          bytesPerRow: 96,
+        );
+
+        expect(misread.meanLuminance, isNot(closeTo(correct.meanLuminance, 1)));
+      },
+    );
+
+    test('a stride narrower than the frame is refused', () {
+      expect(
+        () => gate.assess(
+          flat(64, 64, 128),
+          width: 64,
+          height: 64,
+          bytesPerRow: 32,
+        ),
+        throwsArgumentError,
+      );
+    });
+
+    test('a plane too short for its declared stride is refused', () {
+      expect(
+        () => gate.assess(
+          Uint8List(64 * 64),
+          width: 64,
+          height: 64,
+          bytesPerRow: 96,
+        ),
+        throwsArgumentError,
+      );
+    });
+  });
+
   group('input validation', () {
     test('rejects frames too small for the kernel', () {
       expect(

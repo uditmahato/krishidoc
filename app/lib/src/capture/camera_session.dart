@@ -11,11 +11,17 @@ final class LumaFrame {
     required this.luminance,
     required this.width,
     required this.height,
-  });
+    int? bytesPerRow,
+  }) : bytesPerRow = bytesPerRow ?? width;
 
   final Uint8List luminance;
   final int width;
   final int height;
+
+  /// Row stride in bytes. Android pads YUV rows to an alignment boundary, so
+  /// this is routinely larger than [width]; reading the plane as though rows
+  /// were tightly packed shifts every row and corrupts the frame.
+  final int bytesPerRow;
 }
 
 /// The platform camera, behind a port.

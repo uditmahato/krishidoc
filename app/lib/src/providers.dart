@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app_services.dart';
 import 'capture/camera_session.dart';
 import 'capture/launch_crop_catalog.dart';
+import 'capture/platform_camera_session.dart';
 
 /// Overridden at the root (main or test pump); reading it unoverridden is a
 /// wiring bug and fails loudly.
@@ -24,9 +25,10 @@ final cropCatalogProvider = Provider<CropCatalog>(
   (ref) => const LaunchCropCatalog(),
 );
 
-/// Overridden with the platform camera once one exists; tests supply a fake.
+/// The real camera. Tests override this with a scriptable fake, which is why
+/// every decision the capture screen makes is testable without hardware.
 final cameraSessionProvider = Provider<CameraSession>(
-  (ref) => throw StateError('cameraSessionProvider must be overridden'),
+  (ref) => PlatformCameraSession(),
 );
 
 /// How often preview frames are assessed. Every frame is neither necessary

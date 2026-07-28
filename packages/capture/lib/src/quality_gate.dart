@@ -59,18 +59,33 @@ final class QualityGate {
   final double maxMeanLuminance;
   final int stride;
 
+  /// Assesses one frame.
+  ///
+  /// [bytesPerRow] defaults to [width] but must be passed through from the
+  /// camera when it differs: Android pads YUV plane rows up to an alignment
+  /// boundary, so a 1284-wide frame commonly arrives with a 1312-byte row.
+  /// Assuming tight packing reads each row shifted a little further than the
+  /// last, which turns a sharp frame into diagonal noise and quietly breaks
+  /// every measurement taken from it.
   CaptureQuality assess(
     Uint8List luminance, {
     required int width,
     required int height,
+    int? bytesPerRow,
   }) {
+    final rowStride = bytesPerRow ?? width;
     if (width < 3 || height < 3) {
       throw ArgumentError('frame must be at least 3x3, got ${width}x$height');
     }
-    if (luminance.length < width * height) {
+    if (rowStride < width) {
+      throw ArgumentError(
+        'bytesPerRow ($rowStride) cannot be smaller than width ($width)',
+      );
+    }
+    if (luminance.length < rowStride * height) {
       throw ArgumentError(
         'luminance plane holds ${luminance.length} bytes, '
-        'expected at least ${width * height}',
+        'expected at least ${rowStride * height}',
       );
     }
 
@@ -80,13 +95,13 @@ final class QualityGate {
 
     // Interior pixels only: the kernel needs all four neighbours.
     for (var y = 1; y < height - 1; y += stride) {
-      final rowStart = y * width;
+      final rowStart = y * rowStride;
       for (var x = 1; x < width - 1; x += stride) {
         final centre = luminance[rowStart + x];
         final laplacian =
             4 * centre -
-            luminance[rowStart - width + x] -
-            luminance[rowStart + width + x] -
+            luminance[rowStart - rowStride + x] -
+            luminance[rowStart + rowStride + x] -
             luminance[rowStart + x - 1] -
             luminance[rowStart + x + 1];
 

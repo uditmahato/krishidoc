@@ -51,6 +51,11 @@ class HomeScreen extends StatelessWidget {
             crossAxisSpacing: KdSpacing.md,
             childAspectRatio: 1.2,
             children: [
+              // Still "coming soon" on purpose: the camera works, but no
+              // diagnosis can follow the shutter until a model ships, and a
+              // capture that ends in a byte count is the dead end this
+              // rebuild exists to avoid. The screen is reachable in debug
+              // below, and this tile lights up when inference lands.
               _HomeTile(
                 icon: Icons.photo_camera_outlined,
                 label: l10n.tileDiagnose,
@@ -67,11 +72,16 @@ class HomeScreen extends StatelessWidget {
               ),
             ],
           ),
-          if (kDebugMode)
+          if (kDebugMode) ...[
             TextButton(
-              onPressed: () => context.go(AppRoutes.devResultPreview),
+              onPressed: () => context.push(AppRoutes.devResultPreview),
               child: Text(l10n.devPreviewTitle),
             ),
+            TextButton(
+              onPressed: () => context.push(AppRoutes.capture),
+              child: const Text('Camera preview (debug)'),
+            ),
+          ],
         ],
       ),
     );
