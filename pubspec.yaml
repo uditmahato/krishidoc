@@ -5,5 +5,6 @@ environment:
 workspace:
   - packages/core_domain
   - packages/core_data
+  - packages/capture
   - packages/design_system
   - app

@@ -1,0 +1,12 @@
+name: capture
+description: "Pure Dart capture pipeline for KrishiDoc V2. Pre-capture quality assessment (D-16) and image preparation with EXIF stripping (D-12). No Flutter imports (D-42); camera plumbing lives in the app."
+publish_to: none
+version: 0.1.0
+resolution: workspace
+environment:
+  sdk: ^3.8.0
+dependencies:
+  image: ^4.2.0
+dev_dependencies:
+  lints: ^5.0.0
+  test: ^1.25.0

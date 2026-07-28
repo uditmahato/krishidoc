@@ -60,7 +60,7 @@ jobs:
       - run: flutter analyze --fatal-infos
       - name: no Flutter imports in pure core packages (D-42)
         run: |
-          if grep -rn "package:flutter" packages/core_domain packages/core_data --include="*.dart"; then
+          if grep -rn "package:flutter" packages/core_domain packages/core_data packages/capture --include="*.dart"; then
             echo "core packages must stay Flutter-free (D-42)"; exit 1
           fi
       - name: INTERNET permission in MAIN manifest (V1 regression guard)
@@ -69,6 +69,8 @@ jobs:
         working-directory: packages/core_domain
       - run: dart test
         working-directory: packages/core_data
+      - run: dart test
+        working-directory: packages/capture
       - run: flutter test
         working-directory: packages/design_system
       - run: flutter test
