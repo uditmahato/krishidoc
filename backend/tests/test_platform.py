@@ -7,12 +7,13 @@ from pydantic import BaseModel
 
 from krishidoc import __version__
 from krishidoc.main_api import create_app
+from krishidoc.platform.config import Settings
 from krishidoc.platform.request_id import REQUEST_ID_HEADER
 
 
 @pytest.fixture()
-def client() -> Iterator[TestClient]:
-    app = create_app()
+def client(settings: Settings) -> Iterator[TestClient]:
+    app = create_app(settings=settings)
 
     @app.get("/boom-http")
     async def boom_http() -> None:

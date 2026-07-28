@@ -96,6 +96,20 @@ jobs:
       - run: uv run ruff format --check .
       - run: uv run ruff check .
       - run: uv run mypy
+      - name: module boundaries (D-26)
+        run: |
+          if grep -rn "from krishidoc.modules" src/krishidoc/platform; then
+            echo "platform must not import a domain module (D-26)"; exit 1
+          fi
+      - name: no password fields in the API (D-13)
+        # Matches password used as a field, key, or assignment, not prose
+        # about the decision. V1 shipped a login that promised an account it
+        # could not create and a reset that accepted a hardcoded code; this
+        # system has no such concept to get wrong.
+        run: |
+          if grep -rniE "password[[:space:]]*[:=]|[\"']password[\"']" src/krishidoc; then
+            echo "this system has no passwords (D-13)"; exit 1
+          fi
       - run: uv run pytest -q
 
 # OpenAPI diff, budget, and eval-harness jobs are added by the modules that
