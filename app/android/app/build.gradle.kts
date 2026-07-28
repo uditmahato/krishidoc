@@ -8,7 +8,9 @@ plugins {
 android {
     namespace = "com.krishidoc.krishidoc_app"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    // Pinned rather than inherited: sqlite3_flutter_libs requires this NDK,
+    // and the Flutter default trails it, which the release build warns about.
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
