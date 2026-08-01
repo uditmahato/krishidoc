@@ -28,5 +28,8 @@
   "coachTooDark": "अलि उज्यालो ठाउँमा जानुहोस्",
   "coachTooBright": "सिधा घाम नपर्ने ठाउँमा जानुहोस्",
   "coachTooBlurry": "पातको नजिक गएर स्थिर राख्नुहोस्",
-  "devPreviewTitle": "UI preview"
+  "devPreviewTitle": "UI preview",
+  "a11yStateConfident": "पहिचान भयो",
+  "a11yStateUncertain": "पक्का छैन",
+  "a11yStateOutOfScope": "चिन्न सकिएन"
 }

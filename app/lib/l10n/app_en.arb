@@ -28,5 +28,8 @@
   "coachTooDark": "Move somewhere brighter",
   "coachTooBright": "Step out of direct sunlight",
   "coachTooBlurry": "Move closer to the leaf and hold steady",
-  "devPreviewTitle": "UI preview"
+  "devPreviewTitle": "UI preview",
+  "a11yStateConfident": "Identified",
+  "a11yStateUncertain": "Not sure",
+  "a11yStateOutOfScope": "Not recognised"
 }

@@ -10,7 +10,7 @@ const _timeout = Timeout(Duration(minutes: 1));
 
 Future<void> _openHistory(WidgetTester tester) async {
   // Locale-independent target; the tile can sit below the test viewport.
-  final tile = find.byIcon(Icons.history);
+  final tile = find.byIcon(Icons.history_outlined);
   await tester.scrollUntilVisible(
     tile,
     200,
@@ -75,7 +75,10 @@ void main() {
       expect(find.text('late_blight'), findsOneWidget);
       expect(find.text('Could not identify'), findsOneWidget);
       expect(find.byIcon(Icons.check_circle_outline), findsOneWidget);
-      expect(find.byIcon(Icons.image_not_supported_outlined), findsOneWidget);
+      // `search_off`, not `image_not_supported`. The out-of-scope state means
+      // "this app does not cover that plant yet", and a broken-image glyph
+      // blames the farmer's photo for a gap in our coverage.
+      expect(find.byIcon(Icons.search_off_outlined), findsOneWidget);
 
       final tiles = tester
           .widgetList<ListTile>(find.byType(ListTile))

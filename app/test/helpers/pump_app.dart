@@ -9,6 +9,22 @@ import 'package:krishidoc_app/src/providers.dart';
 
 import 'fakes.dart';
 
+/// Sizes the test view in logical pixels and restores it at teardown.
+///
+/// The default 800x600 test surface is wider and shorter than any phone this
+/// app runs on, which is how a grid that overflowed on every common handset
+/// resolution passed the suite for four modules.
+void useScreen(WidgetTester tester, Size logical, {double textScale = 1.0}) {
+  tester.view.devicePixelRatio = 1.0;
+  tester.view.physicalSize = logical;
+  tester.platformDispatcher.textScaleFactorTestValue = textScale;
+  addTearDown(() {
+    tester.view.resetPhysicalSize();
+    tester.view.resetDevicePixelRatio();
+    tester.platformDispatcher.clearTextScaleFactorTestValue();
+  });
+}
+
 /// Pumps the full app against in-memory port fakes and returns the services
 /// for seeding and assertions. [seed] runs before the first frame, so
 /// restored state (like the persisted language) is visible on boot.
@@ -61,7 +77,7 @@ Future<AppServices> pumpScreen(
         locale: locale,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        theme: kdLightTheme(),
+        theme: kdLightTheme(locale: locale),
         home: screen,
       ),
     ),

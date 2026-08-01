@@ -79,6 +79,10 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
   }
 
   Future<void> _capture() async {
+    // Fired before any await, so the confirmation arrives with the tap rather
+    // than with the result of the tap. Without it the wait that follows reads
+    // as "nothing happened" and the second tap is inevitable.
+    unawaited(KdHaptics.shutter());
     setState(() {
       _isCapturing = true;
       _preparedBytes = null;
@@ -133,33 +137,43 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
                     ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(KdSpacing.md),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const _CropChip(),
-                      const SizedBox(height: KdSpacing.md),
-                      FilledButton.icon(
-                        // Stable handle for tests: the `.icon` factory builds
-                        // a private subclass, which `find.byType` cannot
-                        // match because it compares exact runtime types.
-                        key: shutterKey,
-                        onPressed: canCapture ? _capture : null,
-                        icon: const Icon(Icons.photo_camera),
-                        label: Text(l10n.shutterLabel),
-                      ),
-                      if (_preparedBytes != null)
-                        Padding(
-                          padding: const EdgeInsets.only(top: KdSpacing.sm),
-                          child: Text(
-                            // Developer readout: this screen is debug-only
-                            // until a diagnosis can follow the capture.
-                            'Prepared $_preparedBytes bytes',
-                            textAlign: TextAlign.center,
-                          ),
+                // `targetSdk 35` makes Android 15 draw edge to edge with no
+                // opt-out, and Scaffold keeps the inset in its MediaQuery
+                // without applying it to the body box. Measured before this
+                // was added: the shutter had 16dp of bottom clearance, so 32
+                // of its 48dp sat behind a three-button navigation bar and
+                // its lower edge fell inside the gesture exclusion zone.
+                SafeArea(
+                  top: false,
+                  child: Padding(
+                    padding: const EdgeInsets.all(KdLayout.pageGutter),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const _CropChip(),
+                        const SizedBox(height: KdSpacing.md),
+                        FilledButton.icon(
+                          // Stable handle for tests: the `.icon` factory
+                          // builds a private subclass, which `find.byType`
+                          // cannot match because it compares exact runtime
+                          // types.
+                          key: shutterKey,
+                          onPressed: canCapture ? _capture : null,
+                          icon: const Icon(Icons.photo_camera_outlined),
+                          label: Text(l10n.shutterLabel),
                         ),
-                    ],
+                        if (_preparedBytes != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: KdSpacing.sm),
+                            child: Text(
+                              // Developer readout: this screen is debug-only
+                              // until a diagnosis can follow the capture.
+                              'Prepared $_preparedBytes bytes',
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -197,32 +211,55 @@ class _CoachingBanner extends StatelessWidget {
       _ => (l10n.coachTooBlurry, false),
     };
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: (isReady ? KdColors.primary : KdColors.textPrimary).withValues(
-          alpha: 0.85,
-        ),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(KdSpacing.sm),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              isReady ? Icons.check_circle : Icons.info_outline,
-              color: KdColors.onPrimary,
+    return Semantics(
+      // The coaching line changes without the user touching anything, and it
+      // is the only thing that explains why the shutter is refusing them.
+      // Without liveRegion, TalkBack announces neither "hold steady" nor
+      // "ready", so a blind or low-vision user gets a button that silently
+      // toggles for reasons never spoken aloud.
+      liveRegion: true,
+      label: message,
+      child: ExcludeSemantics(
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            // Opaque, not 85 percent. This floats over live video, and a
+            // translucent fill has no contrast ratio at all: what it is
+            // legible against depends on whatever leaf or sky happens to be
+            // behind it that frame.
+            color: isReady
+                ? KdColors.coachReadyFill
+                : KdColors.coachBusyFill,
+            borderRadius: BorderRadius.circular(KdRadius.md),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: KdSpacing.md,
+              vertical: KdSpacing.smd,
             ),
-            const SizedBox(width: KdSpacing.sm),
-            Flexible(
-              child: Text(
-                message,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: KdColors.onPrimary,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  // Glyph and words carry readiness, because the two fills
+                  // cannot: both must stay dark enough for white text, which
+                  // caps them at about 1.95:1 apart. The large signal is the
+                  // shutter arming underneath.
+                  isReady ? Icons.check_circle_outline : Icons.info_outline,
+                  color: KdColors.coachInk,
+                  size: kdScaledIcon(context, KdIconSize.md),
                 ),
-              ),
+                const SizedBox(width: KdSpacing.smd),
+                Flexible(
+                  child: Text(
+                    message,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: KdColors.coachInk,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -265,10 +302,26 @@ class _CropChip extends ConsumerWidget {
       builder: (sheetContext) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // Without a title the sheet announces itself as the generic
+            // "Dialog" and gives no clue what the list is for.
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                KdLayout.pageGutter,
+                0,
+                KdLayout.pageGutter,
+                KdSpacing.sm,
+              ),
+              child: Text(
+                l10n.cropLabel,
+                style: Theme.of(sheetContext).textTheme.titleMedium,
+              ),
+            ),
             for (final crop in crops)
               ListTile(
                 title: Text(cropName(l10n, crop)),
+                selected: crop == current,
                 trailing: crop == current ? const Icon(Icons.check) : null,
                 onTap: () => Navigator.of(sheetContext).pop(crop),
               ),
@@ -278,6 +331,7 @@ class _CropChip extends ConsumerWidget {
     );
 
     if (chosen != null && chosen != current) {
+      unawaited(KdHaptics.selected());
       await ref.read(selectedCropProvider.notifier).select(chosen);
     }
   }

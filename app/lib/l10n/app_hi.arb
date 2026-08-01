@@ -28,5 +28,8 @@
   "coachTooDark": "थोड़ी ज़्यादा रोशनी में जाएँ",
   "coachTooBright": "सीधी धूप से हटकर खड़े हों",
   "coachTooBlurry": "पत्ते के पास जाएँ और हाथ स्थिर रखें",
-  "devPreviewTitle": "UI preview"
+  "devPreviewTitle": "UI preview",
+  "a11yStateConfident": "पहचाना गया",
+  "a11yStateUncertain": "पक्का नहीं",
+  "a11yStateOutOfScope": "पहचान नहीं सका"
 }

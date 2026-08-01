@@ -54,12 +54,21 @@ class _HistoryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context).toLanguageTag();
-    final (icon, color) = switch (record.state) {
-      ResultState.confident => (Icons.check_circle_outline, KdColors.primary),
-      ResultState.uncertain => (Icons.help_outline, KdColors.warning),
+    final (icon, rail, stateName) = switch (record.state) {
+      ResultState.confident => (
+        Icons.check_circle_outline,
+        KdColors.stateConfidentRail,
+        l10n.a11yStateConfident,
+      ),
+      ResultState.uncertain => (
+        Icons.help_outline,
+        KdColors.stateUncertainRail,
+        l10n.a11yStateUncertain,
+      ),
       ResultState.outOfScope => (
-        Icons.image_not_supported_outlined,
-        KdColors.textSecondary,
+        Icons.search_off_outlined,
+        KdColors.stateOutOfScopeRail,
+        l10n.a11yStateOutOfScope,
       ),
     };
     // Raw model label as a stopgap: KB display names replace this when the
@@ -68,13 +77,35 @@ class _HistoryTile extends StatelessWidget {
     final title = record.predictions.isEmpty
         ? l10n.historyNoIdentification
         : record.predictions.first.label;
+    final when = DateFormat.yMMMd(
+      locale,
+    ).add_jm().format(record.createdAt.toLocal());
 
-    return Card(
-      child: ListTile(
-        leading: Icon(icon, color: color),
-        title: Text(title),
-        subtitle: Text(
-          DateFormat.yMMMd(locale).add_jm().format(record.createdAt.toLocal()),
+    return Semantics(
+      // All three states used to produce byte-identical semantics, so the
+      // certainty of a result, the whole point of the tri-state design, was
+      // invisible to a screen reader. The state is now spoken first, before
+      // the disease name, because "not sure" changes what the rest means.
+      label: '$stateName. $title. $when',
+      child: ExcludeSemantics(
+        child: Card(
+          // The rail is a border rather than a sibling box: a stretched child
+          // inside a list gets unbounded height, and an IntrinsicHeight here
+          // would add a layout pass per row for something a border already
+          // does. Deliberately paired with a distinct glyph and a spoken
+          // state name, because three colours that each stay dark enough to
+          // read on white cannot separate from each other by more than about
+          // 3.5:1. Colour is support here, never the signal.
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              border: Border(left: BorderSide(color: rail, width: KdSpacing.xs)),
+            ),
+            child: ListTile(
+              leading: Icon(icon, color: rail),
+              title: Text(title),
+              subtitle: Text(when),
+            ),
+          ),
         ),
       ),
     );
