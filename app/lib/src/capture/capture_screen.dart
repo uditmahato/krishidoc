@@ -1,13 +1,16 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:capture/capture.dart';
 import 'package:core_domain/core_domain.dart';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../l10n/gen/app_localizations.dart';
 import '../providers.dart';
+import '../router.dart';
 import 'camera_session.dart';
 
 /// Pre-capture screen: live coaching from the quality gate (D-16), the
@@ -37,7 +40,7 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
   CaptureQuality? _quality;
   bool _cameraFailed = false;
   bool _isCapturing = false;
-  int? _preparedBytes;
+  bool _failed = false;
   DateTime? _lastAssessment;
 
   @override
@@ -85,15 +88,82 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
     unawaited(KdHaptics.shutter());
     setState(() {
       _isCapturing = true;
-      _preparedBytes = null;
+      _failed = false;
     });
     try {
+      final crop = ref.read(selectedCropProvider).valueOrNull;
       final original = await _session.capturePhoto();
       final prepared = await ref.read(imagePreparationProvider)(original);
-      if (mounted) setState(() => _preparedBytes = prepared.length);
+      final id = await _diagnose(crop: crop, prepared: prepared);
+      if (!mounted) return;
+      unawaited(KdHaptics.completed());
+      // `push`, not `go`: backing out of a result returns to the camera, which
+      // is where a farmer who wants a second photograph already is.
+      await context.push('${AppRoutes.resultBase}/$id');
+    } catch (_) {
+      // Previously a bare try/finally, so a failed capture was indistinguishable
+      // from the app ignoring the tap. A failure the farmer cannot see is a
+      // failure they will blame themselves for.
+      unawaited(KdHaptics.refused());
+      if (mounted) setState(() => _failed = true);
     } finally {
       if (mounted) setState(() => _isCapturing = false);
     }
+  }
+
+  /// Classifies, stores the photo, and writes the record. Returns its id.
+  ///
+  /// The write happens before navigation on purpose: the result screen reads
+  /// the stored record rather than being handed one, so History and the result
+  /// can never disagree about what was decided, and a process death between
+  /// the two loses nothing.
+  Future<String> _diagnose({
+    required Crop? crop,
+    required Uint8List prepared,
+  }) async {
+    final services = ref.read(servicesProvider);
+    final id = services.ids.newId();
+    final cropKey = crop?.key;
+    final service = cropKey == null
+        ? null
+        : ref.read(classificationServiceProvider(cropKey));
+
+    final path = await ref.read(photoStoreProvider).save(id, prepared);
+
+    if (service == null) {
+      // No pack for this crop. Recorded honestly as outside coverage rather
+      // than run through another crop's model, which would produce a confident
+      // answer about a plant we have never trained on.
+      await services.diagnosisStore.upsert(
+        DiagnosisRecord(
+          id: id,
+          state: ResultState.outOfScope,
+          cropKey: cropKey,
+          predictions: const [],
+          modelVersion: 'none',
+          imagePath: path,
+          createdAt: DateTime.now().toUtc(),
+        ),
+      );
+      return id;
+    }
+
+    final outcome = await service.classify(prepared);
+    await services.diagnosisStore.upsert(
+      DiagnosisRecord(
+        id: id,
+        state: outcome.state,
+        cropKey: cropKey,
+        predictions: [
+          for (final ranked in outcome.ranked)
+            TopPrediction(label: ranked.label, confidence: ranked.probability),
+        ],
+        modelVersion: outcome.modelVersion,
+        imagePath: path,
+        createdAt: DateTime.now().toUtc(),
+      ),
+    );
+    return id;
   }
 
   @override
@@ -162,14 +232,17 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
                           icon: const Icon(Icons.photo_camera_outlined),
                           label: Text(l10n.shutterLabel),
                         ),
-                        if (_preparedBytes != null)
+                        if (_failed)
                           Padding(
-                            padding: const EdgeInsets.only(top: KdSpacing.sm),
+                            padding: const EdgeInsets.only(top: KdSpacing.smd),
                             child: Text(
-                              // Developer readout: this screen is debug-only
-                              // until a diagnosis can follow the capture.
-                              'Prepared $_preparedBytes bytes',
+                              // Inline and persistent, never a snackbar. The
+                              // one message that must not evaporate after four
+                              // seconds is the explanation of a failure.
+                              l10n.diagnosisFailed,
                               textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(color: KdColors.danger),
                             ),
                           ),
                       ],
@@ -226,9 +299,7 @@ class _CoachingBanner extends StatelessWidget {
             // translucent fill has no contrast ratio at all: what it is
             // legible against depends on whatever leaf or sky happens to be
             // behind it that frame.
-            color: isReady
-                ? KdColors.coachReadyFill
-                : KdColors.coachBusyFill,
+            color: isReady ? KdColors.coachReadyFill : KdColors.coachBusyFill,
             borderRadius: BorderRadius.circular(KdRadius.md),
           ),
           child: Padding(

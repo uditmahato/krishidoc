@@ -6,6 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:krishidoc_app/src/app_services.dart';
 import 'package:krishidoc_app/src/capture/camera_session.dart';
 import 'package:krishidoc_app/src/capture/capture_screen.dart';
+import 'package:design_system/design_system.dart';
+import 'package:krishidoc_app/src/diagnosis/result_screen.dart';
 import 'package:krishidoc_app/src/providers.dart';
 
 import 'helpers/fakes.dart';
@@ -217,21 +219,138 @@ void main() {
     });
   });
 
-  group('capture', () {
-    testWidgets(
-      'the shutter captures and prepares the photo',
-      timeout: _timeout,
-      (tester) async {
-        final camera = FakeCameraSession();
-        await _pumpCapture(tester, camera, preparedSize: 4242);
+  group('the closed loop', () {
+    // Driven through the real app rather than the screen in isolation,
+    // because the thing under test is precisely what happens AFTER the
+    // shutter: classify, store, navigate. For four modules the shutter ended
+    // in a byte count, which is the dead end this rebuild exists to remove.
+    Future<AppServices> pumpLoop(
+      WidgetTester tester,
+      FakeCameraSession camera, {
+      Locale locale = const Locale('en'),
+    }) async {
+      addTearDown(camera.close);
+      final services = await pumpApp(
+        tester,
+        locale: locale,
+        overrides: [
+          cameraSessionProvider.overrideWithValue(camera),
+          frameAssessmentIntervalProvider.overrideWithValue(Duration.zero),
+          imagePreparationProvider.overrideWithValue(
+            (original) async => Uint8List.fromList(
+              List<int>.generate(4096, (i) => (i * 7) & 0xFF),
+            ),
+          ),
+        ],
+      );
+      await tester.tap(find.byIcon(Icons.photo_camera_outlined).first);
+      await tester.pumpAndSettle();
+      return services;
+    }
 
-        await _emit(tester, camera, _goodFrame);
-        await tester.tap(find.byKey(shutterKey));
-        await tester.pumpAndSettle();
+    testWidgets('the shutter produces a stored diagnosis', timeout: _timeout, (
+      tester,
+    ) async {
+      final camera = FakeCameraSession();
+      final services = await pumpLoop(tester, camera);
 
-        expect(camera.captureCount, 1);
-        expect(find.text('Prepared 4242 bytes'), findsOneWidget);
-      },
-    );
+      await _emit(tester, camera, _goodFrame);
+      await tester.tap(find.byKey(shutterKey));
+      await tester.pumpAndSettle();
+
+      expect(camera.captureCount, 1);
+
+      final stored = await services.diagnosisStore.recent();
+      expect(stored, hasLength(1));
+      final record = stored.single;
+      expect(record.cropKey, 'tomato');
+      expect(
+        record.modelVersion,
+        startsWith('sample-'),
+        reason: 'a record must stay identifiable as sample data forever (D-52)',
+      );
+      expect(
+        record.imagePath,
+        isNotNull,
+        reason: 'the farmer must be able to see the leaf they photographed',
+      );
+    });
+
+    testWidgets('the result is on screen and says it is sample data', (
+      tester,
+    ) async {
+      final camera = FakeCameraSession();
+      await pumpLoop(tester, camera);
+
+      await _emit(tester, camera, _goodFrame);
+      await tester.tap(find.byKey(shutterKey));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ResultScreen), findsOneWidget);
+      expect(find.byType(DiagnosisResultView), findsOneWidget);
+      expect(find.text('Result'), findsOneWidget);
+      // D-52 makes this notice mandatory on every surface rendering a sample
+      // result. Without it the app is V1's decorative confidence again, with a
+      // bigger blast radius.
+      expect(
+        find.textContaining('Sample data'),
+        findsOneWidget,
+        reason: 'a sample answer must never be presented as a real one',
+      );
+    });
+
+    testWidgets('every result offers a way to reach a person', (tester) async {
+      // Whatever the state, escalation is present. This is the behavioural
+      // half of putting escalation on the sealed base class.
+      final camera = FakeCameraSession();
+      await pumpLoop(tester, camera);
+
+      await _emit(tester, camera, _goodFrame);
+      await tester.tap(find.byKey(shutterKey));
+      await tester.pumpAndSettle();
+
+      expect(find.text('See crop experts near you'), findsOneWidget);
+    });
+
+    testWidgets('the new diagnosis reaches History', timeout: _timeout, (
+      tester,
+    ) async {
+      final camera = FakeCameraSession();
+      await pumpLoop(tester, camera);
+
+      await _emit(tester, camera, _goodFrame);
+      await tester.tap(find.byKey(shutterKey));
+      await tester.pumpAndSettle();
+
+      // Back out of the result, back out of the camera, then into History.
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(Icons.history_outlined));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ListTile), findsOneWidget);
+    });
+
+    testWidgets('a capture failure is stated, not swallowed', (tester) async {
+      // Previously a bare try/finally, so a failure was indistinguishable from
+      // the app ignoring the tap, and a farmer would blame themselves.
+      final camera = FakeCameraSession()..failOnCapture = true;
+      await pumpLoop(tester, camera);
+
+      await _emit(tester, camera, _goodFrame);
+      await tester.tap(find.byKey(shutterKey));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Result'), findsNothing);
+      expect(
+        find.textContaining('Something went wrong'),
+        findsOneWidget,
+        reason:
+            'the explanation of a failure is the one thing that must not '
+            'evaporate',
+      );
+    });
   });
 }

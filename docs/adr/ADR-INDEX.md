@@ -58,3 +58,4 @@ Status codes: A = accepted; A* = accepted as amended (by the referenced decision
 | D-49 | Content ops workstream: pinned launch scope, partnerships, velocity metric, registry cadence | A |
 | D-50 | Audit sweep: op-log compaction, sync admission control, single-region posture, Devanagari FTS, cost | A |
 | D-51 | V2 lives on orphan branch `v2` of the existing repo; V1 branches archived read-only; default-branch flip at first release | A |
+| D-52 | Sample inference stand-in: deterministic, pack-specified, marked `sample-` in `modelVersion` for the life of every record; no distribution and no treatment content while wired ([ADR-0052](ADR-0052-sample-inference-standin.md)) | A |

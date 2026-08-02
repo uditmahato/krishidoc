@@ -74,9 +74,31 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('UI preview'));
     await tester.pumpAndSettle();
-    expect(find.text('Very likely'), findsOneWidget);
-    expect(find.text('We are not sure'), findsOneWidget);
-    expect(find.text('Ask a nearby crop expert'), findsOneWidget);
-    expect(find.text('Take another photo'), findsOneWidget);
+    // All three certainty bands, uncertain, and both out-of-scope causes.
+    // One certainty string used to serve every confident result, so a
+    // calibrated 0.62 and a 0.98 read identically.
+    //
+    // Scrolled to each in turn because the preview list is lazy: asserting
+    // without scrolling would only ever see the first card and would pass
+    // just as happily if the other five were deleted.
+    final preview = find.byType(Scrollable).last;
+    for (final expected in const [
+      'This looks like',
+      'This is probably',
+      'This might be',
+      'We are not sure',
+      'I do not know this one',
+      'I could not read this photo',
+    ]) {
+      final target = find.textContaining(expected);
+      await tester.scrollUntilVisible(target, 200, scrollable: preview);
+      expect(target, findsOneWidget, reason: expected);
+      // Escalation lives on the sealed base class, so every state renders it.
+      expect(
+        find.text('See crop experts near you'),
+        findsWidgets,
+        reason: 'no state may be a dead end',
+      );
+    }
   });
 }

@@ -24,10 +24,7 @@ class HomeScreen extends StatelessWidget {
             // readers announce it inconsistently. For a user who reads only
             // Nepali, this control is the single way out of an English app,
             // so the glyph itself carries a name.
-            icon: Icon(
-              Icons.language,
-              semanticLabel: l10n.languageMenuTooltip,
-            ),
+            icon: Icon(Icons.language, semanticLabel: l10n.languageMenuTooltip),
             tooltip: l10n.languageMenuTooltip,
             onSelected: (language) {
               KdHaptics.selected();
@@ -68,13 +65,13 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: KdLayout.sectionGap),
           _TileGrid(
             children: [
-              // Still "coming soon" on purpose: the camera works, but no
-              // diagnosis can follow the shutter until a model ships, and a
-              // capture that ends in a byte count is the dead end this
-              // rebuild exists to avoid.
+              // Live as of the closed loop: the shutter now leads to a stored
+              // result instead of a byte count. The answers behind it are
+              // sample data (D-52) and every result says so.
               _HomeTile(
                 icon: Icons.photo_camera_outlined,
                 label: l10n.tileDiagnose,
+                onTap: (context) => context.push(AppRoutes.capture),
               ),
               _HomeTile(icon: Icons.chat_bubble_outline, label: l10n.tileAsk),
               _HomeTile(
@@ -93,10 +90,6 @@ class HomeScreen extends StatelessWidget {
             TextButton(
               onPressed: () => context.push(AppRoutes.devResultPreview),
               child: Text(l10n.devPreviewTitle),
-            ),
-            TextButton(
-              onPressed: () => context.push(AppRoutes.capture),
-              child: const Text('Camera preview (debug)'),
             ),
           ],
         ],

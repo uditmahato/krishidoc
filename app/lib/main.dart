@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 
 import 'l10n/gen/app_localizations.dart';
 import 'src/app_services.dart';
+import 'src/diagnosis/photo_store.dart';
 import 'src/locale_scope.dart';
 import 'src/providers.dart';
 import 'src/router.dart';
@@ -15,6 +16,7 @@ import 'src/router.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final services = await AppServices.open();
+  final photos = await FilePhotoStore.open();
   // Read the saved language BEFORE the first frame. Restoring it afterwards
   // meant a Nepali-only user saw an English home screen flash on every cold
   // start, and the type theme is locale dependent, so the first frame also
@@ -32,7 +34,10 @@ Future<void> main() async {
   );
   runApp(
     ProviderScope(
-      overrides: [servicesProvider.overrideWithValue(services)],
+      overrides: [
+        servicesProvider.overrideWithValue(services),
+        photoStoreProvider.overrideWithValue(photos),
+      ],
       child: KrishiDocApp(
         initialLocale: saved == null ? null : Locale(saved.code),
       ),

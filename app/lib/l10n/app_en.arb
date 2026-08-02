@@ -8,10 +8,8 @@
   "tileSettings": "Settings",
   "comingSoon": "Coming soon.",
   "languageMenuTooltip": "Language",
-  "certaintyVeryLikely": "Very likely",
   "resultUncertainTitle": "We are not sure",
-  "escalateToClinic": "Ask a nearby crop expert",
-  "resultOutOfScopeGuidance": "We could not identify anything from this photo. Take a closer photo of one affected leaf in good light.",
+  "escalateToClinic": "See crop experts near you",
   "retryCapture": "Take another photo",
   "historyEmpty": "No diagnoses yet. Your results will appear here.",
   "historyNoIdentification": "Could not identify",
@@ -31,5 +29,38 @@
   "devPreviewTitle": "UI preview",
   "a11yStateConfident": "Identified",
   "a11yStateUncertain": "Not sure",
-  "a11yStateOutOfScope": "Not recognised"
+  "a11yStateOutOfScope": "Not recognised",
+  "certaintyHigh": "This looks like {disease}.",
+  "@certaintyHigh": {
+    "placeholders": {
+      "disease": {
+        "type": "String"
+      }
+    }
+  },
+  "certaintyModerate": "This is probably {disease}.",
+  "@certaintyModerate": {
+    "placeholders": {
+      "disease": {
+        "type": "String"
+      }
+    }
+  },
+  "certaintyLow": "This might be {disease}. Check the plant again in two days.",
+  "@certaintyLow": {
+    "placeholders": {
+      "disease": {
+        "type": "String"
+      }
+    }
+  },
+  "confidentCaveat": "A phone photo cannot be certain. If this crop matters to you, show it to a crop expert before you spray.",
+  "resultNotMyProblem": "This is not what my leaf has",
+  "outOfScopeNotCovered": "I do not know this one. This app can only check tomato, potato and maize leaves so far.",
+  "outOfScopeUnreadable": "I could not read this photo. Take one leaf, closer, out of direct sun.",
+  "resultTitle": "Result",
+  "sampleDataNotice": "Sample data. This answer does not come from a trained model and must not be used on a real crop.",
+  "savedOffline": "Saved. You can open this later without internet.",
+  "diagnosisFailed": "Something went wrong while checking this photo.",
+  "checking": "Checking the photo"
 }

@@ -17,6 +17,44 @@ final class RankedPrediction {
   bool get isHealthy => kind == LabelKind.healthy;
 }
 
+/// How far past its own bar the leading answer got.
+///
+/// A single certainty phrase for every confident result was a real defect: a
+/// calibrated 0.62 and a calibrated 0.98 spoke identically, so the app looked
+/// calibrated while being uncalibrated, which is worse than showing nothing at
+/// all. Module 8 computed [ClassificationOutcome.topProbability] and no screen
+/// ever read it.
+///
+/// The band is measured as HEADROOM above the label's own threshold, not as a
+/// raw probability. Thresholds are per class and ship with the model (D-18), so
+/// 0.75 may be comfortably clear for one disease and barely scraping for
+/// another; a fixed probability cut would compare the two as if they meant the
+/// same thing. Headroom asks the only question a farmer cares about: how much
+/// better than the bar this answer had to clear.
+enum CertaintyBand {
+  /// Well clear of its threshold.
+  high,
+
+  /// Clear, but not by much.
+  moderate,
+
+  /// Only just over the line. Worth checking again in a couple of days.
+  low;
+
+  /// Boundaries are on normalised headroom, `(p - threshold) / (1 - threshold)`.
+  /// They are provisional in exactly the way every other calibration constant
+  /// here is provisional: real cuts come from a fitted validation set, and
+  /// choosing them is an ML plus Agri decision, not an engineering one.
+  static const double highHeadroom = 0.50;
+  static const double moderateHeadroom = 0.20;
+
+  static CertaintyBand fromHeadroom(double headroom) {
+    if (headroom >= highHeadroom) return CertaintyBand.high;
+    if (headroom >= moderateHeadroom) return CertaintyBand.moderate;
+    return CertaintyBand.low;
+  }
+}
+
 /// What the model concluded, and how far it should be trusted.
 final class ClassificationOutcome {
   const ClassificationOutcome({
@@ -25,6 +63,7 @@ final class ClassificationOutcome {
     required this.modelVersion,
     required this.thresholdSetVersion,
     required this.topProbability,
+    this.certainty,
   });
 
   final ResultState state;
@@ -39,6 +78,13 @@ final class ClassificationOutcome {
 
   /// Kept even when [ranked] is empty, for telemetry on rejected photos.
   final double topProbability;
+
+  /// Non-null only when [state] is confident.
+  ///
+  /// Uncertain and out-of-scope have no band by construction: uncertainty is
+  /// not a weak kind of certainty, and giving it a band would invite a screen
+  /// to render "slightly sure" where the honest answer is "I do not know".
+  final CertaintyBand? certainty;
 
   /// True only when the model is confident the leaf is healthy. Advisory and
   /// treatment surfaces key off this: a healthy leaf must never be handed a
@@ -129,6 +175,15 @@ final class PredictionResolver {
       modelVersion: pack.modelVersion,
       thresholdSetVersion: pack.thresholdSetVersion,
       topProbability: leader.probability,
+      // Guarded because a threshold of exactly 1 would divide by zero. Such a
+      // pack is loadable (thresholds are validated as 0 to 1 inclusive) and
+      // means "never confident", so anything that does clear it is as clear as
+      // it is possible to be.
+      certainty: threshold >= 1
+          ? CertaintyBand.high
+          : CertaintyBand.fromHeadroom(
+              (leader.probability - threshold) / (1 - threshold),
+            ),
     );
   }
 }

@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:krishidoc_app/l10n/gen/app_localizations.dart';
 import 'package:krishidoc_app/main.dart';
 import 'package:krishidoc_app/src/app_services.dart';
+import 'package:krishidoc_app/src/diagnosis/photo_store.dart';
 import 'package:krishidoc_app/src/providers.dart';
 
 import 'fakes.dart';
@@ -46,7 +47,11 @@ Future<AppServices> pumpApp(
   }
   await tester.pumpWidget(
     ProviderScope(
-      overrides: [servicesProvider.overrideWithValue(services), ...overrides],
+      overrides: [
+        servicesProvider.overrideWithValue(services),
+        photoStoreProvider.overrideWithValue(MemoryPhotoStore()),
+        ...overrides,
+      ],
       child: KrishiDocApp(initialLocale: locale),
     ),
   );
@@ -72,7 +77,11 @@ Future<AppServices> pumpScreen(
   }
   await tester.pumpWidget(
     ProviderScope(
-      overrides: [servicesProvider.overrideWithValue(services), ...overrides],
+      overrides: [
+        servicesProvider.overrideWithValue(services),
+        photoStoreProvider.overrideWithValue(MemoryPhotoStore()),
+        ...overrides,
+      ],
       child: MaterialApp(
         locale: locale,
         localizationsDelegates: AppLocalizations.localizationsDelegates,

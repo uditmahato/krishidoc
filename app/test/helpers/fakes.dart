@@ -74,9 +74,16 @@ final class FakeCameraSession implements CameraSession {
   @override
   Stream<LumaFrame> get frames => _frames.stream;
 
+  /// Makes the shutter path throw, so tests can assert the app SAYS a capture
+  /// failed rather than silently doing nothing.
+  bool failOnCapture = false;
+
   @override
   Future<Uint8List> capturePhoto() async {
     captureCount++;
+    if (failOnCapture) {
+      throw StateError('capture failed');
+    }
     return photoBytes;
   }
 

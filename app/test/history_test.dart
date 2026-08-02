@@ -27,11 +27,12 @@ DiagnosisRecord _record(
   required ResultState state,
   required DateTime createdAt,
   List<TopPrediction> predictions = const [],
+  String modelVersion = 'tomato-v1',
 }) => DiagnosisRecord(
   id: services.ids.newId(),
   state: state,
   predictions: predictions,
-  modelVersion: 'tomato-v1',
+  modelVersion: modelVersion,
   createdAt: createdAt,
 );
 
@@ -113,4 +114,58 @@ void main() {
       expect(find.text('early_blight'), findsOneWidget);
     },
   );
+
+  // D-52 forbids ANY surface presenting a sample answer as a real one, and
+  // History is a surface: it renders a stored diagnosis with a confident glyph
+  // and a disease name. These two tests are what turns that from a rule
+  // someone has to remember into one the suite refuses to let go.
+  group('sample data is declared (D-52)', () {
+    testWidgets(
+      'a sample record is marked, in words and in glyph',
+      timeout: _timeout,
+      (tester) async {
+        final services = await pumpApp(tester, locale: const Locale('en'));
+        await services.diagnosisStore.upsert(
+          _record(
+            services,
+            state: ResultState.confident,
+            createdAt: DateTime.utc(2026, 7, 4),
+            predictions: [TopPrediction(label: 'late_blight', confidence: 0.9)],
+            modelVersion: 'sample-tomato-v0',
+          ),
+        );
+
+        await _openHistory(tester);
+
+        expect(
+          find.textContaining('Sample data'),
+          findsOneWidget,
+          reason: 'History must not present a sample answer as a real one',
+        );
+        expect(find.byIcon(Icons.science_outlined), findsWidgets);
+      },
+    );
+
+    testWidgets('a real record carries no sample notice', timeout: _timeout, (
+      tester,
+    ) async {
+      final services = await pumpApp(tester, locale: const Locale('en'));
+      await services.diagnosisStore.upsert(
+        _record(
+          services,
+          state: ResultState.confident,
+          createdAt: DateTime.utc(2026, 7, 5),
+          predictions: [TopPrediction(label: 'late_blight', confidence: 0.9)],
+        ),
+      );
+
+      await _openHistory(tester);
+
+      // The inverse assertion matters as much as the first: a notice that is
+      // always on says nothing, and would train the reader to skip it before
+      // the first real model ever ships.
+      expect(find.textContaining('Sample data'), findsNothing);
+      expect(find.byIcon(Icons.science_outlined), findsNothing);
+    });
+  });
 }
