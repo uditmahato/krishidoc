@@ -196,17 +196,9 @@ abstract final class KdMotion {
 abstract final class KdElevation {
   static const List<BoxShadow> none = <BoxShadow>[];
   static const List<BoxShadow> raised = <BoxShadow>[
-    BoxShadow(
-      color: Color(0x14000000),
-      blurRadius: 3,
-      offset: Offset(0, 1),
-    ),
+    BoxShadow(color: Color(0x14000000), blurRadius: 3, offset: Offset(0, 1)),
   ];
   static const List<BoxShadow> floating = <BoxShadow>[
-    BoxShadow(
-      color: Color(0x1F000000),
-      blurRadius: 10,
-      offset: Offset(0, 4),
-    ),
+    BoxShadow(color: Color(0x1F000000), blurRadius: 10, offset: Offset(0, 4)),
   ];
 }

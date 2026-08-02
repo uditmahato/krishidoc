@@ -54,19 +54,49 @@ void main() {
 
   group('text on the surfaces we actually paint', () {
     test('ink clears AA on both white and canvas', () {
-      expectRatio('inkStrong on surface', KdColors.inkStrong, KdColors.surface, 4.5);
-      expectRatio('inkStrong on canvas', KdColors.inkStrong, KdColors.canvas, 4.5);
-      expectRatio('inkBody on surface', KdColors.inkBody, KdColors.surface, 4.5);
+      expectRatio(
+        'inkStrong on surface',
+        KdColors.inkStrong,
+        KdColors.surface,
+        4.5,
+      );
+      expectRatio(
+        'inkStrong on canvas',
+        KdColors.inkStrong,
+        KdColors.canvas,
+        4.5,
+      );
+      expectRatio(
+        'inkBody on surface',
+        KdColors.inkBody,
+        KdColors.surface,
+        4.5,
+      );
       expectRatio('inkBody on canvas', KdColors.inkBody, KdColors.canvas, 4.5);
-      expectRatio('inkMuted on surface', KdColors.inkMuted, KdColors.surface, 4.5);
-      expectRatio('inkMuted on canvas', KdColors.inkMuted, KdColors.canvas, 4.5);
+      expectRatio(
+        'inkMuted on surface',
+        KdColors.inkMuted,
+        KdColors.surface,
+        4.5,
+      );
+      expectRatio(
+        'inkMuted on canvas',
+        KdColors.inkMuted,
+        KdColors.canvas,
+        4.5,
+      );
     });
 
     test('body ink holds a wide margin, because sunlight eats contrast', () {
       // Veiling glare in open sun can cut effective contrast by a factor of
       // five or more. A body ratio that only just clears 4.5:1 indoors is
       // unreadable in a field, so body copy is held far above the minimum.
-      expectRatio('inkBody on surface', KdColors.inkBody, KdColors.surface, 12.0);
+      expectRatio(
+        'inkBody on surface',
+        KdColors.inkBody,
+        KdColors.surface,
+        12.0,
+      );
     });
 
     test('the disabled label stays readable, which WCAG does not require', () {
@@ -86,7 +116,12 @@ void main() {
   group('brand and semantic accents', () {
     test('every accent clears AA on white', () {
       expectRatio('primary', KdColors.primary, KdColors.surface, 4.5);
-      expectRatio('primaryPressed', KdColors.primaryPressed, KdColors.surface, 4.5);
+      expectRatio(
+        'primaryPressed',
+        KdColors.primaryPressed,
+        KdColors.surface,
+        4.5,
+      );
       expectRatio('warning', KdColors.warning, KdColors.surface, 4.5);
       expectRatio('danger', KdColors.danger, KdColors.surface, 4.5);
       expectRatio('slate', KdColors.slate, KdColors.surface, 4.5);
@@ -97,7 +132,12 @@ void main() {
     });
 
     test('white on primary is legible, so filled buttons are safe', () {
-      expectRatio('onPrimary on primary', KdColors.onPrimary, KdColors.primary, 4.5);
+      expectRatio(
+        'onPrimary on primary',
+        KdColors.onPrimary,
+        KdColors.primary,
+        4.5,
+      );
     });
   });
 
@@ -125,9 +165,24 @@ void main() {
 
   group('diagnosis states', () {
     test('each state rail is visible against the surfaces it sits on', () {
-      expectRatio('confident rail', KdColors.stateConfidentRail, KdColors.surface, 3.0);
-      expectRatio('uncertain rail', KdColors.stateUncertainRail, KdColors.surface, 3.0);
-      expectRatio('out-of-scope rail', KdColors.stateOutOfScopeRail, KdColors.surface, 3.0);
+      expectRatio(
+        'confident rail',
+        KdColors.stateConfidentRail,
+        KdColors.surface,
+        3.0,
+      );
+      expectRatio(
+        'uncertain rail',
+        KdColors.stateUncertainRail,
+        KdColors.surface,
+        3.0,
+      );
+      expectRatio(
+        'out-of-scope rail',
+        KdColors.stateOutOfScopeRail,
+        KdColors.surface,
+        3.0,
+      );
     });
 
     test('ink on each tinted band clears AA', () {
@@ -151,30 +206,42 @@ void main() {
       );
     });
 
-    test('colour alone cannot separate the three states, and that is arithmetic', () {
-      // For a rail to read as a boundary on white it needs at least 3:1
-      // against white, which puts a ceiling on its luminance. Three colours
-      // all under that ceiling span at most roughly 3.5:1 between the
-      // darkest and lightest, so the middle one cannot clear 3:1 against
-      // either neighbour no matter which hues are chosen.
-      //
-      // This is asserted, not lamented. It is the reason state must always be
-      // carried by glyph and by words as well, and it is why an earlier
-      // review's measurement of 1.19:1 between two state colours was not a
-      // palette bug to be tuned away.
-      final pairs = <double>[
-        contrastRatio(KdColors.stateConfidentRail, KdColors.stateUncertainRail),
-        contrastRatio(KdColors.stateUncertainRail, KdColors.stateOutOfScopeRail),
-        contrastRatio(KdColors.stateConfidentRail, KdColors.stateOutOfScopeRail),
-      ];
-      expect(
-        pairs.every((r) => r < 4.5),
-        isTrue,
-        reason:
-            'if this ever passes 4.5:1 the ceiling argument has changed and '
-            'the colour-is-not-alone rule should be revisited, not deleted',
-      );
-    });
+    test(
+      'colour alone cannot separate the three states, and that is arithmetic',
+      () {
+        // For a rail to read as a boundary on white it needs at least 3:1
+        // against white, which puts a ceiling on its luminance. Three colours
+        // all under that ceiling span at most roughly 3.5:1 between the
+        // darkest and lightest, so the middle one cannot clear 3:1 against
+        // either neighbour no matter which hues are chosen.
+        //
+        // This is asserted, not lamented. It is the reason state must always be
+        // carried by glyph and by words as well, and it is why an earlier
+        // review's measurement of 1.19:1 between two state colours was not a
+        // palette bug to be tuned away.
+        final pairs = <double>[
+          contrastRatio(
+            KdColors.stateConfidentRail,
+            KdColors.stateUncertainRail,
+          ),
+          contrastRatio(
+            KdColors.stateUncertainRail,
+            KdColors.stateOutOfScopeRail,
+          ),
+          contrastRatio(
+            KdColors.stateConfidentRail,
+            KdColors.stateOutOfScopeRail,
+          ),
+        ];
+        expect(
+          pairs.every((r) => r < 4.5),
+          isTrue,
+          reason:
+              'if this ever passes 4.5:1 the ceiling argument has changed and '
+              'the colour-is-not-alone rule should be revisited, not deleted',
+        );
+      },
+    );
   });
 
   group('capture coaching', () {
@@ -182,8 +249,18 @@ void main() {
       // The banner floats over live video, which may be a white sheet of
       // paper or an overcast sky, so both fills are opaque and dark and the
       // text is white on both.
-      expectRatio('ink on ready fill', KdColors.coachInk, KdColors.coachReadyFill, 4.5);
-      expectRatio('ink on busy fill', KdColors.coachInk, KdColors.coachBusyFill, 4.5);
+      expectRatio(
+        'ink on ready fill',
+        KdColors.coachInk,
+        KdColors.coachReadyFill,
+        4.5,
+      );
+      expectRatio(
+        'ink on busy fill',
+        KdColors.coachInk,
+        KdColors.coachBusyFill,
+        4.5,
+      );
     });
 
     test('the fills do NOT carry readiness, so the shutter must', () {
@@ -201,16 +278,19 @@ void main() {
     // The regression guard for the defect that motivated this whole module.
     // ColorScheme.fromSeed(#1B5E20) returns #3C6939. If anyone reintroduces
     // seeding, these fail immediately instead of shipping an unaudited green.
-    test('the colour scheme carries the audited values, not a seeded palette', () {
-      final scheme = kdLightTheme().colorScheme;
-      expect(scheme.primary, KdColors.primary);
-      expect(scheme.onPrimary, KdColors.onPrimary);
-      expect(scheme.surface, KdColors.surface);
-      expect(scheme.error, KdColors.danger);
-      expect(scheme.outline, KdColors.border);
-      expect(scheme.onSurface, KdColors.inkBody);
-      expect(scheme.onSurfaceVariant, KdColors.inkMuted);
-    });
+    test(
+      'the colour scheme carries the audited values, not a seeded palette',
+      () {
+        final scheme = kdLightTheme().colorScheme;
+        expect(scheme.primary, KdColors.primary);
+        expect(scheme.onPrimary, KdColors.onPrimary);
+        expect(scheme.surface, KdColors.surface);
+        expect(scheme.error, KdColors.danger);
+        expect(scheme.outline, KdColors.border);
+        expect(scheme.onSurface, KdColors.inkBody);
+        expect(scheme.onSurfaceVariant, KdColors.inkMuted);
+      },
+    );
 
     test('the scaffold sits on canvas and cards sit on surface', () {
       final theme = kdLightTheme();
@@ -269,7 +349,9 @@ void main() {
       );
       expect(KdType.forLocale(const Locale('hi')), same(deva));
       expect(
-        KdType.forLocale(const Locale.fromSubtags(languageCode: 'xx', scriptCode: 'Deva')),
+        KdType.forLocale(
+          const Locale.fromSubtags(languageCode: 'xx', scriptCode: 'Deva'),
+        ),
         same(deva),
       );
     });
@@ -316,10 +398,16 @@ void main() {
       }
     });
 
-    test('leading is distributed evenly, so the extra space lands where matras are', () {
-      final deva = KdType.forLocale(const Locale('ne'));
-      expect(deva.bodyLarge!.leadingDistribution, TextLeadingDistribution.even);
-    });
+    test(
+      'leading is distributed evenly, so the extra space lands where matras are',
+      () {
+        final deva = KdType.forLocale(const Locale('ne'));
+        expect(
+          deva.bodyLarge!.leadingDistribution,
+          TextLeadingDistribution.even,
+        );
+      },
+    );
 
     test('the theme adopts the locale column', () {
       expect(

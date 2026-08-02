@@ -64,9 +64,7 @@ ThemeData kdLightTheme({Locale locale = const Locale('en')}) {
       scrolledUnderElevation: 0,
       // The app bar is the top edge of a white surface against a tinted
       // canvas, so it needs a drawn boundary for the same reason cards do.
-      shape: const Border(
-        bottom: BorderSide(color: KdColors.border, width: 1),
-      ),
+      shape: const Border(bottom: BorderSide(color: KdColors.border, width: 1)),
       titleTextStyle: text.titleLarge?.copyWith(color: KdColors.inkStrong),
     ),
 
@@ -123,7 +121,10 @@ ThemeData kdLightTheme({Locale locale = const Locale('en')}) {
     // under the Android minimum.
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        minimumSize: const Size(KdSpacing.minTouchTarget, KdSpacing.minTouchTarget),
+        minimumSize: const Size(
+          KdSpacing.minTouchTarget,
+          KdSpacing.minTouchTarget,
+        ),
         padding: const EdgeInsets.symmetric(horizontal: KdSpacing.md),
         textStyle: text.labelLarge,
         foregroundColor: KdColors.primaryPressed,
@@ -175,9 +176,7 @@ ThemeData kdLightTheme({Locale locale = const Locale('en')}) {
     // stream is still alive. The fade is cheaper and does not fight the
     // camera for memory.
     pageTransitionsTheme: const PageTransitionsTheme(
-      builders: {
-        TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-      },
+      builders: {TargetPlatform.android: FadeUpwardsPageTransitionsBuilder()},
     ),
   );
 }

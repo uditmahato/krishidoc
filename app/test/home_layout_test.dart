@@ -45,42 +45,38 @@ void main() {
   for (final screen in screens.entries) {
     for (final scale in scales) {
       for (final locale in locales.entries) {
-        testWidgets(
-          'home lays out without overflow at ${screen.key} '
-          'x${scale.toStringAsFixed(1)} in ${locale.key}',
-          (tester) async {
-            useScreen(tester, screen.value, textScale: scale);
-            await pumpApp(tester, locale: locale.value);
+        testWidgets('home lays out without overflow at ${screen.key} '
+            'x${scale.toStringAsFixed(1)} in ${locale.key}', (tester) async {
+          useScreen(tester, screen.value, textScale: scale);
+          await pumpApp(tester, locale: locale.value);
 
-            // An overflow reports itself through FlutterError during paint,
-            // which the harness surfaces here. Reading it explicitly gives a
-            // failure message that names the exact combination.
-            expect(
-              tester.takeException(),
-              isNull,
-              reason:
-                  'overflow at ${screen.key} scale $scale in ${locale.key}',
+          // An overflow reports itself through FlutterError during paint,
+          // which the harness surfaces here. Reading it explicitly gives a
+          // failure message that names the exact combination.
+          expect(
+            tester.takeException(),
+            isNull,
+            reason: 'overflow at ${screen.key} scale $scale in ${locale.key}',
+          );
+
+          // Overflow is not the only way to lose a tile: content can also
+          // sit below the fold with no way to reach it. The page scrolls,
+          // so every tile must be findable after scrolling to it.
+          for (final tile in [
+            find.byIcon(Icons.photo_camera_outlined),
+            find.byIcon(Icons.chat_bubble_outline),
+            find.byIcon(Icons.history_outlined),
+            find.byIcon(Icons.settings_outlined),
+          ]) {
+            await tester.scrollUntilVisible(
+              tile,
+              120,
+              scrollable: find.byType(Scrollable).first,
             );
-
-            // Overflow is not the only way to lose a tile: content can also
-            // sit below the fold with no way to reach it. The page scrolls,
-            // so every tile must be findable after scrolling to it.
-            for (final tile in [
-              find.byIcon(Icons.photo_camera_outlined),
-              find.byIcon(Icons.chat_bubble_outline),
-              find.byIcon(Icons.history_outlined),
-              find.byIcon(Icons.settings_outlined),
-            ]) {
-              await tester.scrollUntilVisible(
-                tile,
-                120,
-                scrollable: find.byType(Scrollable).first,
-              );
-              expect(tile, findsOneWidget);
-            }
-            expect(tester.takeException(), isNull);
-          },
-        );
+            expect(tile, findsOneWidget);
+          }
+          expect(tester.takeException(), isNull);
+        });
       }
     }
   }
