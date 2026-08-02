@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:krishidoc_app/src/home_screen.dart';
 
 import 'helpers/pump_app.dart';
 
@@ -59,26 +60,52 @@ void main() {
             reason: 'overflow at ${screen.key} scale $scale in ${locale.key}',
           );
 
-          // Overflow is not the only way to lose a tile: content can also
-          // sit below the fold with no way to reach it. The page scrolls,
-          // so every tile must be findable after scrolling to it.
-          for (final tile in [
-            find.byIcon(Icons.photo_camera_outlined),
-            find.byIcon(Icons.chat_bubble_outline),
-            find.byIcon(Icons.history_outlined),
-            find.byIcon(Icons.settings_outlined),
+          // Overflow is not the only way to lose a row: content can also sit
+          // below the fold with no way to reach it. The page scrolls, so
+          // every row must be findable after scrolling to it. Keyed rather
+          // than found by icon, because the not-ready row and the debug
+          // capture door now share the camera glyph.
+          for (final row in [
+            find.byKey(homeNotReadyKey),
+            find.byKey(homeHistoryKey),
           ]) {
             await tester.scrollUntilVisible(
-              tile,
+              row,
               120,
               scrollable: find.byType(Scrollable).first,
             );
-            expect(tile, findsOneWidget);
+            expect(row, findsOneWidget);
           }
           expect(tester.takeException(), isNull);
         });
       }
     }
+  }
+
+  // Landscape has never been covered by any test in this repo, and review 06
+  // records it as broken under the old grid. A short wide viewport is where a
+  // scrolling page and a fixed-height child disagree.
+  for (final scale in <double>[1.0, 2.0]) {
+    testWidgets('home lays out in landscape 915x412 x$scale in ne', (
+      tester,
+    ) async {
+      useScreen(tester, const Size(915, 412), textScale: scale);
+      await pumpApp(tester, locale: const Locale('ne'));
+
+      expect(tester.takeException(), isNull);
+      for (final row in [
+        find.byKey(homeNotReadyKey),
+        find.byKey(homeHistoryKey),
+      ]) {
+        await tester.scrollUntilVisible(
+          row,
+          120,
+          scrollable: find.byType(Scrollable).first,
+        );
+        expect(row, findsOneWidget);
+      }
+      expect(tester.takeException(), isNull);
+    });
   }
 
   testWidgets('tiles grow with the text scaler rather than clipping', (
@@ -88,24 +115,34 @@ void main() {
     // tile must get taller. Under the old aspect-ratio grid this height was
     // identical at every scale, which is exactly why the label had nowhere to
     // go and overflowed instead.
-    double tileHeight(WidgetTester tester) => tester
-        .getSize(
-          find
-              .ancestor(
-                of: find.byIcon(Icons.history_outlined),
-                matching: find.byType(Card),
-              )
-              .first,
-        )
-        .height;
+    // Scrolled into view before measuring. The page is a lazy ListView, so at
+    // scale 2.0 the history row is below the fold and simply not built, and
+    // the finder fails with "No element" rather than with a wrong height.
+    Future<double> rowHeight(WidgetTester tester) async {
+      await tester.scrollUntilVisible(
+        find.byKey(homeHistoryKey),
+        120,
+        scrollable: find.byType(Scrollable).first,
+      );
+      return tester
+          .getSize(
+            find
+                .descendant(
+                  of: find.byKey(homeHistoryKey),
+                  matching: find.byType(Card),
+                )
+                .first,
+          )
+          .height;
+    }
 
     useScreen(tester, const Size(360, 800));
     await pumpApp(tester, locale: const Locale('ne'));
-    final atDefault = tileHeight(tester);
+    final atDefault = await rowHeight(tester);
 
     useScreen(tester, const Size(360, 800), textScale: 2.0);
     await pumpApp(tester, locale: const Locale('ne'));
-    final atDouble = tileHeight(tester);
+    final atDouble = await rowHeight(tester);
 
     expect(
       atDouble,
@@ -114,21 +151,16 @@ void main() {
     );
   });
 
-  testWidgets('every home tile clears the 48dp touch minimum', (tester) async {
+  testWidgets('every home row clears the 48dp touch minimum', (tester) async {
     useScreen(tester, const Size(320, 640));
     await pumpApp(tester, locale: const Locale('ne'));
 
-    for (final icon in [
-      Icons.photo_camera_outlined,
-      Icons.chat_bubble_outline,
-      Icons.history_outlined,
-      Icons.settings_outlined,
-    ]) {
+    for (final key in [homeNotReadyKey, homeHistoryKey]) {
       final size = tester.getSize(
-        find.ancestor(of: find.byIcon(icon), matching: find.byType(Card)).first,
+        find.descendant(of: find.byKey(key), matching: find.byType(Card)).first,
       );
-      expect(size.width, greaterThanOrEqualTo(48.0), reason: '$icon width');
-      expect(size.height, greaterThanOrEqualTo(48.0), reason: '$icon height');
+      expect(size.width, greaterThanOrEqualTo(48.0), reason: '$key width');
+      expect(size.height, greaterThanOrEqualTo(48.0), reason: '$key height');
     }
   });
 }

@@ -5,31 +5,39 @@ import 'package:flutter_test/flutter_test.dart';
 import 'helpers/pump_app.dart';
 
 void main() {
-  testWidgets('boots to home with all four tiles (en)', (tester) async {
+  testWidgets('boots to home saying what the app is for (en)', (tester) async {
     await pumpApp(tester, locale: const Locale('en'));
     expect(find.text('KrishiDoc'), findsOneWidget);
-    expect(find.text('Identify disease'), findsOneWidget);
-    expect(find.text('Ask a question'), findsOneWidget);
+    // What replaced the four tiles: a true statement of coverage, one control
+    // that is honest about not being ready, and one that works.
+    expect(
+      find.text('This app is for the leaves of tomato, potato and maize.'),
+      findsOneWidget,
+    );
+    expect(find.text('Check a leaf'), findsOneWidget);
+    expect(find.text('This is not ready yet.'), findsOneWidget);
     expect(find.text('History'), findsOneWidget);
-    expect(find.text('Settings'), findsOneWidget);
+    // Deleted, with their strings, so they cannot be re-added by accident.
+    expect(find.text('Ask a question'), findsNothing);
+    expect(find.text('Settings'), findsNothing);
   });
 
   testWidgets('renders Nepali with the reviewed register (D-06/D-35)', (
     tester,
   ) async {
     await pumpApp(tester, locale: const Locale('ne'));
-    expect(find.text('रोग पहिचान गर्नुहोस्'), findsOneWidget);
+    expect(find.text('पात जाँच्नुहोस्'), findsOneWidget);
     expect(
-      find.textContaining('बालीको रोग पहिचान'),
+      find.textContaining('गोलभेँडा, आलु र मकै'),
       findsOneWidget,
-      reason: 'tagline must use crop (बाली) register, not plant/seedling',
+      reason: 'coverage must use the same crop register as cropTomato et al',
     );
   });
 
-  testWidgets('renders Hindi tiles (D-06)', (tester) async {
+  testWidgets('renders Hindi (D-06)', (tester) async {
     await pumpApp(tester, locale: const Locale('hi'));
-    expect(find.text('रोग पहचानें'), findsOneWidget);
-    expect(find.text('सवाल पूछें'), findsOneWidget);
+    expect(find.text('पत्ता जाँचें'), findsOneWidget);
+    expect(find.text('यह अभी तैयार नहीं है।'), findsOneWidget);
   });
 
   testWidgets('language switch applies and persists (D-35 + M2 promise)', (
@@ -41,8 +49,8 @@ void main() {
     await tester.tap(find.text('नेपाली'));
     await tester.pumpAndSettle();
 
-    expect(find.text('रोग पहिचान गर्नुहोस्'), findsOneWidget);
-    expect(find.text('Identify disease'), findsNothing);
+    expect(find.text('पात जाँच्नुहोस्'), findsOneWidget);
+    expect(find.text('Check a leaf'), findsNothing);
     expect(
       await services.settingsStore.read(SettingsKeys.selectedLanguage),
       'ne',
@@ -51,14 +59,17 @@ void main() {
   });
 
   testWidgets('persisted language is restored on boot', (tester) async {
+    // Now passing for a better reason than before: the helper reads the
+    // seeded value and boots Hindi through the real pre-runApp shape, rather
+    // than through a post-frame restore that has been deleted.
     await pumpApp(
       tester,
       seed: (services) =>
           services.settingsStore.write(SettingsKeys.selectedLanguage, 'hi'),
     );
     await tester.pumpAndSettle();
-    expect(find.text('रोग पहचानें'), findsOneWidget);
-    expect(find.text('Identify disease'), findsNothing);
+    expect(find.text('पत्ता जाँचें'), findsOneWidget);
+    expect(find.text('Check a leaf'), findsNothing);
   });
 
   testWidgets('dev preview shows all three result states (D-17)', (

@@ -7,6 +7,24 @@ import 'package:go_router/go_router.dart';
 import '../l10n/gen/app_localizations.dart';
 import 'locale_scope.dart';
 import 'router.dart';
+import 'welcome/language_choice.dart';
+
+/// Stable handles. Both rows are named because the layout matrix measures
+/// them, and because a finder keyed on an icon breaks every time the glyph is
+/// reconsidered.
+const Key homeNotReadyKey = Key('home.notReady');
+const Key homeHistoryKey = Key('home.history');
+
+/// Debug-only door to the capture flow.
+///
+/// The spec for this module deletes the Diagnose tile, and that tile was the
+/// only route to `/capture`. Deleting it outright would make the closed loop
+/// unreachable, so it moves behind `kDebugMode` rather than disappearing:
+/// D-52 already forbids distributing any build while a sample pack is wired,
+/// and Home must not offer a farmer a diagnosis it cannot honestly give. A
+/// debug entry satisfies both, and it is how `/capture` was reached before
+/// the loop was closed.
+const Key homeDebugCaptureKey = Key('home.debug.capture');
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -14,7 +32,9 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
     final current = Localizations.localeOf(context).languageCode;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.appTitle),
@@ -30,25 +50,26 @@ class HomeScreen extends StatelessWidget {
               KdHaptics.selected();
               LocaleScope.of(context).setLocale(Locale(language.code));
             },
+            // Read from the same list the chooser renders, so the two
+            // surfaces cannot drift apart in spelling or in order. The
+            // endonyms were hardcoded here, which is precisely the second
+            // ungated string surface D-54 exists to prevent.
             itemBuilder: (context) => [
-              for (final (language, name) in const [
-                (AppLanguage.en, 'English'),
-                (AppLanguage.ne, 'नेपाली'),
-                (AppLanguage.hi, 'हिन्दी'),
-              ])
+              for (final choice in kLanguageChoices)
                 CheckedPopupMenuItem(
-                  value: language,
-                  checked: language.code == current,
-                  child: Text(name),
+                  value: choice.language,
+                  checked: choice.language.code == current,
+                  child: Text(
+                    choice.name(l10n),
+                    style: KdType.forLocale(
+                      choice.locale,
+                    ).bodyLarge?.copyWith(color: KdColors.inkStrong),
+                  ),
                 ),
             ],
           ),
         ],
       ),
-      // Scrollable so large font scales and small screens never clip the
-      // page. Note that this alone was NOT enough: the tiles below used to
-      // derive their height from their width, which put the overflow inside a
-      // box the scroll view had no way to grow. See _HomeTile.
       body: ListView(
         padding: const EdgeInsets.fromLTRB(
           KdLayout.pageGutter,
@@ -58,35 +79,39 @@ class HomeScreen extends StatelessWidget {
         ),
         children: [
           Text(
-            l10n.homeTagline,
-            style: Theme.of(context).textTheme.bodyLarge,
-            textAlign: TextAlign.center,
+            // The same key About renders, verbatim. It replaces a tagline
+            // that promised "identification and advice", which named two
+            // things this build cannot do.
+            l10n.coverageStatement,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: KdColors.inkBody,
+            ),
+            // Start, not centre, so it shares the page's left edge with
+            // everything below it.
+            textAlign: TextAlign.start,
           ),
           const SizedBox(height: KdLayout.sectionGap),
-          _TileGrid(
-            children: [
-              // Live as of the closed loop: the shutter now leads to a stored
-              // result instead of a byte count. The answers behind it are
-              // sample data (D-52) and every result says so.
-              _HomeTile(
-                icon: Icons.photo_camera_outlined,
-                label: l10n.tileDiagnose,
-                onTap: (context) => context.push(AppRoutes.capture),
-              ),
-              _HomeTile(icon: Icons.chat_bubble_outline, label: l10n.tileAsk),
-              _HomeTile(
-                icon: Icons.history_outlined,
-                label: l10n.tileHistory,
-                onTap: (context) => context.push(AppRoutes.history),
-              ),
-              _HomeTile(
-                icon: Icons.settings_outlined,
-                label: l10n.tileSettings,
-              ),
-            ],
+          _NotReadyRow(
+            key: homeNotReadyKey,
+            icon: Icons.photo_camera_outlined,
+            title: l10n.homeNotReadyTitle,
+            status: l10n.homeNotReadyStatus,
+            onTap: () => context.push(AppRoutes.welcomeAbout),
+          ),
+          const SizedBox(height: KdLayout.itemGap),
+          _DestinationRow(
+            key: homeHistoryKey,
+            icon: Icons.history_outlined,
+            title: l10n.tileHistory,
+            onTap: () => context.push(AppRoutes.history),
           ),
           if (kDebugMode) ...[
             const SizedBox(height: KdLayout.sectionGap),
+            TextButton(
+              key: homeDebugCaptureKey,
+              onPressed: () => context.push(AppRoutes.capture),
+              child: Text(l10n.captureTitle),
+            ),
             TextButton(
               onPressed: () => context.push(AppRoutes.devResultPreview),
               child: Text(l10n.devPreviewTitle),
@@ -98,106 +123,165 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-/// A two-column grid whose rows are as tall as their content.
+/// A live destination.
 ///
-/// This replaces `GridView.count(childAspectRatio: 1.2)`, which was a real
-/// defect rather than a preference: an aspect ratio derives tile height from
-/// tile *width*, so the height was fixed no matter how tall the label inside
-/// it grew. Measured result was `RenderFlex overflowed` exceptions on 320x640
-/// and 360x800 at the default font size, with no font scaling involved at all,
-/// and 360x800 is one of the most common resolutions in this market. Nepali
-/// reaches three lines sooner than English, so the failure was worst in the
-/// language most of these users read.
+/// Row, not grid. A row is as tall as its content by construction, so the
+/// `childAspectRatio` class of defect that overflowed the old tile grid at
+/// default font size cannot return through a new component.
 ///
-/// `IntrinsicHeight` costs an extra layout pass over its children. With four
-/// tiles that is irrelevant, and it buys a grid that cannot overflow at any
-/// text scale in any language, which is the property that matters.
-class _TileGrid extends StatelessWidget {
-  const _TileGrid({required this.children});
-
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    final rows = <Widget>[];
-    for (var i = 0; i < children.length; i += 2) {
-      if (rows.isNotEmpty) {
-        rows.add(const SizedBox(height: KdLayout.itemGap));
-      }
-      final right = i + 1 < children.length ? children[i + 1] : null;
-      rows.add(
-        IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(child: children[i]),
-              const SizedBox(width: KdLayout.itemGap),
-              // An odd number of tiles keeps the last one half width rather
-              // than letting it stretch across the row and read as a
-              // different kind of thing.
-              Expanded(child: right ?? const SizedBox.shrink()),
-            ],
-          ),
-        ),
-      );
-    }
-    return Column(children: rows);
-  }
-}
-
-class _HomeTile extends StatelessWidget {
-  const _HomeTile({required this.icon, required this.label, this.onTap});
+/// [onTap] is required and non-nullable, and that is the point: after this, a
+/// dead destination is a compile error rather than a style choice. It is the
+/// same discipline the sealed `DiagnosisPresentation` applies to certainty.
+class _DestinationRow extends StatelessWidget {
+  const _DestinationRow({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+    super.key,
+  });
 
   final IconData icon;
-  final String label;
-
-  /// Defaults to the honest "coming soon" notice until the feature exists.
-  final void Function(BuildContext context)? onTap;
+  final String title;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final live = onTap != null;
 
     return Semantics(
       button: true,
-      // A tile that only raises a snackbar is not a destination, and a screen
-      // reader should not announce it as one.
-      enabled: live,
-      label: label,
-      child: ExcludeSemantics(
-        child: Card(
-          child: InkWell(
-            borderRadius: BorderRadius.circular(KdRadius.lg),
-            onTap: live
-                ? () => onTap!(context)
-                : () => ScaffoldMessenger.of(context)
-                    ..hideCurrentSnackBar()
-                    ..showSnackBar(SnackBar(content: Text(l10n.comingSoon))),
+      label: title,
+      // Handler on the node, subtree excluded beneath it. The old _HomeTile
+      // wrapped an ExcludeSemantics around the InkWell, which produced a node
+      // announcing "button" with no tap action at all.
+      onTap: onTap,
+      excludeSemantics: true,
+      child: Card(
+        child: InkWell(
+          borderRadius: BorderRadius.circular(KdRadius.lg),
+          onTap: onTap,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              minHeight: KdSpacing.minTouchTarget,
+            ),
             child: Padding(
               padding: const EdgeInsets.all(KdLayout.cardPadding),
-              child: Column(
-                // Top aligned, not centred. Tiles in a row share a height,
-                // so centring each tile's own content puts the icons at
-                // different heights as soon as one label wraps to more lines
-                // than its neighbour, which Nepali does at large font sizes.
-                mainAxisAlignment: MainAxisAlignment.start,
+              child: Row(
                 children: [
                   Icon(
                     icon,
-                    // Grows with the user's font setting. Android's font size
-                    // slider scales text and not icons, so a fixed glyph
-                    // beside a growing label inverts their relationship for
-                    // exactly the people who navigate by picture.
                     size: kdScaledIcon(context, KdIconSize.lg),
-                    color: theme.colorScheme.primary,
+                    color: KdColors.primary,
                   ),
-                  const SizedBox(height: KdSpacing.smd),
-                  Text(
-                    label,
-                    style: theme.textTheme.titleMedium,
-                    textAlign: TextAlign.center,
+                  const SizedBox(width: KdSpacing.md),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: KdColors.inkStrong,
+                      ),
+                    ),
+                  ),
+                  Icon(
+                    Icons.chevron_right,
+                    size: kdScaledIcon(context, KdIconSize.md),
+                    color: KdColors.inkMuted,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Not ready, and it says so at rest rather than on tap.
+///
+/// The same shape as [_DestinationRow] with the fill switched to sunken, the
+/// ink dropped to disabled, and a second line the live row does not have.
+/// `surfaceSunken` against `surface` measures 1.25:1, so the fill alone
+/// cannot carry this and is not asked to: the sentence and the
+/// missing-versus-present second line are load bearing, and the fill is the
+/// fourth channel.
+///
+/// It is NOT inert. The whole card is one InkWell and it opens a real screen.
+/// An inert block at the biggest tap magnet on Home is the "the tap is not
+/// refused, it is unobserved" defect verbatim, and a farmer who touches a
+/// camera glyph and gets nothing at all cannot tell the app from a frozen
+/// phone. Its trailing glyph is a chevron rather than a camera, so what it
+/// opens reads as an explanation and not as the camera.
+class _NotReadyRow extends StatelessWidget {
+  const _NotReadyRow({
+    required this.icon,
+    required this.title,
+    required this.status,
+    required this.onTap,
+    super.key,
+  });
+
+  final IconData icon;
+  final String title;
+  final String status;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Semantics(
+      button: true,
+      // The reason arrives in the same breath as the name. Deliberately NOT
+      // `enabled: false`: this control is enabled, it navigates, and marking
+      // it disabled would have TalkBack announce a dead control that then
+      // works.
+      label: '$title. $status',
+      onTap: onTap,
+      excludeSemantics: true,
+      child: Card(
+        color: KdColors.surfaceSunken,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(KdRadius.lg),
+          onTap: onTap,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              minHeight: KdSpacing.minTouchTarget,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(KdLayout.cardPadding),
+              child: Row(
+                children: [
+                  Icon(
+                    icon,
+                    size: kdScaledIcon(context, KdIconSize.lg),
+                    color: KdColors.inkDisabled,
+                  ),
+                  const SizedBox(width: KdSpacing.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: KdColors.inkDisabled,
+                          ),
+                        ),
+                        const SizedBox(height: KdSpacing.xxs),
+                        Text(
+                          status,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: KdColors.inkMuted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.chevron_right,
+                    size: kdScaledIcon(context, KdIconSize.md),
+                    color: KdColors.inkMuted,
                   ),
                 ],
               ),

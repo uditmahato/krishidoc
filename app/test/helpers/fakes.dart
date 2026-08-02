@@ -97,13 +97,27 @@ final class FakeCameraSession implements CameraSession {
 
 /// Plain in-memory [SettingsStore].
 final class FakeSettingsStore implements SettingsStore {
+  FakeSettingsStore({this.writeDelay = Duration.zero});
+
+  /// Makes a write take observable time.
+  ///
+  /// The default is zero, so every existing test is unaffected. A test that
+  /// needs to prove a caller AWAITED a write rather than merely starting it
+  /// has to be able to observe the gap, and an instant fake has none.
+  final Duration writeDelay;
+
   final Map<String, String> _values = {};
 
   @override
   Future<String?> read(String key) async => _values[key];
 
   @override
-  Future<void> write(String key, String value) async => _values[key] = value;
+  Future<void> write(String key, String value) async {
+    if (writeDelay > Duration.zero) {
+      await Future<void>.delayed(writeDelay);
+    }
+    _values[key] = value;
+  }
 
   @override
   Future<void> delete(String key) async => _values.remove(key);

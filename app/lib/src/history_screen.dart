@@ -30,12 +30,7 @@ class HistoryScreen extends ConsumerWidget {
           ),
         ),
         data: (records) => records.isEmpty
-            ? Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(KdSpacing.lg),
-                  child: Text(l10n.historyEmpty, textAlign: TextAlign.center),
-                ),
-              )
+            ? const _EmptyHistory()
             : Column(
                 children: [
                   // D-52. History renders stored diagnoses, so it is a surface
@@ -74,6 +69,95 @@ class HistoryScreen extends ConsumerWidget {
                 ],
               ),
       ),
+    );
+  }
+}
+
+/// Stable handle for the empty-state action, measured by the layout matrix.
+const Key historyEmptyActionKey = Key('history.empty.action');
+
+/// Empty History as a funnel rather than a dead end.
+///
+/// The glyph is a leaf, not a broken image or an empty box: nothing is broken
+/// and nothing is missing. The reader has simply not done a thing that cannot
+/// be done yet, and the screen says which.
+class _EmptyHistory extends StatelessWidget {
+  const _EmptyHistory();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+
+    return Column(
+      children: [
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(
+              KdLayout.pageGutter,
+              KdLayout.sectionGap,
+              KdLayout.pageGutter,
+              KdLayout.pageGutter,
+            ),
+            children: [
+              ExcludeSemantics(
+                child: Center(
+                  child: Icon(
+                    Icons.eco_outlined,
+                    size: kdScaledIcon(context, KdIconSize.xxl),
+                    color: KdColors.inkMuted,
+                  ),
+                ),
+              ),
+              const SizedBox(height: KdSpacing.lg),
+              Semantics(
+                container: true,
+                label: '${l10n.historyEmptyTitle} ${l10n.historyEmptyBody}',
+                child: ExcludeSemantics(
+                  child: Column(
+                    children: [
+                      Text(
+                        l10n.historyEmptyTitle,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          color: KdColors.inkStrong,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: KdSpacing.smd),
+                      Text(
+                        l10n.historyEmptyBody,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: KdColors.inkBody,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        // Outside the scroll view, same rule as About.
+        //
+        // Deliberately NOT "Take your first photo", disabled or otherwise. No
+        // model exists, so a disabled primary here would be the coming-soon
+        // tile wearing different clothes. When inference ships this becomes
+        // `label: takePhoto, onPressed: () => context.push(AppRoutes.capture)`
+        // at this same widget key: a one-line change, recorded now so it is
+        // not rediscovered.
+        SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.all(KdLayout.pageGutter),
+            child: FilledButton(
+              key: historyEmptyActionKey,
+              onPressed: () => context.push(AppRoutes.welcomeAbout),
+              child: Text(l10n.historyEmptyAction),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        The launch window colour, and the only place in the Android resources
+        that carries a brand value.
+
+        It must stay byte-identical to KdColors.canvas in
+        packages/design_system/lib/src/tokens.dart. The point of it existing at
+        all is that the screen is one continuous colour from the end of the
+        launcher animation to the first Dart frame; a near-miss here reads as a
+        flash, which is exactly the defect it removes.
+
+        Deliberately NOT under values-night. The app has no dark theme, so a
+        dark launch window would be a promise the first Dart frame immediately
+        breaks.
+    -->
+    <color name="kd_canvas">#F1F3EC</color>
+</resources>

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:core_domain/core_domain.dart';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +10,7 @@ import 'src/diagnosis/photo_store.dart';
 import 'src/locale_scope.dart';
 import 'src/providers.dart';
 import 'src/router.dart';
+import 'src/welcome/first_run.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,16 +21,30 @@ Future<void> main() async {
   // start, and the type theme is locale dependent, so the first frame also
   // laid Devanagari out on Latin metrics before correcting itself. Twenty
   // milliseconds more splash is a straight trade for neither happening.
-  final saved = AppLanguage.fromCode(
-    // A launch override for the screen review cycle: reviewing Nepali and
-    // Hindi screens on a device otherwise needs a system language change,
-    // which is blocked on an emulator and is a poor reason to touch a real
-    // phone's settings. Empty by default, so a normal build is unaffected.
-    //   flutter run --dart-define=KD_LOCALE=ne
-    const String.fromEnvironment('KD_LOCALE').isEmpty
-        ? await services.settingsStore.read(SettingsKeys.selectedLanguage)
-        : const String.fromEnvironment('KD_LOCALE'),
-  );
+  // A launch override for the screen review cycle: reviewing Nepali and Hindi
+  // screens on a device otherwise needs a system language change, which is
+  // blocked on an emulator and is a poor reason to touch a real phone's
+  // settings. Empty by default, so a normal build is unaffected.
+  //   flutter run --dart-define=KD_LOCALE=ne
+  //
+  // It now supplies the routing decision as well as the rendered locale, so a
+  // review build on a fresh install still lands on the screen under review
+  // instead of on the chooser. KD_FIRST_RUN=1 asks for the opposite, which is
+  // the only way to see the chooser twice without wiping app data.
+  //   flutter run --dart-define=KD_LOCALE=ne --dart-define=KD_FIRST_RUN=1
+  const localeOverride = String.fromEnvironment('KD_LOCALE');
+  const forceFirstRun = String.fromEnvironment('KD_FIRST_RUN') == '1';
+
+  // Read the saved language BEFORE the first frame. Restoring it afterwards
+  // meant a Nepali-only user saw an English home screen flash on every cold
+  // start, and the type theme is locale dependent, so the first frame also
+  // laid Devanagari out on Latin metrics before correcting itself. Twenty
+  // milliseconds more splash is a straight trade for neither happening.
+  final stored = localeOverride.isEmpty
+      ? await services.settingsStore.read(SettingsKeys.selectedLanguage)
+      : localeOverride;
+  final saved = AppLanguage.fromCode(stored);
+
   runApp(
     ProviderScope(
       overrides: [
@@ -40,17 +53,30 @@ Future<void> main() async {
       ],
       child: KrishiDocApp(
         initialLocale: saved == null ? null : Locale(saved.code),
+        initialLocation: forceFirstRun
+            ? AppRoutes.welcomeLanguage
+            : initialLocationFor(stored),
       ),
     ),
   );
 }
 
 class KrishiDocApp extends ConsumerStatefulWidget {
-  const KrishiDocApp({this.initialLocale, super.key});
+  const KrishiDocApp({
+    this.initialLocale,
+    this.initialLocation = AppRoutes.home,
+    super.key,
+  });
 
-  /// Explicit override (tests). When null, the persisted choice is restored
-  /// from the settings store; absent that, the device locale applies.
+  /// The language to render in. Null means none has been chosen, in which
+  /// case the device locale applies to the few strings shown before the
+  /// chooser is answered.
   final Locale? initialLocale;
+
+  /// Where the app opens. Resolved before `runApp` from the same stored value
+  /// as [initialLocale], so the two cannot disagree about whether this reader
+  /// has answered the chooser.
+  final String initialLocation;
 
   @override
   ConsumerState<KrishiDocApp> createState() => _KrishiDocAppState();
@@ -64,20 +90,7 @@ class _KrishiDocAppState extends ConsumerState<KrishiDocApp> {
   void initState() {
     super.initState();
     _locale = widget.initialLocale;
-    _router = createAppRouter();
-    if (_locale == null) {
-      unawaited(_restorePersistedLocale());
-    }
-  }
-
-  Future<void> _restorePersistedLocale() async {
-    final store = ref.read(servicesProvider).settingsStore;
-    final saved = AppLanguage.fromCode(
-      await store.read(SettingsKeys.selectedLanguage),
-    );
-    if (saved != null && mounted && _locale == null) {
-      setState(() => _locale = Locale(saved.code));
-    }
+    _router = createAppRouter(initialLocation: widget.initialLocation);
   }
 
   @override
@@ -86,10 +99,25 @@ class _KrishiDocAppState extends ConsumerState<KrishiDocApp> {
     super.dispose();
   }
 
-  void _setLocale(Locale locale) {
+  /// Applies the language, then returns once it is durable.
+  ///
+  /// The repaint is synchronous, so the screen changes with the tap. The
+  /// await is for the caller that navigates on completion: the chooser must
+  /// not be able to hand the reader to the next screen in a state where the
+  /// language is on screen but not on disk.
+  Future<void> _setLocale(Locale locale) async {
     setState(() => _locale = locale);
-    final store = ref.read(servicesProvider).settingsStore;
-    unawaited(store.write(SettingsKeys.selectedLanguage, locale.languageCode));
+    try {
+      await ref
+          .read(servicesProvider)
+          .settingsStore
+          .write(SettingsKeys.selectedLanguage, locale.languageCode);
+    } catch (_) {
+      // Never trap the farmer behind a storage error on the first screen.
+      // The in-memory locale is already applied, so the app is usable in the
+      // language they picked; the accepted consequence is that the chooser
+      // reappears on the next cold start.
+    }
   }
 
   @override

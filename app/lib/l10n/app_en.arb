@@ -1,17 +1,11 @@
 {
   "@@locale": "en",
   "appTitle": "KrishiDoc",
-  "homeTagline": "Crop disease identification and advice, in your own language.",
-  "tileDiagnose": "Identify disease",
-  "tileAsk": "Ask a question",
   "tileHistory": "History",
-  "tileSettings": "Settings",
-  "comingSoon": "Coming soon.",
   "languageMenuTooltip": "Language",
   "resultUncertainTitle": "We are not sure",
   "escalateToClinic": "See crop experts near you",
   "retryCapture": "Take another photo",
-  "historyEmpty": "No diagnoses yet. Your results will appear here.",
   "historyNoIdentification": "Could not identify",
   "errorGeneric": "Something went wrong.",
   "captureTitle": "Take a photo",
@@ -62,5 +56,69 @@
   "sampleDataNotice": "Sample data. This answer does not come from a trained model and must not be used on a real crop.",
   "savedOffline": "Saved. You can open this later without internet.",
   "diagnosisFailed": "Something went wrong while checking this photo.",
-  "checking": "Checking the photo"
+  "checking": "Checking the photo",
+  "languageNameNe": "नेपाली",
+  "@languageNameNe": {
+    "description": "Do not translate. This is an endonym and must appear in its own script in every locale. See D-54."
+  },
+  "languageNameHi": "हिन्दी",
+  "@languageNameHi": {
+    "description": "Do not translate. This is an endonym and must appear in its own script in every locale. See D-54. Reviewer: confirm हिन्दी versus हिंदी; the two spellings must not diverge across surfaces."
+  },
+  "languageNameEn": "English",
+  "@languageNameEn": {
+    "description": "Do not translate. This is an endonym and must appear in its own script in every locale. See D-54."
+  },
+  "a11yLanguageChooser": "Choose the language you read.",
+  "@a11yLanguageChooser": {
+    "description": "Screen-reader only, on the language chooser glyph. Resolves in the device locale, which is correct: a screen-reader user's device language is their language. 'The language you read', not 'your language': the handset is often configured by the shop, and reading is the capability that matters."
+  },
+  "coverageStatement": "This app is for the leaves of tomato, potato and maize.",
+  "@coverageStatement": {
+    "description": "One key, rendered verbatim on Home, on About, and later on the out-of-scope result state. Deliberately 'is for', not 'can check': a capability claim would be false today. Reviewer: confirm the crop names match the cropTomato/cropPotato/cropMaize register so one vocabulary is reviewed."
+  },
+  "coverageLimit": "It cannot look at fruit, at roots, or at any other crop.",
+  "@coverageLimit": {
+    "description": "About only. Reviewer: does the negative construction read as the app describing its own limit, or as the app refusing the farmer?"
+  },
+  "homeNotReadyTitle": "Check a leaf",
+  "@homeNotReadyTitle": {
+    "description": "Replaces tileDiagnose, which named an output the app cannot produce. A control name, so the complete-sentence rule does not apply; the sentence beneath it is homeNotReadyStatus."
+  },
+  "homeNotReadyStatus": "This is not ready yet.",
+  "@homeNotReadyStatus": {
+    "description": "Second line inside the not-ready row on Home. Short by design: this line must not drive the row's height at text scale 2.0 in Nepali. The reason lives on the About screen."
+  },
+  "aboutTitle": "What this app can check",
+  "@aboutTitle": {
+    "description": "AppBar title, shown only when About is opened after the first run. A screen name, not instructional copy."
+  },
+  "aboutNotReadyBody": "Checking a leaf is not ready yet. The part that recognises diseases is still being built.",
+  "@aboutNotReadyBody": {
+    "description": "The only string in the app that is temporary by design. Names a state, never a date. Reviewer: does the 'still being built' phrasing read as 'not finished' rather than 'under repair, broken'?"
+  },
+  "aboutPrivacyOffline": "This app works when your phone has no internet.",
+  "@aboutPrivacyOffline": {
+    "description": "True today and structurally: no code path in the app makes a network call. Addresses the prepaid-pack rationing behaviour the UX research ranked third."
+  },
+  "aboutPrivacyOnDevice": "Your photos stay on this phone.",
+  "@aboutPrivacyOnDevice": {
+    "description": "True today: EXIF is stripped in packages/capture and nothing uploads. Supersede, never weaken, when sync lands."
+  },
+  "aboutContinue": "Take me to the app",
+  "@aboutContinue": {
+    "description": "Button label, so no terminal danda. Not 'Get started' or 'Done': both imply something was just unlocked."
+  },
+  "historyEmptyTitle": "You have not checked a leaf yet.",
+  "@historyEmptyTitle": {
+    "description": "Replaces historyEmpty. The previous Nepali used रोग पहिचान as a count noun, which reads like a government form."
+  },
+  "historyEmptyBody": "Checking a leaf is not ready yet. When it is ready, your results will stay on this phone.",
+  "@historyEmptyBody": {
+    "description": "Future tense, explicitly conditioned on the not-ready statement in its own first sentence, so it does not claim a save that no code path performs. Deliberately omits 'with its photo': imagePath renders on no screen yet."
+  },
+  "historyEmptyAction": "See what this app can check",
+  "@historyEmptyAction": {
+    "description": "Button label on empty History. Superseded at the same widget key by a capture label when inference ships."
+  }
 }

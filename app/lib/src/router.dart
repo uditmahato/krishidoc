@@ -5,11 +5,23 @@ import 'diagnosis/result_screen.dart';
 import 'history_screen.dart';
 import 'home_screen.dart';
 import 'result_preview_screen.dart';
+import 'welcome/welcome_about_screen.dart';
+import 'welcome/welcome_language_screen.dart';
 
 abstract final class AppRoutes {
   static const String home = '/';
   static const String capture = '/capture';
   static const String history = '/history';
+
+  /// First contact. The chooser is unskippable by construction: it has no
+  /// AppBar, no back and no skip, and it is reached by being the initial
+  /// location rather than by being pushed onto something.
+  static const String welcomeLanguage = '/welcome/language';
+
+  /// What the app is for and what is not built yet. Reachable on first run
+  /// with `?first=1`, and afterwards from Home and from empty History, which
+  /// is why it is a real route rather than a page in an onboarding deck.
+  static const String welcomeAbout = '/welcome/about';
 
   /// A result is addressed by the id of the record it renders, so the screen
   /// reads stored state rather than being handed a value that could disagree
@@ -22,11 +34,29 @@ abstract final class AppRoutes {
 
 /// Router is created per app instance (never a module-level singleton) so
 /// navigation state cannot leak between instances, including in tests.
-GoRouter createAppRouter() => GoRouter(
+///
+/// [initialLocation] is the boot decision, computed by `initialLocationFor`
+/// before `runApp` and handed straight to GoRouter. It is a parameter rather
+/// than a redirect because a redirect would re-evaluate on every navigation
+/// and would need to know when the first run had ended, which is exactly the
+/// second piece of state this module refuses to store.
+GoRouter createAppRouter({String initialLocation = AppRoutes.home}) => GoRouter(
+  initialLocation: initialLocation,
   routes: [
     GoRoute(
       path: AppRoutes.home,
       builder: (context, state) => const HomeScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.welcomeLanguage,
+      builder: (context, state) => const WelcomeLanguageScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.welcomeAbout,
+      // `?first=1` rather than a second route, because it is the same screen
+      // with one button added; two routes would be two things to keep in step.
+      builder: (context, state) =>
+          WelcomeAboutScreen(first: state.uri.queryParameters['first'] == '1'),
     ),
     GoRoute(
       path: AppRoutes.capture,

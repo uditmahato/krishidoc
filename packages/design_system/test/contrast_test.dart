@@ -99,6 +99,18 @@ void main() {
       );
     });
 
+    test('muted ink survives the sunken fill it is painted on', () {
+      // The not-ready row on Home puts its second line on surfaceSunken. That
+      // sentence is one of the channels carrying "this is switched off", so it
+      // has to stay readable on the fill that is also carrying it.
+      expectRatio(
+        'inkMuted on surfaceSunken',
+        KdColors.inkMuted,
+        KdColors.surfaceSunken,
+        4.5,
+      );
+    });
+
     test('the disabled label stays readable, which WCAG does not require', () {
       // Deliberately stricter than the standard. The shutter is disabled by
       // default while the frame is not yet good enough, and a farmer who
@@ -147,6 +159,15 @@ void main() {
       // that only clears one of them is invisible along half its length.
       expectRatio('border on surface', KdColors.border, KdColors.surface, 3.0);
       expectRatio('border on canvas', KdColors.border, KdColors.canvas, 3.0);
+      // The not-ready row is the same card with a sunken fill, so the shared
+      // cardTheme border has a third surface to survive. It is the closest of
+      // the three, which is why it is asserted rather than assumed.
+      expectRatio(
+        'border on surfaceSunken',
+        KdColors.border,
+        KdColors.surfaceSunken,
+        3.0,
+      );
     });
 
     test('card fill against canvas is NOT a boundary, by measurement', () {

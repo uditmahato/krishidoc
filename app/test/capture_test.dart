@@ -8,6 +8,7 @@ import 'package:krishidoc_app/src/capture/camera_session.dart';
 import 'package:krishidoc_app/src/capture/capture_screen.dart';
 import 'package:design_system/design_system.dart';
 import 'package:krishidoc_app/src/diagnosis/result_screen.dart';
+import 'package:krishidoc_app/src/home_screen.dart';
 import 'package:krishidoc_app/src/providers.dart';
 
 import 'helpers/fakes.dart';
@@ -243,7 +244,11 @@ void main() {
           ),
         ],
       );
-      await tester.tap(find.byIcon(Icons.photo_camera_outlined).first);
+      // The debug-only door. The Diagnose tile that used to lead here was
+      // deleted in Module 13, because Home must not offer a farmer a
+      // diagnosis this build cannot honestly give. Keyed rather than found by
+      // icon: the not-ready row now carries the camera glyph too.
+      await tester.tap(find.byKey(homeDebugCaptureKey));
       await tester.pumpAndSettle();
       return services;
     }

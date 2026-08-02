@@ -2,6 +2,8 @@ import 'package:core_domain/core_domain.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:krishidoc_app/src/app_services.dart';
+import 'package:krishidoc_app/src/history_screen.dart';
+import 'package:krishidoc_app/src/welcome/welcome_about_screen.dart';
 
 import 'helpers/pump_app.dart';
 
@@ -44,11 +46,67 @@ void main() {
       await pumpApp(tester, locale: const Locale('ne'));
       await _openHistory(tester);
       expect(
-        find.text('अहिलेसम्म कुनै रोग पहिचान छैन। नतिजाहरू यहाँ देखिनेछन्।'),
+        find.text('तपाईंले अझै कुनै पात जाँच्नुभएको छैन।'),
         findsOneWidget,
       );
+      expect(find.byKey(historyEmptyActionKey), findsOneWidget);
     },
   );
+
+  testWidgets('the empty state funnels to the explanation', timeout: _timeout, (
+    tester,
+  ) async {
+    await pumpApp(tester, locale: const Locale('en'));
+    await _openHistory(tester);
+
+    await tester.tap(find.byKey(historyEmptyActionKey));
+    await tester.pumpAndSettle();
+
+    // Deliberately not a disabled "take your first photo": no model exists,
+    // and a disabled primary here would be the coming-soon tile in new
+    // clothes. It goes somewhere true instead.
+    expect(find.byType(WelcomeAboutScreen), findsOneWidget);
+  });
+
+  group('the empty-state action stays reachable', () {
+    // Same rule as About: the button lives outside the scroll view, so it
+    // must be inside the viewport at every size, scale and language.
+    for (final size in const [Size(320, 640), Size(360, 800)]) {
+      for (final scale in const [1.0, 1.3, 2.0]) {
+        for (final locale in const ['ne', 'hi', 'en']) {
+          testWidgets(
+            'at ${size.width.toInt()}x${size.height.toInt()} x$scale in $locale',
+            timeout: _timeout,
+            (tester) async {
+              useScreen(tester, size, textScale: scale);
+              await pumpApp(tester, locale: Locale(locale));
+              await _openHistory(tester);
+
+              expect(tester.takeException(), isNull);
+              final rect = tester.getRect(find.byKey(historyEmptyActionKey));
+              expect(
+                rect.top >= 0 && rect.bottom <= size.height,
+                isTrue,
+                reason: 'action at $rect falls outside the viewport',
+              );
+            },
+          );
+        }
+      }
+    }
+
+    testWidgets('in landscape 915x412 x2.0 in ne', timeout: _timeout, (
+      tester,
+    ) async {
+      useScreen(tester, const Size(915, 412), textScale: 2.0);
+      await pumpApp(tester, locale: const Locale('ne'));
+      await _openHistory(tester);
+
+      expect(tester.takeException(), isNull);
+      final rect = tester.getRect(find.byKey(historyEmptyActionKey));
+      expect(rect.top >= 0 && rect.bottom <= 412, isTrue, reason: '$rect');
+    });
+  });
 
   testWidgets(
     'records render newest first with state icons',

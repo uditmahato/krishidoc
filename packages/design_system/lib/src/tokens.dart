@@ -165,6 +165,12 @@ abstract final class KdIconSize {
   static const double md = 24;
   static const double lg = 32;
   static const double xl = 48;
+
+  /// The one glyph on a screen that has no heading: the language chooser and
+  /// the empty History state. Added with two consumers rather than
+  /// speculatively, because [KdElevation] and [KdMotion] are already recorded
+  /// as defined-but-unconsumed debt and a third would make that the habit.
+  static const double xxl = 64;
 }
 
 /// Motion durations and curves.
