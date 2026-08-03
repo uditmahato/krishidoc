@@ -23,6 +23,15 @@ final recentDiagnosesProvider = StreamProvider.autoDispose(
   (ref) => ref.watch(servicesProvider).diagnosisStore.watchRecent(),
 );
 
+/// Newest-first window of the field notebook.
+///
+/// Unlike diagnoses, this one has rows in a release build, because writing to
+/// it needs no model: a photograph and a date are true whatever the app can
+/// or cannot recognise.
+final recentObservationsProvider = StreamProvider.autoDispose(
+  (ref) => ref.watch(servicesProvider).observationStore.watchRecent(),
+);
+
 /// The model pack for a crop, or null when that crop is not covered.
 ///
 /// Null is a first-class answer, not an error. Coverage is finite (D-49 pins
@@ -73,6 +82,19 @@ final diagnosisPhotoProvider = FutureProvider.autoDispose
 final diagnosisByIdProvider = FutureProvider.autoDispose
     .family<DiagnosisRecord?, String>(
       (ref, id) => ref.watch(servicesProvider).diagnosisStore.byId(id),
+    );
+
+/// One notebook entry.
+///
+/// Watched rather than read once, unlike a diagnosis: an observation IS
+/// mutable, because the note is the farmer's to change after the fact.
+final observationByIdProvider = StreamProvider.autoDispose
+    .family<Observation?, String>(
+      (ref, id) => ref
+          .watch(servicesProvider)
+          .observationStore
+          .watchRecent()
+          .map((rows) => rows.where((row) => row.id == id).firstOrNull),
     );
 
 final cropCatalogProvider = Provider<CropCatalog>(

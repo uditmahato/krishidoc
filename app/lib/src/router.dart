@@ -4,6 +4,8 @@ import 'capture/capture_screen.dart';
 import 'diagnosis/result_screen.dart';
 import 'history_screen.dart';
 import 'home_screen.dart';
+import 'notebook/notebook_screen.dart';
+import 'notebook/observation_screen.dart';
 import 'result_preview_screen.dart';
 import 'welcome/welcome_about_screen.dart';
 import 'welcome/welcome_language_screen.dart';
@@ -28,6 +30,12 @@ abstract final class AppRoutes {
   /// with what History shows.
   static const String resultBase = '/result';
   static const String result = '$resultBase/:id';
+
+  /// The field notebook, and one entry within it. Reachable in a release
+  /// build, unlike [result], because nothing here claims anything about a
+  /// plant and so ADR-0052 does not reach it.
+  static const String notebook = '/notebook';
+  static const String observation = '$notebook/:id';
 
   static const String devResultPreview = '/dev/result-preview';
 }
@@ -60,7 +68,23 @@ GoRouter createAppRouter({String initialLocation = AppRoutes.home}) => GoRouter(
     ),
     GoRoute(
       path: AppRoutes.capture,
-      builder: (context, state) => const CaptureScreen(),
+      // Notebook by default. `?diagnose=1` selects the classifying path,
+      // which only a debug entry offers, because every answer it can give
+      // today is a hash of the image bytes.
+      builder: (context, state) => CaptureScreen(
+        mode: state.uri.queryParameters['diagnose'] == '1'
+            ? CaptureMode.diagnose
+            : CaptureMode.notebook,
+      ),
+    ),
+    GoRoute(
+      path: AppRoutes.notebook,
+      builder: (context, state) => const NotebookScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.observation,
+      builder: (context, state) =>
+          ObservationScreen(observationId: state.pathParameters['id']!),
     ),
     GoRoute(
       path: AppRoutes.history,

@@ -13,6 +13,7 @@ final class AppServices {
   AppServices._(AppDatabase db)
     : _db = db,
       diagnosisStore = DriftDiagnosisStore(db),
+      observationStore = DriftObservationStore(db),
       settingsStore = DriftSettingsStore(db),
       ids = const IdGenerator();
 
@@ -20,12 +21,18 @@ final class AppServices {
   /// use this (never a live drift database under fake async).
   AppServices.forTest({
     required this.diagnosisStore,
+    required this.observationStore,
     required this.settingsStore,
     this.ids = const IdGenerator(),
   }) : _db = null;
 
   final AppDatabase? _db;
   final DiagnosisStore diagnosisStore;
+
+  /// The field notebook. Separate port from [diagnosisStore] because an
+  /// observation makes no claim about a plant and therefore has none of the
+  /// obligations ADR-0052 attaches to a diagnosis.
+  final ObservationStore observationStore;
   final SettingsStore settingsStore;
   final IdGenerator ids;
   bool _disposed = false;

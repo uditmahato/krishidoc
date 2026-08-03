@@ -120,5 +120,49 @@
   "historyEmptyAction": "See what this app can check",
   "@historyEmptyAction": {
     "description": "Button label on empty History. Superseded at the same widget key by a capture label when inference ships."
+  },
+  "notebookTitle": "My leaf photos",
+  "@notebookTitle": {
+    "description": "The field notebook. Named for what it contains rather than for the metaphor: 'notebook' is an office word, and the farmer's mental model is photographs they took. Reviewer: is there a better everyday word for a kept record of photographs?"
+  },
+  "notebookEmptyTitle": "You have no photos yet.",
+  "@notebookEmptyTitle": {
+    "description": "Empty state of the notebook. A statement of fact about the reader, not an instruction."
+  },
+  "notebookEmptyBody": "Photograph a leaf to keep a dated record of it. This works without internet, and the photo stays on this phone.",
+  "@notebookEmptyBody": {
+    "description": "Both claims are true today and structurally: no code path uploads, and EXIF is stripped in packages/capture. Deliberately makes NO claim about recognising anything."
+  },
+  "notebookNoteHint": "Add a note (optional)",
+  "@notebookNoteHint": {
+    "description": "Text field label on one saved photo. Optional is stated because a farmer who cannot write must not think the photo is unsaved without it."
+  },
+  "notebookSaveNote": "Save note",
+  "@notebookSaveNote": {
+    "description": "Button label. Saves only the note; the photograph was already saved at the moment of capture."
+  },
+  "notebookNoNote": "No note",
+  "@notebookNoNote": {
+    "description": "Shown in a list row where the farmer added no note. Neutral, never 'missing' or 'empty'."
+  },
+  "notebookPhotoSaved": "Photo saved on this phone.",
+  "@notebookPhotoSaved": {
+    "description": "Confirmation after capture. Says where it went, because 'saved' alone raises the question this audience most often asks about photographs."
+  },
+  "notebookDelete": "Delete this photo",
+  "@notebookDelete": {
+    "description": "Destructive action on one entry."
+  },
+  "notebookDeleteConfirm": "Delete this photo? This cannot be undone.",
+  "@notebookDeleteConfirm": {
+    "description": "Confirmation prompt. Storage is scarce on these devices so deletion is a real need, but a photograph of a crop that later died is not replaceable."
+  },
+  "commonCancel": "Cancel",
+  "@commonCancel": {
+    "description": "Dismisses a dialog without acting."
+  },
+  "commonDelete": "Delete",
+  "@commonDelete": {
+    "description": "Confirms a destructive action in a dialog."
   }
 }

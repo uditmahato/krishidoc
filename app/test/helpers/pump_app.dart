@@ -51,6 +51,7 @@ Future<AppServices> pumpApp(
 }) async {
   final services = AppServices.forTest(
     diagnosisStore: FakeDiagnosisStore(),
+    observationStore: FakeObservationStore(),
     // Injectable so a test can supply a deliberately slow store. Without one,
     // "the write is awaited" is untestable: an instant fake completes in a
     // microtask either way, so the assertion would pass against code that
@@ -102,6 +103,7 @@ Future<AppServices> pumpScreen(
 }) async {
   final services = AppServices.forTest(
     diagnosisStore: FakeDiagnosisStore(),
+    observationStore: FakeObservationStore(),
     settingsStore: FakeSettingsStore(),
   );
   if (seed != null) {

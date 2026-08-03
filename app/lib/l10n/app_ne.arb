@@ -51,5 +51,16 @@
   "aboutContinue": "मलाई एपमा लैजानुहोस्",
   "historyEmptyTitle": "तपाईंले अझै कुनै पात जाँच्नुभएको छैन।",
   "historyEmptyBody": "पात जाँच्ने काम अझै तयार भएको छैन। तयार भएपछि तपाईंका नतिजा यही फोनमै रहनेछन्।",
-  "historyEmptyAction": "यो एपले के जाँच्न सक्छ हेर्नुहोस्"
+  "historyEmptyAction": "यो एपले के जाँच्न सक्छ हेर्नुहोस्",
+  "notebookTitle": "मेरा पातका तस्बिर",
+  "notebookEmptyTitle": "तपाईंसँग अहिलेसम्म कुनै तस्बिर छैन।",
+  "notebookEmptyBody": "पातको तस्बिर खिचेर मितिसहित राख्नुहोस्। यो इन्टरनेट नभए पनि चल्छ, र तस्बिर यही फोनमै रहन्छ।",
+  "notebookNoteHint": "टिप्पणी थप्नुहोस् (वैकल्पिक)",
+  "notebookSaveNote": "टिप्पणी सुरक्षित गर्नुहोस्",
+  "notebookNoNote": "टिप्पणी छैन",
+  "notebookPhotoSaved": "तस्बिर यही फोनमा सुरक्षित भयो।",
+  "notebookDelete": "यो तस्बिर हटाउनुहोस्",
+  "notebookDeleteConfirm": "यो तस्बिर हटाउने? यो फेरि फर्काउन सकिँदैन।",
+  "commonCancel": "रद्द गर्नुहोस्",
+  "commonDelete": "हटाउनुहोस्"
 }

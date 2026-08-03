@@ -23,8 +23,26 @@ import 'camera_session.dart';
 /// The shutter, exposed so tests can assert on its enabled state.
 const Key shutterKey = Key('capture.shutter');
 
+/// What the shutter leads to.
+///
+/// The split exists because the two outcomes have different truth conditions.
+/// A notebook entry asserts only that this photograph was taken today; a
+/// diagnosis asserts something about the plant. ADR-0052 governs the second
+/// and has nothing to say about the first, which is why one of them can ship
+/// in a release build today and the other cannot.
+enum CaptureMode {
+  /// Keep the photograph with a date. No model involved, no claim made.
+  notebook,
+
+  /// Classify it. Debug only until a trained model exists, because every
+  /// answer it can produce today is a hash of the image bytes.
+  diagnose,
+}
+
 class CaptureScreen extends ConsumerStatefulWidget {
-  const CaptureScreen({super.key});
+  const CaptureScreen({this.mode = CaptureMode.notebook, super.key});
+
+  final CaptureMode mode;
 
   @override
   ConsumerState<CaptureScreen> createState() => _CaptureScreenState();
@@ -94,12 +112,19 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
       final crop = ref.read(selectedCropProvider).valueOrNull;
       final original = await _session.capturePhoto();
       final prepared = await ref.read(imagePreparationProvider)(original);
-      final id = await _diagnose(crop: crop, prepared: prepared);
+      final isDiagnosis = widget.mode == CaptureMode.diagnose;
+      final id = isDiagnosis
+          ? await _diagnose(crop: crop, prepared: prepared)
+          : await _observe(crop: crop, prepared: prepared);
       if (!mounted) return;
       unawaited(KdHaptics.completed());
-      // `push`, not `go`: backing out of a result returns to the camera, which
-      // is where a farmer who wants a second photograph already is.
-      await context.push('${AppRoutes.resultBase}/$id');
+      // `push`, not `go`: backing out returns to the camera, which is where a
+      // farmer who wants a second photograph already is.
+      await context.push(
+        isDiagnosis
+            ? '${AppRoutes.resultBase}/$id'
+            : '${AppRoutes.notebook}/$id',
+      );
     } catch (_) {
       // Previously a bare try/finally, so a failed capture was indistinguishable
       // from the app ignoring the tap. A failure the farmer cannot see is a
@@ -109,6 +134,32 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
     } finally {
       if (mounted) setState(() => _isCapturing = false);
     }
+  }
+
+  /// Stores the photo and writes a notebook entry. Returns its id.
+  ///
+  /// Nothing here consults a model, so nothing here can be wrong about a
+  /// plant. That is the whole reason this path can reach a farmer today while
+  /// the diagnosis path cannot.
+  Future<String> _observe({
+    required Crop? crop,
+    required Uint8List prepared,
+  }) async {
+    final services = ref.read(servicesProvider);
+    final id = services.ids.newId();
+    // The photo is written first and the row second, so a row can never point
+    // at a file that was never created. The reverse order would leave a
+    // notebook entry with nothing behind it after a process death.
+    final path = await ref.read(photoStoreProvider).save(id, prepared);
+    await services.observationStore.upsert(
+      Observation(
+        id: id,
+        imagePath: path,
+        createdAt: DateTime.now().toUtc(),
+        cropKey: crop?.key,
+      ),
+    );
+    return id;
   }
 
   /// Classifies, stores the photo, and writes the record. Returns its id.

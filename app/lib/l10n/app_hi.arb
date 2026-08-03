@@ -51,5 +51,16 @@
   "aboutContinue": "मुझे ऐप पर ले चलें",
   "historyEmptyTitle": "आपने अभी तक कोई पत्ता नहीं जाँचा है।",
   "historyEmptyBody": "पत्ता जाँचना अभी तैयार नहीं है। तैयार होने पर आपके नतीजे इसी फ़ोन में रहेंगे।",
-  "historyEmptyAction": "यह ऐप क्या जाँच सकता है देखें"
+  "historyEmptyAction": "यह ऐप क्या जाँच सकता है देखें",
+  "notebookTitle": "मेरे पत्तों की तस्वीरें",
+  "notebookEmptyTitle": "आपके पास अभी तक कोई तस्वीर नहीं है।",
+  "notebookEmptyBody": "पत्ते की तस्वीर लेकर तारीख के साथ रखें। यह इंटरनेट के बिना भी चलता है, और तस्वीर इसी फ़ोन में रहती है।",
+  "notebookNoteHint": "टिप्पणी जोड़ें (वैकल्पिक)",
+  "notebookSaveNote": "टिप्पणी सहेजें",
+  "notebookNoNote": "कोई टिप्पणी नहीं",
+  "notebookPhotoSaved": "तस्वीर इसी फ़ोन में सहेज ली गई।",
+  "notebookDelete": "यह तस्वीर हटाएँ",
+  "notebookDeleteConfirm": "यह तस्वीर हटाएँ? यह वापस नहीं आएगी।",
+  "commonCancel": "रद्द करें",
+  "commonDelete": "हटाएँ"
 }

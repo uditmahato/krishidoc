@@ -28,6 +28,33 @@ class Diagnoses extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
+/// The field notebook: a photograph, a date, and nothing asserted.
+///
+/// Separate from [Diagnoses] rather than a nullable-answer column on it,
+/// because the two have different truth conditions. A diagnosis row is a
+/// claim the app made; an observation row is a thing the farmer did. Merging
+/// them would put a `resultState` on rows that have no result, and every
+/// exhaustive switch downstream would have to invent a case for it.
+@DataClassName('ObservationRow')
+@TableIndex(name: 'idx_observations_created', columns: {#createdAtMs})
+class Observations extends Table {
+  /// Client-minted UUIDv7 (D-11).
+  TextColumn get id => text()();
+  TextColumn get cropKey => text().nullable()();
+
+  /// Never nullable: an observation without its photograph is not one.
+  TextColumn get imagePath => text()();
+
+  /// Capped in the domain type, which is the single owner of the rule.
+  TextColumn get note => text().nullable()();
+
+  /// Epoch milliseconds UTC.
+  IntColumn get createdAtMs => integer()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
 /// Small scalar preferences (SettingsStore port).
 class Settings extends Table {
   TextColumn get key => text()();
@@ -37,18 +64,30 @@ class Settings extends Table {
   Set<Column<Object>> get primaryKey => {key};
 }
 
-@DriftDatabase(tables: [Diagnoses, Settings])
+@DriftDatabase(tables: [Diagnoses, Observations, Settings])
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (m) => m.createAll(),
     // Client migrations follow the same expand-and-contract discipline as
     // the server (D-28): schemaVersion bumps ship additive DDL first.
+    //
+    // v1 -> v2 adds the field notebook. It is purely additive: no existing
+    // column is altered, narrowed or dropped, so a device upgrading keeps
+    // every diagnosis and every setting it already had. This is the first
+    // migration this client has ever run, which is why it is deliberately
+    // the smallest possible one and why a test drives a real v1 database
+    // through it rather than asserting the strategy in the abstract.
+    onUpgrade: (m, from, to) async {
+      if (from < 2) {
+        await m.createTable(observations);
+      }
+    },
   );
 }
 
@@ -67,6 +106,25 @@ extension DiagnosisRowMapping on DiagnosisRow {
     imagePath: imagePath,
   );
 }
+
+extension ObservationRowMapping on ObservationRow {
+  Observation toDomain() => Observation(
+    id: id,
+    imagePath: imagePath,
+    createdAt: DateTime.fromMillisecondsSinceEpoch(createdAtMs, isUtc: true),
+    cropKey: cropKey,
+    note: note,
+  );
+}
+
+ObservationsCompanion observationToRow(Observation observation) =>
+    ObservationsCompanion.insert(
+      id: observation.id,
+      cropKey: Value(observation.cropKey),
+      imagePath: observation.imagePath,
+      note: Value(observation.note),
+      createdAtMs: observation.createdAt.millisecondsSinceEpoch,
+    );
 
 DiagnosesCompanion diagnosisToRow(DiagnosisRecord record) =>
     DiagnosesCompanion.insert(

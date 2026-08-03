@@ -12,6 +12,7 @@ import 'welcome/language_choice.dart';
 /// Stable handles. Both rows are named because the layout matrix measures
 /// them, and because a finder keyed on an icon breaks every time the glyph is
 /// reconsidered.
+const Key homeNotebookKey = Key('home.notebook');
 const Key homeNotReadyKey = Key('home.notReady');
 const Key homeHistoryKey = Key('home.history');
 
@@ -91,6 +92,17 @@ class HomeScreen extends StatelessWidget {
             textAlign: TextAlign.start,
           ),
           const SizedBox(height: KdLayout.sectionGap),
+          // First, because it is the only thing on this screen a farmer can
+          // actually finish today. Keeping a dated photograph needs no model
+          // and makes no claim, so it is a real capability rather than a
+          // placeholder for one.
+          _DestinationRow(
+            key: homeNotebookKey,
+            icon: Icons.photo_camera_outlined,
+            title: l10n.notebookTitle,
+            onTap: () => context.push(AppRoutes.notebook),
+          ),
+          const SizedBox(height: KdLayout.itemGap),
           _NotReadyRow(
             key: homeNotReadyKey,
             icon: Icons.photo_camera_outlined,
@@ -109,8 +121,10 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: KdLayout.sectionGap),
             TextButton(
               key: homeDebugCaptureKey,
-              onPressed: () => context.push(AppRoutes.capture),
-              child: Text(l10n.captureTitle),
+              // The classifying path, explicitly. The release build reaches
+              // the same camera through the notebook, where it makes no claim.
+              onPressed: () => context.push('${AppRoutes.capture}?diagnose=1'),
+              child: Text('${l10n.captureTitle} (diagnose)'),
             ),
             TextButton(
               onPressed: () => context.push(AppRoutes.devResultPreview),

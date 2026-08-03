@@ -40,6 +40,44 @@ final class FakeDiagnosisStore implements DiagnosisStore {
   }
 }
 
+/// Plain in-memory [ObservationStore], same discipline as the diagnosis one:
+/// widget tests fake the ports, and the real Drift implementation is covered
+/// by core_data's pure-Dart suite where the event loop is real.
+final class FakeObservationStore implements ObservationStore {
+  final Map<String, Observation> _rows = {};
+  final StreamController<void> _changes = StreamController<void>.broadcast();
+
+  List<Observation> _snapshot(int limit) {
+    final all = _rows.values.toList()
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return all.take(limit).toList(growable: false);
+  }
+
+  @override
+  Future<void> upsert(Observation observation) async {
+    _rows[observation.id] = observation;
+    _changes.add(null);
+  }
+
+  @override
+  Future<Observation?> byId(String id) async => _rows[id];
+
+  @override
+  Future<List<Observation>> recent({int limit = 50}) async => _snapshot(limit);
+
+  @override
+  Stream<List<Observation>> watchRecent({int limit = 50}) async* {
+    yield _snapshot(limit);
+    yield* _changes.stream.map((_) => _snapshot(limit));
+  }
+
+  @override
+  Future<void> delete(String id) async {
+    _rows.remove(id);
+    _changes.add(null);
+  }
+}
+
 /// Scriptable [CameraSession]: the test drives frames and failures, so the
 /// screen's coaching and gating are exercised without a device.
 final class FakeCameraSession implements CameraSession {
