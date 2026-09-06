@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "config_kind": "manifest_preparation",
+  "run_name": "field_v3_potato_open_set",
+  "seed": 20260903,
+  "manifest": "ml/data/prepared/manifest_field_v3_raw.csv",
+  "crop": "potato",
+  "candidate_architectures": [
+    "mobilenet_v3_large",
+    "efficientnet_b0"
+  ],
+  "pretrained": true,
+  "pretraining_weights": "torchvision_default_imagenet_1k",
+  "training_transform_recipe": "resize_then_augment_then_mean_pad_v2",
+  "image_size": 224,
+  "batch_size": 32,
+  "num_workers": 4,
+  "epochs": 12,
+  "freeze_backbone_epochs": 1,
+  "learning_rate": 0.0003,
+  "backbone_learning_rate_multiplier": 0.2,
+  "minimum_learning_rate": 0.000001,
+  "weight_decay": 0.0001,
+  "label_smoothing": 0.05,
+  "mixup_alpha": 0.1,
+  "amp": true,
+  "early_stopping_patience": 4,
+  "monitor": "field_macro_f1",
+  "unconfigured_conditions": "as_unknown",
+  "known_labels": [
+    "potato_early_blight",
+    "potato_late_blight",
+    "potato_healthy"
+  ],
+  "unknown_label": "potato_other_unknown",
+  "source_evidence_policy": "ml/datasets/source_evidence_policy_v2.json",
+  "split_policy": {
+    "method": "source_and_group_locked",
+    "train": 0.7,
+    "validation": 0.1,
+    "calibration": 0.1,
+    "test": 0.1,
+    "near_duplicate_hamming_distance": 4,
+    "locked_external_test_sources": [
+      "farmer_chat_india"
+    ],
+    "future_nepal_test_source": "nepal_field_locked_v1"
+  },
+  "status": "manifest_preparation_only_do_not_train",
+  "promotion_allowed": false,
+  "limitations": [
+    "Central Java folders other than Healthy are broad publisher categories and are staged as potato_other_unknown examples for controlled outlier-exposure experiments, never as a named diagnosis.",
+    "Central Java is locked to train and cannot contribute validation, calibration, test, or promotion evidence.",
+    "Digital Green is consumed development evidence and remains locked to external_test for diagnostic comparison only.",
+    "No independently labelled, farm-grouped, locked Nepal evaluation set exists; no candidate produced from this snapshot can be promoted or installed as a trusted diagnosis model."
+  ]
+}

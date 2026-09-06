@@ -1,0 +1,616 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-09-03",
+  "raw_data_policy": {
+    "default_root": "ml/data/raw",
+    "committed": false,
+    "rules": [
+      "Raw images, archives, API responses, and download receipts stay below ml/data/ and are ignored by Git.",
+      "A repository licence is not proof that every upstream image is cleared for commercial model training.",
+      "Only immutable dataset versions are accepted; HTTP files receive local SHA-256 and byte-count receipts, while Git sources receive a commit plus deterministic tree SHA-256 and total bytes.",
+      "Generated or augmented images must never cross train, validation, or test groups independently of their originals."
+    ]
+  },
+  "sources": [
+    {
+      "id": "ccmt-field",
+      "title": "Dataset for Crop Pest and Disease Detection (CCMT raw field images)",
+      "status": "preferred",
+      "priority": 10,
+      "default_selected": true,
+      "crops": ["cashew", "cassava", "maize", "tomato"],
+      "geography": ["Ghana"],
+      "landing_url": "https://data.mendeley.com/datasets/bwh3zbpkpv/1",
+      "doi": "10.17632/bwh3zbpkpv.1",
+      "license": {
+        "spdx": "CC-BY-4.0",
+        "name": "Creative Commons Attribution 4.0 International",
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "provenance_warnings": [
+        "Keep capture-near-duplicates and all transformations of an original in one split group.",
+        "The raw branch also includes cashew and cassava; use those only as wrong-crop/OOD exposure for the current product scope.",
+        "Geography differs from Nepal; it is field-domain training data, not a Nepal validation set."
+      ],
+      "acquisition": {
+        "provider": "mendeley",
+        "dataset_id": "bwh3zbpkpv",
+        "version": 1,
+        "mode": "files",
+        "extract": false,
+        "include": ["Raw Data/**"],
+        "exclude": ["CCMT Dataset-Augmented/**", "**/*augment*/**"],
+        "approximate_selected_bytes": 1220000000,
+        "selection_reason": "Use the 24,881 captured originals only; never download the 102,976-image augmented branch."
+      }
+    },
+    {
+      "id": "tom2024-original",
+      "title": "TOM2024 original crop images (Category A only)",
+      "status": "preferred",
+      "priority": 20,
+      "default_selected": true,
+      "crops": ["maize", "onion", "tomato"],
+      "geography": ["West Africa"],
+      "landing_url": "https://ppedmas.org/datasets/images/TOM2024/",
+      "doi": "10.17632/3d4yg89rtr.1",
+      "license": {
+        "spdx": "CC-BY-4.0",
+        "name": "Creative Commons Attribution 4.0 International",
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "provenance_warnings": [
+        "Category B contains derived data; only Category A is admitted to the acquisition set.",
+        "Category A includes maize, onion, and tomato disease and pest branches; onion and non-target pests are OOD/other exposure for the current product scope, not target disease labels.",
+        "Review class translations and collapse only labels that are agronomically equivalent."
+      ],
+      "acquisition": {
+        "provider": "http",
+        "url": "https://ppedmas.org/datasets/images/TOM2024/TOM2024-CATEGORYA-English.zip",
+        "filename": "TOM2024-CATEGORYA-English.zip",
+        "expected_size": 134833774,
+        "expected_sha256": "6c110be15bc8bcdd4bc58aed277b3b81d66d8e2497505edb19639a60a8b76747",
+        "destination": "tom2024",
+        "extract": true,
+        "selection_reason": "Fetch the publisher's immutable English Category A archive directly; Category B is never acquired."
+      }
+    },
+    {
+      "id": "pldd-up",
+      "title": "PLDD-UP: Potato Leaf Disease Dataset from Uttar Pradesh, India",
+      "status": "preferred",
+      "priority": 30,
+      "default_selected": true,
+      "crops": ["potato"],
+      "geography": ["Uttar Pradesh, India"],
+      "landing_url": "https://data.mendeley.com/datasets/3j4nfkvp2n/1",
+      "doi": "10.17632/3j4nfkvp2n.1",
+      "license": {
+        "spdx": "CC-BY-4.0",
+        "name": "Creative Commons Attribution 4.0 International",
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "provenance_warnings": [
+        "Capture bursts can leak nearly identical leaves across random splits; group by perceptual similarity and session where recoverable."
+      ],
+      "acquisition": {
+        "provider": "mendeley",
+        "dataset_id": "3j4nfkvp2n",
+        "version": 1,
+        "mode": "files",
+        "extract": true,
+        "include": ["EB.zip", "Healthy.zip", "LB.zip"]
+      }
+    },
+    {
+      "id": "potato-central-java",
+      "title": "Central Java potato leaf field dataset",
+      "status": "preferred",
+      "priority": 40,
+      "default_selected": true,
+      "crops": ["potato"],
+      "geography": ["Central Java, Indonesia"],
+      "landing_url": "https://data.mendeley.com/datasets/ptz377bwb8/1",
+      "doi": "10.17632/ptz377bwb8.1",
+      "license": {
+        "spdx": "CC-BY-4.0",
+        "name": "Creative Commons Attribution 4.0 International",
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "provenance_warnings": [
+        "Hold out farms or collection sessions if metadata permits; do not rely on the publisher split without duplicate checks."
+      ],
+      "acquisition": {
+        "provider": "mendeley",
+        "dataset_id": "ptz377bwb8",
+        "version": 1,
+        "mode": "files",
+        "extract": true
+      }
+    },
+    {
+      "id": "potato-bangladesh",
+      "title": "Potato Leaf Disease Dataset (Bangladesh)",
+      "status": "preferred",
+      "priority": 50,
+      "default_selected": true,
+      "crops": ["potato"],
+      "geography": ["Bangladesh"],
+      "landing_url": "https://data.mendeley.com/datasets/d5b3fzpw3g/1",
+      "doi": "10.17632/d5b3fzpw3g.1",
+      "license": {
+        "spdx": "CC-BY-4.0",
+        "name": "Creative Commons Attribution 4.0 International",
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "provenance_warnings": [
+        "Use originals only where the archive distinguishes originals from augmented derivatives.",
+        "All augmented descendants must inherit the original image's split group."
+      ],
+      "acquisition": {
+        "provider": "mendeley",
+        "dataset_id": "d5b3fzpw3g",
+        "version": 1,
+        "mode": "files",
+        "extract": true
+      }
+    },
+    {
+      "id": "maize-figshare-29298275",
+      "title": "Maize Dataset (PlantVillage-style lab derivative)",
+      "status": "lab_derivative",
+      "priority": 150,
+      "default_selected": true,
+      "crops": ["maize"],
+      "geography": ["controlled/background-isolated imagery; exact upstream provenance unresolved"],
+      "landing_url": "https://figshare.com/articles/dataset/Maize_Leaf_Dataset/29298275",
+      "license": {
+        "spdx": "CC-BY-4.0",
+        "name": "Creative Commons Attribution 4.0 International",
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "provenance_warnings": [
+        "CONTENT AUDIT: despite the field-oriented description, the archive contains PlantVillage-style 256x256 filenames and images; treat it as a lab derivative, not field evidence.",
+        "The archive contains four maize directories (282 CGLS, 538 rust, 430 healthy, 342 NLB) plus unexpected pepper disease (301) and pepper healthy (446) directories.",
+        "Use maize images for warm-start training only and pepper as optional non-maize exposure; never use any of this archive for field validation or Nepal claims.",
+        "Resolve the exact upstream-image provenance before commercial release even though the Figshare record states CC BY 4.0."
+      ],
+      "acquisition": {
+        "provider": "figshare",
+        "article_id": 29298275,
+        "destination": "figshare_maize",
+        "extract": true
+      }
+    },
+    {
+      "id": "tomato-bangladesh",
+      "title": "Tomato Leaf Disease Classification Dataset (Bangladesh)",
+      "status": "preferred",
+      "priority": 70,
+      "default_selected": true,
+      "crops": ["tomato"],
+      "geography": ["Bangladesh"],
+      "landing_url": "https://data.mendeley.com/datasets/jttrv2w27r/2",
+      "doi": "10.17632/jttrv2w27r.2",
+      "license": {
+        "spdx": "CC-BY-4.0",
+        "name": "Creative Commons Attribution 4.0 International",
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "provenance_warnings": [
+        "Version 2 is intentional; class counts and labels must be taken from the downloaded immutable version, not cached Version 1 descriptions."
+      ],
+      "acquisition": {
+        "provider": "mendeley",
+        "dataset_id": "jttrv2w27r",
+        "version": 2,
+        "mode": "files",
+        "extract": true
+      }
+    },
+    {
+      "id": "tomato-boxes",
+      "title": "Tomato field images with bounding-box annotations",
+      "status": "preferred",
+      "priority": 80,
+      "default_selected": true,
+      "crops": ["tomato"],
+      "geography": ["field conditions"],
+      "landing_url": "https://data.mendeley.com/datasets/bpfd9cns5g/2",
+      "doi": "10.17632/bpfd9cns5g.2",
+      "license": {
+        "spdx": "CC-BY-4.0",
+        "name": "Creative Commons Attribution 4.0 International",
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "provenance_warnings": [
+        "Bounding boxes can support leaf/lesion localization, but image-level disease labels must not be inferred unless the annotation schema explicitly supplies them."
+      ],
+      "acquisition": {
+        "provider": "mendeley",
+        "dataset_id": "bpfd9cns5g",
+        "version": 2,
+        "mode": "files",
+        "extract": true
+      }
+    },
+    {
+      "id": "plantdoc-field",
+      "title": "PlantDoc field-image dataset",
+      "status": "review_required",
+      "priority": 200,
+      "default_selected": false,
+      "crops": ["maize", "potato", "tomato"],
+      "geography": ["internet-sourced, mixed and often unknown"],
+      "landing_url": "https://github.com/pratikkayal/PlantDoc-Dataset",
+      "license": {
+        "spdx": "CC-BY-4.0",
+        "name": "Creative Commons Attribution 4.0 International",
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "provenance_warnings": [
+        "LEGAL REVIEW REQUIRED: the repository licence does not establish that each scraped source image was licensed for redistribution or commercial model training.",
+        "Internet search results are duplicate-prone and can overlap benchmarks; apply exact/perceptual deduplication before any split.",
+        "Do not use PlantDoc as the sole field test set or as evidence of Nepal performance."
+      ],
+      "acquisition": {
+        "provider": "github",
+        "repository": "https://github.com/pratikkayal/PlantDoc-Dataset.git",
+        "ref": "master",
+        "extract": false
+      }
+    },
+    {
+      "id": "plantvillage-mendeley",
+      "title": "PlantVillage dataset mirror/version",
+      "status": "license_review",
+      "priority": 210,
+      "default_selected": false,
+      "crops": ["maize", "potato", "tomato"],
+      "geography": ["controlled-background laboratory imagery"],
+      "landing_url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "doi": "10.17632/tywbtsjrjv.1",
+      "license": {
+        "spdx": "LicenseRef-UNRESOLVED",
+        "name": "Resolve the version-specific licence before training",
+        "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1"
+      },
+      "provenance_warnings": [
+        "LEGAL REVIEW REQUIRED: CC0 claims attached to other PlantVillage distributions must not be assumed to cover this exact Mendeley version.",
+        "Controlled backgrounds create a large field-domain gap and inflated random-split metrics.",
+        "If cleared, use only for pretraining; exclude from the field validation and field test evidence."
+      ],
+      "alternatives": [
+        "https://github.com/spMohanty/PlantVillage-Dataset",
+        "https://huggingface.co/datasets/geraldmc/plantvillage-full"
+      ],
+      "acquisition": {
+        "provider": "mendeley",
+        "dataset_id": "tywbtsjrjv",
+        "version": 1,
+        "mode": "files",
+        "extract": true
+      }
+    },
+    {
+      "id": "plantcity-pakistan-v2",
+      "title": "PlantCity: Multi-crop leaf disease images from Pakistan (Version 2)",
+      "status": "review_required",
+      "priority": 220,
+      "default_selected": false,
+      "crops": ["apple", "apricot", "bean", "cherry", "maize", "fig", "grape", "loquat", "pear", "tomato", "walnut", "persimmon"],
+      "geography": ["Chitral District, Khyber Pakhtunkhwa, Pakistan", "Charsadda District, Khyber Pakhtunkhwa, Pakistan"],
+      "landing_url": "https://data.mendeley.com/datasets/w8kh2xkspx/2",
+      "doi": "10.17632/w8kh2xkspx.2",
+      "license": {
+        "spdx": "CC-BY-4.0",
+        "name": "Creative Commons Attribution 4.0 International",
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "known_counts": {
+        "publisher_reported_original_images": 10667,
+        "publisher_reported_post_augmentation_images": 52219,
+        "publisher_reported_crop_species": 12,
+        "publisher_reported_classes": 52,
+        "publisher_reported_disease_classes": 41,
+        "publisher_reported_healthy_classes": 11
+      },
+      "provenance_warnings": [
+        "REVIEW REQUIRED: the publisher reports 10,667 collected images but 52,219 images after augmentation; the two provider archives are named train.zip and test.zip, and their internal original-to-derivative lineage has not been verified.",
+        "Do not admit this source until the archives are inspected. Prefer verified originals only; if a derivative is retained, it must inherit its source image's split group.",
+        "Do not trust the publisher train/test boundary as an independent evaluation split until exact and perceptual duplicate checks prove that no original or capture-near-duplicate crosses it.",
+        "Only maize and tomato are in the present product taxonomy; all other species require explicit wrong-crop/OOD mapping rather than disease-label coercion.",
+        "Pakistan field imagery improves regional diversity but is not evidence of performance in Nepal."
+      ],
+      "acquisition": {
+        "provider": "mendeley",
+        "dataset_id": "w8kh2xkspx",
+        "version": 2,
+        "mode": "files",
+        "extract": true,
+        "selection_reason": "Registered for manual archive and lineage review; no include/exclude path is asserted because the provider exposes only train.zip and test.zip and their internal augmentation layout is unverified."
+      }
+    },
+    {
+      "id": "tomato-bangladesh-93h9p62kg4-v1",
+      "title": "Tomato leaf diseases field images from Bangladesh (Version 1)",
+      "status": "review_required",
+      "priority": 230,
+      "default_selected": false,
+      "crops": ["tomato"],
+      "geography": ["Khagan and Charabag, Savar, Dhaka Division, Bangladesh"],
+      "landing_url": "https://data.mendeley.com/datasets/93h9p62kg4/1",
+      "doi": "10.17632/93h9p62kg4.1",
+      "license": {
+        "spdx": "CC-BY-4.0",
+        "name": "Creative Commons Attribution 4.0 International",
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "known_counts": {
+        "publisher_reported_total_from_class_counts": 2659,
+        "provider_visible_image_files": 2627,
+        "publisher_reported_class_counts": {
+          "tomato_leaf_curl_virus": 394,
+          "spider_mites": 307,
+          "leaf_mold": 66,
+          "leaf_miner": 519,
+          "late_blight": 166,
+          "insect_damage": 336,
+          "healthy": 103,
+          "early_blight": 204,
+          "cercospora_leaf_mold": 156,
+          "bacterial_spot": 376,
+          "uncategorized_other_class_16": 32
+        }
+      },
+      "provenance_warnings": [
+        "COUNT MISMATCH: the published class counts sum to 2,659, while the public provider folder tree exposes 2,627 image files; the reported 32-image uncategorized Class 16 is not visible as a folder. Reconcile the downloaded immutable version before admission.",
+        "The description says images were reduced in size by 80% and also mentions preprocessing and augmentation without identifying derivative lineage; do not assume every file is a distinct camera original.",
+        "Group exact/perceptual duplicates and any recovered transformations by original capture before assigning splits.",
+        "Several labels describe pests or generic damage rather than diseases, and Leaf Mold versus Cercospora leaf mold may be taxonomically ambiguous; require agronomic label review before mapping.",
+        "The stated collection location and the broader claim of samples from varied regions are not reconciled in the record; do not infer farm-independent coverage or Nepal validity."
+      ],
+      "acquisition": {
+        "provider": "mendeley",
+        "dataset_id": "93h9p62kg4",
+        "version": 1,
+        "mode": "files",
+        "extract": true,
+        "selection_reason": "Registered for count, lineage, duplicate and taxonomy review; no originals-only path is claimed by the publisher metadata."
+      }
+    },
+    {
+      "id": "maize-seasonal-corn-v1",
+      "title": "Seasonal Corn Leaf Disease Dataset from Bangladesh (Version 1)",
+      "status": "review_required",
+      "priority": 240,
+      "default_selected": false,
+      "crops": ["maize"],
+      "geography": ["Gurudaspur, Natore District, Rajshahi Division, Bangladesh"],
+      "landing_url": "https://data.mendeley.com/datasets/vy629dngm8/1",
+      "doi": "10.17632/vy629dngm8.1",
+      "license": {
+        "spdx": "CC-BY-4.0",
+        "name": "Creative Commons Attribution 4.0 International",
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "known_counts": {
+        "publisher_reported_original_images": 2943,
+        "publisher_reported_augmented_images": 7500,
+        "publisher_reported_original_class_counts": {
+          "healthy": 1038,
+          "bacterial_leaf_streak": 190,
+          "common_rust": 129,
+          "gray_leaf_spot": 1497,
+          "maize_chlorotic_mottle_virus": 89
+        }
+      },
+      "provenance_warnings": [
+        "REVIEW REQUIRED: the publisher reports 2,943 originals and 7,500 augmented images, but exposes one Corn leaf disease dataset.zip archive whose internal originals/augmentation layout and lineage are unverified.",
+        "Admit verified originals only unless every augmented file can inherit its original capture's split group; never randomly split the combined archive.",
+        "The wording does not establish whether 7,500 means derivative images alone or the post-augmentation total; verify archive counts rather than deriving a total.",
+        "The title claims a multi-year collection and the record says environmental metadata exists; preserve year, farm, session and capture-near-duplicate groups for site/time holdouts if those fields are actually present.",
+        "Bangladesh field imagery is useful regional evidence but cannot substitute for a locked Nepal evaluation set."
+      ],
+      "acquisition": {
+        "provider": "mendeley",
+        "dataset_id": "vy629dngm8",
+        "version": 1,
+        "mode": "files",
+        "extract": true,
+        "selection_reason": "Registered for manual archive and lineage review; no originals-only include path is asserted because the single archive's internal layout is unverified."
+      }
+    },
+    {
+      "id": "tomato-bangladesh-jttrv2w27r-v1",
+      "title": "Tomato Leaf Disease Classification Dataset from Bangladesh (Version 1)",
+      "status": "review_required",
+      "priority": 250,
+      "default_selected": false,
+      "crops": ["tomato"],
+      "geography": ["multiple agricultural regions, Bangladesh"],
+      "landing_url": "https://data.mendeley.com/datasets/jttrv2w27r/1",
+      "doi": "10.17632/jttrv2w27r.1",
+      "license": {
+        "spdx": "CC-BY-4.0",
+        "name": "Creative Commons Attribution 4.0 International",
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "known_counts": {
+        "publisher_reported_total_images": 2995,
+        "publisher_reported_class_counts": {
+          "bacterial_spot": 117,
+          "yellow_leaf_curl_virus": 234,
+          "early_blight": 524,
+          "healthy": 380,
+          "late_blight": 112,
+          "leaf_miner_flies": 884,
+          "magnesium_deficiency": 744
+        },
+        "publisher_reported_capture_start": "2025-03-10",
+        "publisher_reported_capture_end": "2025-03-20"
+      },
+      "provenance_warnings": [
+        "VERSION ISOLATION REQUIRED: Version 1 is registered separately from the existing Version 2 source. Do not merge versions until file hashes, perceptual duplicates and version lineage are audited.",
+        "The record describes multiple regions but does not provide farm or session identifiers in its summary; infer neither farm independence nor a valid geographic holdout without inspecting metadata.",
+        "Leaf miner flies and magnesium deficiency are not interchangeable with named infectious diseases; map them only through explicit pest/deficiency or other-unknown taxonomy states.",
+        "Images were collected within an eleven-day window, so capture bursts and repeated leaves must remain in one split group.",
+        "Bangladesh evidence cannot establish performance for Nepal."
+      ],
+      "acquisition": {
+        "provider": "mendeley",
+        "dataset_id": "jttrv2w27r",
+        "version": 1,
+        "mode": "files",
+        "extract": true,
+        "selection_reason": "Registered as an immutable historical version for lineage and duplicate review, not as an automatic supplement to Version 2."
+      }
+    },
+    {
+      "id": "maize-bangladesh-mld-v1",
+      "title": "MLD: Multi-Class Maize Leaf Disease Image Dataset from Bangladesh (Version 1)",
+      "status": "review_required",
+      "priority": 260,
+      "default_selected": false,
+      "crops": ["maize"],
+      "geography": ["Jhenaidah District, Khulna Division, Bangladesh (23.54498 N, 89.15321 E)"],
+      "landing_url": "https://data.mendeley.com/datasets/3myfctrgk3/1",
+      "doi": "10.17632/3myfctrgk3.1",
+      "license": {
+        "spdx": "CC-BY-4.0",
+        "name": "Creative Commons Attribution 4.0 International",
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "known_counts": {
+        "publisher_reported_total_images": 1996,
+        "publisher_reported_class_counts": {
+          "blight": 489,
+          "fall_armyworm": 525,
+          "gray_spot": 555,
+          "healthy": 427
+        },
+        "publisher_reported_capture_start": "2026-02-02",
+        "publisher_reported_capture_end": "2026-02-09"
+      },
+      "provenance_warnings": [
+        "The publisher reports HEIF/JPG camera images converted to JPG where necessary and resized to 640x480; treat converted or resized variants of one capture as one provenance group if multiple representations are present.",
+        "The eight-day, single-orchard capture window is vulnerable to burst and plant-level leakage; group by capture sequence and plant/session where recoverable before splitting.",
+        "Fall armyworm is pest damage, not a disease class, while Blight and Gray Spot are underspecified names; require agronomic label normalization rather than forcing them into more specific diagnoses.",
+        "Inspect the single Maize dataset.zip archive and reconcile exactly 1,996 decodable, unique admitted images before use.",
+        "One Bangladesh orchard is valuable field-domain training data but is neither a Nepal validation set nor broad farm-level evidence."
+      ],
+      "acquisition": {
+        "provider": "mendeley",
+        "dataset_id": "3myfctrgk3",
+        "version": 1,
+        "mode": "files",
+        "extract": true,
+        "selection_reason": "Registered for archive, duplicate, grouping and taxonomy review before any manifest admission."
+      }
+    },
+    {
+      "id": "tomato-realworld-binary",
+      "title": "Tomato Leaf Image Dataset for Disease Analysis in Real-World Environment",
+      "status": "holdout_locked",
+      "priority": 300,
+      "default_selected": false,
+      "crops": ["tomato"],
+      "geography": ["Bangladesh"],
+      "landing_url": "https://data.mendeley.com/datasets/rnbsw72zb5/1",
+      "doi": "10.17632/rnbsw72zb5.1",
+      "license": {
+        "spdx": "CC-BY-4.0",
+        "name": "Creative Commons Attribution 4.0 International",
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "provenance_warnings": [
+        "LOCKED HOLDOUT: binary healthy/diseased labels are useful for independent gating evaluation but not for disease-name supervision.",
+        "Do not inspect or train on the locked holdout while selecting models or thresholds."
+      ],
+      "acquisition": {
+        "provider": "mendeley",
+        "dataset_id": "rnbsw72zb5",
+        "version": 1,
+        "mode": "files",
+        "extract": true
+      }
+    },
+    {
+      "id": "digigreen-crop-disease-images",
+      "title": "DigiGreen/Crop_Disease_Images",
+      "status": "holdout_locked",
+      "priority": 310,
+      "default_selected": false,
+      "crops": ["maize", "potato", "tomato"],
+      "geography": ["mixed"],
+      "landing_url": "https://huggingface.co/datasets/DigiGreen/Crop_Disease_Images",
+      "license": {
+        "spdx": "CC-BY-4.0",
+        "name": "Creative Commons Attribution 4.0 International",
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "provenance_warnings": [
+        "LOCKED HOLDOUT: never train on, tune thresholds against, or inspect this source during model selection.",
+        "Access only for a pre-registered final evaluation and retain the pinned repository commit in the receipt."
+      ],
+      "acquisition": {
+        "provider": "huggingface",
+        "repository": "https://huggingface.co/datasets/DigiGreen/Crop_Disease_Images",
+        "ref": "2b18be861bddeb525c83cf2d7e07eb7f649dfed9",
+        "lfs": true,
+        "enabled": true,
+        "extract": false
+      }
+    },
+    {
+      "id": "openimages-v7-nonplant-candidates",
+      "title": "Open Images V7 object-focused candidates for manual non-plant review",
+      "status": "review_required",
+      "priority": 400,
+      "default_selected": false,
+      "crops": ["none"],
+      "geography": ["Flickr-sourced, global and mixed"],
+      "landing_url": "https://storage.googleapis.com/openimages/web/factsfigures_v7.html",
+      "license": {
+        "spdx": "LicenseRef-OPENIMAGES-PER-IMAGE",
+        "name": "Pixels listed per image as CC BY 2.0; Google annotations CC BY 4.0; individual verification required",
+        "url": "https://storage.googleapis.com/openimages/web/factsfigures_v7.html#licenses"
+      },
+      "provenance_warnings": [
+        "MANUAL REVIEW REQUIRED: image-level annotations are not exhaustive, so automated filtering cannot establish that a frame is non-plant.",
+        "Never map a staged candidate to non_plant or include it in a model manifest until a human has reviewed the complete frame.",
+        "Exclude any visible person, face, plant, crop, tree, flower, leaf, food, or ambiguous organic material during manual review.",
+        "Open Images disclaims warranties about image licence status; retain author, original landing URL and per-image licence metadata and verify them before release."
+      ],
+      "acquisition": {
+        "provider": "manual",
+        "enabled": false,
+        "selection_policy": "ml/datasets/openimages_negative_policy_v1.json",
+        "selection_script": "ml/scripts/stage_openimages_negatives.py",
+        "destination": "openimages-v7-nonplant-candidates"
+      }
+    },
+    {
+      "id": "plantwild",
+      "title": "PlantWild / PlantWild_v2",
+      "status": "excluded",
+      "priority": 999,
+      "default_selected": false,
+      "crops": ["mixed"],
+      "geography": ["in-the-wild"],
+      "landing_url": "https://tqwei05.github.io/PlantWild/",
+      "license": {
+        "spdx": "CC-BY-NC-ND-4.0",
+        "name": "Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International",
+        "url": "https://creativecommons.org/licenses/by-nc-nd/4.0/"
+      },
+      "provenance_warnings": [
+        "EXCLUDED: the non-commercial and no-derivatives restrictions are incompatible with the intended product-training workflow."
+      ],
+      "acquisition": {
+        "provider": "manual",
+        "enabled": false
+      }
+    }
+  ]
+}

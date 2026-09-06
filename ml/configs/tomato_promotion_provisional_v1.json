@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "policy_type": "candidate_evidence_bundle_promotion",
+  "policy_name": "tomato_public_field_provisional_v1",
+  "crop": "tomato",
+  "status": "provisional_public_field_evidence_only",
+  "promotion_allowed": false,
+  "known_labels": [
+    "tomato_early_blight",
+    "tomato_late_blight",
+    "tomato_healthy"
+  ],
+  "required_evidence_roles": [
+    "internal_test",
+    "external_test",
+    "deployment_benchmark",
+    "export"
+  ],
+  "external_required_labels": [
+    "tomato_early_blight",
+    "tomato_late_blight",
+    "tomato_healthy"
+  ],
+  "split_policy": {
+    "future_nepal_test_source": "nepal_field_locked_v1"
+  },
+  "acceptance_gates": {
+    "minimum_field_macro_f1": 0.8,
+    "minimum_worst_known_class_recall": 0.7,
+    "minimum_worst_known_class_recall_lower_95": 0.6,
+    "minimum_per_class_support": 75,
+    "minimum_accepted_set_per_class_precision_lower_95": 0.9,
+    "minimum_healthy_precision_lower_95": 0.95,
+    "minimum_usable_target_leaf_recall": 0.95,
+    "maximum_expected_calibration_error": 0.05,
+    "maximum_ood_false_accept_rate_at_operating_point": 0.05,
+    "minimum_external_known_accept_rate": 0.7,
+    "minimum_external_field_macro_f1": 0.75,
+    "minimum_external_condition_balanced_accuracy": 0.7,
+    "minimum_external_known_support": 300,
+    "minimum_external_per_class_support": 75,
+    "maximum_int8_field_macro_f1_drop": 0.01,
+    "maximum_int8_accepted_risk_drop": 0.01,
+    "maximum_int8_model_bytes_per_crop": 6000000,
+    "maximum_p95_device_inference_ms": 750,
+    "maximum_cold_device_inference_ms": 2000,
+    "nepal_field_gate_required_for_confident_results": true
+  },
+  "evidence_requirements": {
+    "internal": "Locked grouped test data with no source, plant, burst, or duplicate leakage from training or calibration.",
+    "external": "At least one source-locked independent field domain containing all three provisional labels and reported separately from internal test data.",
+    "acceptance": "Per-class accepted-set confusion counts at the frozen refusal threshold; unfiltered closed-set precision is not a substitute.",
+    "ood": "Both false-accept numerator and OOD denominator at the frozen operating point, judged by the upper 95% Wilson bound.",
+    "calibration": "Temperature and refusal threshold fitted only on the locked calibration split, with test ECE reported after freezing.",
+    "device_and_int8": "Hash-matched full-integer INT8 export, float-versus-INT8 parity, and physical Android warm/cold timing evidence.",
+    "nepal": "The expected locked Nepal dataset must be independently labelled and explicitly pass before promotion can be reconsidered."
+  },
+  "limitations": [
+    "This is a standalone candidate-bundle policy; it does not modify or control tomato training.",
+    "Only early blight, late blight, and healthy are assessed as provisional known labels. Every other tomato symptom, disease, pest, deficiency, mixed condition, and unsuitable image remains open-set or refused.",
+    "Available public external tomato evidence is not assumed to meet the required per-class support or Nepal representativeness; missing evidence must fail closed rather than lower the gate.",
+    "Passing public internal, external, calibration, OOD, INT8, and device gates remains insufficient without locked independent Nepal field evidence.",
+    "promotion_allowed remains false until agronomy, localized safety, Nepal field, export/runtime, and rollout reviews explicitly supersede this policy."
+  ]
+}

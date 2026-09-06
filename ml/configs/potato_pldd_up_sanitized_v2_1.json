@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "run_name": "potato_pldd_up_sanitized_v2_1",
+  "seed": 20260902,
+  "manifest": "ml/data/prepared/manifest_field_v2_1_pldd_up.csv",
+  "crop": "potato",
+  "candidate_architectures": [
+    "mobilenet_v3_large",
+    "efficientnet_b0"
+  ],
+  "pretrained": true,
+  "pretraining_weights": "torchvision_default_imagenet_1k",
+  "training_transform_recipe": "resize_then_augment_then_mean_pad_v2",
+  "image_size": 224,
+  "batch_size": 32,
+  "num_workers": 4,
+  "epochs": 12,
+  "freeze_backbone_epochs": 1,
+  "learning_rate": 0.0003,
+  "backbone_learning_rate_multiplier": 0.2,
+  "minimum_learning_rate": 0.000001,
+  "weight_decay": 0.0001,
+  "label_smoothing": 0.05,
+  "mixup_alpha": 0.1,
+  "amp": true,
+  "early_stopping_patience": 4,
+  "monitor": "field_macro_f1",
+  "unconfigured_conditions": "as_unknown",
+  "known_labels": [
+    "potato_early_blight",
+    "potato_late_blight",
+    "potato_healthy"
+  ],
+  "unknown_label": "potato_other_unknown",
+  "data_snapshot": {
+    "manifest_sha256": "ae51bad46aa258fe7877ecbbeb36bc0a3815c7f4c76485ed2ad967668be26751",
+    "audit_receipt": "ml/data/prepared/audit_receipt_field_v2_1_pldd_up.json",
+    "sanitization_policy": "quarantine_whole_mixed_condition_components",
+    "quarantine_sidecar": "ml/data/prepared/quarantine_field_v2_1_pldd_up.json",
+    "quarantine_sha256": "889816c70ce235e6b3fd6e12034eb4798dad041ba9ead864401edc479708c8c2",
+    "quarantined_groups": 87,
+    "quarantined_rows": 293,
+    "audit_required_before_training": true
+  },
+  "evaluation_contract": {
+    "digitalgreen_role": "external_development_diagnostic_only",
+    "future_locked_test_source": "nepal_field_locked_v1",
+    "reviewed_nonplant_negatives_required_for_promotion": true
+  },
+  "status": "research_only_sanitized_public_data",
+  "promotion_allowed": false,
+  "limitations": [
+    "The v2.1 snapshot quarantines every member of 87 mixed-condition connected components (293 rows), including PLDD-UP conflicts. This removes contradictory supervision but is not expert label adjudication and does not establish that the retained labels are correct.",
+    "Potato condition supervision is dominated by PLDD-UP operational-field images from Uttar Pradesh, India; it is not evidence of performance in Nepal or across Nepal's varieties, altitudes, seasons, devices, and field backgrounds.",
+    "Digital Green has already been inspected and used during model iteration, so its India-heavy external split is a development diagnostic rather than an unbiased final holdout and must not be used to make final promotion claims.",
+    "Filename and perceptual grouping reduce known leakage, but source metadata cannot prove independence at the farm, plant, or capture-session level.",
+    "Only early blight, late blight, and healthy are supervised as provisional known labels; all other potato diseases, pests, deficiencies, mixed symptoms, and unsuitable views must be treated as unknown or refused.",
+    "No independently labelled and locked Nepal test set exists, and no candidate may be promoted until one passes preregistered crop-, condition-, refusal-, and calibration gates.",
+    "The manifest has no admitted manually reviewed non-plant negatives; staged Open Images candidates remain ineligible until rights, attribution, relevance, and labels are reviewed. Non-plant refusal performance is therefore unestablished."
+  ]
+}

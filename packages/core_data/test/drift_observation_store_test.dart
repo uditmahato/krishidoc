@@ -122,7 +122,7 @@ void main() {
   // the abstract would prove nothing: what matters is that a database created
   // at v1, carrying real rows, still carries them after the upgrade and can
   // then use the new table.
-  group('v1 to v2 migration', () {
+  group('v1 to v4 migration', () {
     test(
       'is additive: v1 data survives and the notebook works after',
       () async {
@@ -133,7 +133,19 @@ void main() {
         // is the closest a pure-Dart test gets to an upgraded device: the
         // Observations table genuinely does not exist when the upgrade starts.
         await fresh.customStatement('DROP TABLE IF EXISTS observations');
-        final diagnoses = DriftDiagnosisStore(fresh);
+        await fresh.customStatement('DROP TABLE IF EXISTS farm_tasks');
+        await fresh.customStatement('DROP TABLE IF EXISTS diagnoses');
+        await fresh.customStatement('''
+          CREATE TABLE diagnoses (
+            id TEXT NOT NULL PRIMARY KEY,
+            crop_key TEXT NULL,
+            result_state TEXT NOT NULL,
+            predictions_json TEXT NOT NULL,
+            model_version TEXT NOT NULL,
+            image_path TEXT NULL,
+            created_at_ms INTEGER NOT NULL
+          )
+        ''');
         final settings = DriftSettingsStore(fresh);
         final legacy = DiagnosisRecord(
           id: ids.newId(),
@@ -144,12 +156,29 @@ void main() {
           cropKey: 'tomato',
           imagePath: '/data/old.jpg',
         );
-        await diagnoses.upsert(legacy);
+        await fresh.customStatement(
+          '''
+            INSERT INTO diagnoses (
+              id, crop_key, result_state, predictions_json, model_version,
+              image_path, created_at_ms
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+          ''',
+          [
+            legacy.id,
+            legacy.cropKey,
+            legacy.state.name,
+            '[{"label":"late_blight","confidence":0.9}]',
+            legacy.modelVersion,
+            legacy.imagePath,
+            legacy.createdAt.millisecondsSinceEpoch,
+          ],
+        );
         await settings.write(SettingsKeys.selectedLanguage, 'ne');
 
-        await fresh.migration.onUpgrade(Migrator(fresh), 1, 2);
+        await fresh.migration.onUpgrade(Migrator(fresh), 1, 4);
 
         // Nothing v1 wrote was touched.
+        final diagnoses = DriftDiagnosisStore(fresh);
         final survived = await diagnoses.byId(legacy.id);
         expect(
           survived,
@@ -157,6 +186,7 @@ void main() {
           reason: 'the upgrade must not drop history',
         );
         expect(survived!.modelVersion, 'sample-tomato-v0');
+        expect(survived.thresholdSetVersion, 'legacy-unknown');
         expect(
           await settings.read(SettingsKeys.selectedLanguage),
           'ne',
@@ -174,6 +204,16 @@ void main() {
         await notebook.upsert(entry);
         expect((await notebook.recent()).single.id, entry.id);
 
+        final work = DriftFarmTaskStore(fresh);
+        final task = FarmTask(
+          id: ids.newId(),
+          title: 'Inspect irrigation',
+          kind: FarmTaskKind.work,
+          createdAt: DateTime.utc(2026, 8, 3),
+        );
+        await work.upsert(task);
+        expect((await work.recent()).single.id, task.id);
+
         await fresh.close();
       },
     );
@@ -188,7 +228,7 @@ void main() {
       // assertion can never fail and would have read as coverage while
       // proving nothing. What the branch actually DOES is proved by the
       // upgrade test above, which drives a real v1 database through it.
-      expect(db.schemaVersion, 2);
+      expect(db.schemaVersion, 4);
     });
 
     test('a fresh install creates the notebook without any upgrade', () async {

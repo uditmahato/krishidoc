@@ -42,6 +42,8 @@ venv/
 .mypy_cache/
 .ruff_cache/
 .pytest_cache/
+.pytest-tmp*/
+.pytest_tmp*/
 .coverage
 .coverage.*
 htmlcov/
@@ -64,3 +66,13 @@ Thumbs.db
 # --- Reports and artifacts (V1 committed these; V2 never will) ---
 **/reports/
 *.log
+
+# --- Local ML data, caches, runs, and exported candidates ---
+# Dataset manifests, source code, and small evaluation summaries are committed;
+# downloaded images and generated model artifacts are reproducible local state.
+/ml/data/
+/ml/cache/
+/ml/runs/
+/ml/artifacts/
+/ml/.venv/
+/app/test_assets/mobile_audit/

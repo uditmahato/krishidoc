@@ -23,6 +23,29 @@ final class FakeClassifier implements ImageClassifier {
   Future<void> dispose() async => disposed = true;
 }
 
+final class FakeGatedClassifier implements GatedImageClassifier {
+  FakeGatedClassifier(this._result);
+
+  final GatedLogits _result;
+  int gatedCalls = 0;
+  int plainCalls = 0;
+
+  @override
+  Future<GatedLogits> gatedLogits(Uint8List preparedImage) async {
+    gatedCalls++;
+    return _result;
+  }
+
+  @override
+  Future<List<double>> logits(Uint8List preparedImage) async {
+    plainCalls++;
+    return _result.logits;
+  }
+
+  @override
+  Future<void> dispose() async {}
+}
+
 final _pack = ModelPack(
   cropKey: 'tomato',
   modelVersion: 'tomato-v1.2.0',
@@ -86,6 +109,44 @@ void main() {
       throwsA(isA<ModelPackFormatException>()),
     );
   });
+
+  test(
+    'a rejected validity gate overrides decisive condition logits',
+    () async {
+      final classifier = FakeGatedClassifier(
+        const GatedLogits(logits: [8, 0, 0], accepted: false),
+      );
+      final service = ClassificationService(
+        classifier: classifier,
+        pack: _pack,
+      );
+
+      final outcome = await service.classify(_image);
+
+      expect(classifier.gatedCalls, 1);
+      expect(classifier.plainCalls, 0);
+      expect(outcome.state, ResultState.outOfScope);
+      expect(outcome.ranked, isEmpty);
+    },
+  );
+
+  test(
+    'an accepted validity gate continues through the normal resolver',
+    () async {
+      final classifier = FakeGatedClassifier(
+        const GatedLogits(logits: [8, 0, 0], accepted: true),
+      );
+      final service = ClassificationService(
+        classifier: classifier,
+        pack: _pack,
+      );
+
+      final outcome = await service.classify(_image);
+
+      expect(outcome.state, ResultState.confident);
+      expect(outcome.ranked.first.label, 'late_blight');
+    },
+  );
 
   test('the whole path runs without any network', () async {
     // Nothing in this package imports dart:io or http; the offline core loop

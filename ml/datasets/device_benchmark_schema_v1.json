@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://krishidoc.local/schemas/device-benchmark-v1.json",
+  "title": "KrishiDoc physical Android benchmark evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "scope",
+    "is_emulator",
+    "artifact_sha256",
+    "runtime",
+    "contract_test",
+    "device",
+    "steady_inference_ms",
+    "cold_start_ms"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "scope": {"const": "physical_android_device"},
+    "is_emulator": {"const": false},
+    "artifact_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "runtime": {
+      "type": "object",
+      "required": ["name", "version", "threads"],
+      "properties": {
+        "name": {"const": "tflite_flutter"},
+        "version": {"type": "string", "minLength": 1},
+        "threads": {"type": "integer", "minimum": 1}
+      }
+    },
+    "contract_test": {
+      "type": "object",
+      "required": ["passed", "input", "outputs", "policy_test_vectors"],
+      "properties": {
+        "passed": {"const": true},
+        "test_run_id": {"type": "string", "minLength": 1},
+        "input": {"$ref": "#/$defs/tensor"},
+        "outputs": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {"$ref": "#/$defs/tensor"}
+        },
+        "policy_test_vectors": {
+          "type": "object",
+          "required": ["count", "passed"],
+          "properties": {
+            "count": {"type": "integer", "minimum": 3},
+            "passed": {"const": true}
+          }
+        }
+      }
+    },
+    "device": {
+      "type": "object",
+      "required": ["manufacturer", "model", "android_version", "api_level", "abi"],
+      "properties": {
+        "manufacturer": {"type": "string", "minLength": 1},
+        "model": {"type": "string", "minLength": 1},
+        "android_version": {"type": "string", "minLength": 1},
+        "api_level": {"type": "integer", "minimum": 21},
+        "abi": {"type": "string", "minLength": 1}
+      }
+    },
+    "steady_inference_ms": {
+      "type": "array",
+      "minItems": 100,
+      "items": {"type": "number", "exclusiveMinimum": 0}
+    },
+    "cold_start_ms": {
+      "type": "array",
+      "minItems": 5,
+      "items": {"type": "number", "exclusiveMinimum": 0}
+    }
+  },
+  "$defs": {
+    "tensor": {
+      "type": "object",
+      "required": ["name", "position", "shape", "dtype", "quantization"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "position": {"type": "integer", "minimum": 0},
+        "shape": {
+          "type": "array",
+          "minItems": 2,
+          "items": {"type": "integer", "minimum": 1}
+        },
+        "dtype": {"const": "int8"},
+        "quantization": {
+          "type": "object",
+          "required": ["scale", "zero_point"],
+          "properties": {
+            "scale": {"type": "number", "exclusiveMinimum": 0},
+            "zero_point": {"type": "integer", "minimum": -128, "maximum": 127}
+          }
+        }
+      }
+    }
+  }
+}

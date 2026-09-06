@@ -1,0 +1,68 @@
+Plant Disease Detection - MobileNetV2 model
+Copyright (c) 2021-present Sunrit Jana
+Source: https://github.com/janaSunrise/Plant-disease-detection
+Pinned revision: 8bff045b0845394cb4028e8b62cb8f0bf41e3ba7
+Artifact: models/plant_disease_detection.tflite
+License: MIT (repository LICENSE at the pinned revision)
+
+MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Training-data attribution
+
+The pinned training program downloads the "New Plant Diseases Dataset
+(Augmented)", a derivative of PlantVillage. The current official PlantVillage
+dataset card declares CC BY-SA 3.0 and requests citation of:
+
+Mohanty, S. P., Hughes, D. P., and Salathe, M. (2016). Using deep learning for
+image-based plant disease detection. Frontiers in Plant Science, 7, 1419.
+https://doi.org/10.3389/fpls.2016.01419
+
+Official dataset card: https://huggingface.co/datasets/mohanty/PlantVillage
+Training dataset page:
+https://www.kaggle.com/datasets/vipoooool/new-plant-diseases-dataset
+
+Important product limitation
+
+The source notebook reports 92.44% validation accuracy on augmented,
+controlled-background dataset images. KrishiDoc has not independently
+reproduced that result. The model has not been calibrated or validated on
+Nepal field photographs, and it has no reliable open-set/non-plant detector.
+KrishiDoc therefore uses it only for experimental possible matches, never a
+confirmed diagnosis or an instruction to apply a chemical treatment.
+
+-------------------------------------------------------------------------------
+
+KrishiDoc potato field research model - EfficientNet-B0
+
+Artifact identity:
+90875fad84d33e06884466030e2dfe18fedc2fd89b5e71a9d61835b837891c69
+
+This artifact was trained by the KrishiDoc pipeline from the provenance-tracked
+sources and policies recorded in ml/DATASET_CARD.md, ml/datasets/sources.json,
+and the immutable training manifest hash embedded in its metadata. The
+EfficientNet-B0 initialization uses torchvision ImageNet-1K default weights;
+torchvision is distributed under the BSD 3-Clause License.
+
+The model covers only potato early blight, potato late blight, and healthy
+potato leaves. Public field evidence is dominated by India and Indonesia and
+does not constitute independent Nepal validation. The app therefore presents
+only experimental possible matches and applies a separate validity/OOD refusal
+gate. It must not confirm a diagnosis or recommend a chemical treatment.

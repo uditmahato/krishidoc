@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "availability": "bundled",
+  "modelId": "krishidoc/potato-field-v3-efficientnet-b0",
+  "modelVersion": "experimental-potato-efficientnet-b0-9e1854e4dabf",
+  "thresholdSetVersion": "calibration-fe4f0715b3fc-three-signal-v1",
+  "decisionMode": "possibleMatchOnly",
+  "artifact": {
+    "path": "assets/models/potato_field_v3_efficientnet_b0_float32.tflite",
+    "format": "tflite",
+    "precision": "float32",
+    "bytes": 16066296,
+    "sha256": "90875fad84d33e06884466030e2dfe18fedc2fd89b5e71a9d61835b837891c69"
+  },
+  "source": {
+    "checkpointSha256": "9e1854e4dabf868622abc5f21fea6cc13680c24bcdaa985560832e3843ed520a",
+    "calibrationSha256": "fe4f0715b3fca7a4ac9c62cc40d6265d628e5fd471272beb84ef453d32d5aefa",
+    "manifestSha256": "8d091b81284885c2acbba46b07e41873bf2a2d0e6af5e650ec0320aaec8d4177",
+    "architecture": "efficientnet_b0",
+    "bestEpoch": 11,
+    "trainingDevice": "NVIDIA GeForce RTX 4060 Laptop GPU"
+  },
+  "input": {
+    "shape": [1, 224, 224, 3],
+    "dtype": "float32",
+    "layout": "NHWC",
+    "colorOrder": "RGB",
+    "resize": {
+      "method": "aspect_preserving_letterbox",
+      "width": 224,
+      "height": 224,
+      "interpolation": "bilinear_antialiased",
+      "preprocessingVersion": "pillow_rgb_triangle_v1",
+      "fillRgb": [124, 116, 104]
+    },
+    "normalization": {
+      "formula": "(pixel / 255.0 - mean) / std",
+      "meanRgb": [0.485, 0.456, 0.406],
+      "stdRgb": [0.229, 0.224, 0.225]
+    }
+  },
+  "outputs": [
+    {
+      "index": 0,
+      "name": "validity_logits",
+      "shape": [1, 5],
+      "dtype": "float32",
+      "labels": [
+        "usable_target_leaf",
+        "unsuitable_target_crop_view",
+        "wrong_crop_leaf",
+        "other_plant",
+        "non_plant"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "condition_logits",
+      "shape": [1, 3],
+      "dtype": "float32",
+      "labels": [
+        "potato_early_blight",
+        "potato_late_blight",
+        "potato_healthy"
+      ]
+    }
+  ],
+  "calibration": {
+    "validityTemperature": 0.653050816470007,
+    "conditionTemperature": 0.6482262752865812,
+    "validityProbabilityMin": 0.5,
+    "conditionProbabilityMin": 0.3519576858617407,
+    "conditionEnergyMax": -0.061798970861053196,
+    "acceptanceRule": "validity probability >= minimum AND condition probability >= minimum AND condition energy <= maximum"
+  },
+  "conversionValidation": {
+    "sourceFormat": "ONNX opset 17",
+    "randomTensorCount": 5,
+    "maximumAbsoluteLogitDifference": 0.00006565451622009277,
+    "tolerance": 0.0001,
+    "passed": true
+  },
+  "evaluation": {
+    "internalTestConditionMacroF1": 0.9748683672906107,
+    "internalTestKnownAcceptRate": 0.9993514915693904,
+    "internalTestOodFalseAcceptCount": 0,
+    "internalTestOodCount": 1219,
+    "externalDevelopmentKnownCount": 8,
+    "externalDevelopmentOodFalseAcceptCount": 10,
+    "externalDevelopmentOodCount": 174,
+    "promotionEligible": false
+  },
+  "safetyPolicy": {
+    "confidentResultsAllowed": false,
+    "chemicalAdviceAllowed": false,
+    "treatmentAdviceAllowed": false,
+    "humanConfirmationRequired": true,
+    "validityGateRequired": true
+  },
+  "limitations": [
+    "experimental_model",
+    "possible_matches_only",
+    "potato_only",
+    "not_nepal_field_validated",
+    "external_development_split_not_selection_independent",
+    "limited_external_known_sample_count",
+    "float32_not_int8",
+    "physical_device_latency_not_yet_measured",
+    "no_chemical_advice"
+  ]
+}

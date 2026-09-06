@@ -111,6 +111,27 @@ void main() {
       );
     });
 
+    test('the light action and navigation surfaces retain strong ink', () {
+      expectRatio(
+        'inkStrong on actionLeaf',
+        KdColors.inkStrong,
+        KdColors.actionLeaf,
+        4.5,
+      );
+      expectRatio(
+        'inkBody on actionLeaf',
+        KdColors.inkBody,
+        KdColors.actionLeaf,
+        4.5,
+      );
+      expectRatio(
+        'primaryPressed on navigation',
+        KdColors.primaryPressed,
+        KdColors.navigation,
+        4.5,
+      );
+    });
+
     test('the disabled label stays readable, which WCAG does not require', () {
       // Deliberately stricter than the standard. The shutter is disabled by
       // default while the frame is not yet good enough, and a farmer who
@@ -317,11 +338,19 @@ void main() {
       final theme = kdLightTheme();
       expect(theme.scaffoldBackgroundColor, KdColors.canvas);
       expect(theme.cardTheme.color, KdColors.surface);
-      expect(theme.cardTheme.elevation, 0);
+      expect(theme.cardTheme.elevation, 1);
       expect(
         theme.cardTheme.margin,
         EdgeInsets.zero,
         reason: 'the default 4dp margin silently doubled every list gap',
+      );
+      final shape = theme.cardTheme.shape! as RoundedRectangleBorder;
+      expect(
+        shape.side.color,
+        KdColors.outlineSoft,
+        reason:
+            'editorial cards use the quiet edge; controls and safety states '
+            'still opt into the stronger functional border',
       );
     });
 

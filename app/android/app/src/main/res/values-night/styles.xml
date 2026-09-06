@@ -3,14 +3,14 @@
     <!-- Theme applied to the Android Window while the process is starting when the OS's Dark Mode setting is on -->
     <!--
         Both themes here carried Theme.Black, so a device with the OS in dark
-        mode showed a black window and then flashed to #F1F3EC the moment the
+        mode showed a black window and then flashed to #F7F5EC the moment the
         first Dart frame landed. The app ships no dark theme, so the honest
         fix is for the launch window to match the app rather than the OS.
     -->
-    <style name="LaunchTheme" parent="@android:style/Theme.Black.NoTitleBar">
+    <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <!-- Show a splash screen on the activity. Automatically removed when
              the Flutter engine draws its first frame -->
-        <item name="android:windowBackground">@color/kd_canvas</item>
+        <item name="android:windowBackground">@drawable/launch_background</item>
     </style>
     <!-- Theme applied to the Android Window as soon as the process has started.
          This theme determines the color of the Android Window while your
@@ -18,7 +18,7 @@
          running.
 
          This Theme is only used starting with V2 of Flutter's Android embedding. -->
-    <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
+    <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <item name="android:windowBackground">@color/kd_canvas</item>
     </style>
 </resources>

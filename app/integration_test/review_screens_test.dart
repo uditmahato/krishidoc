@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:krishidoc_app/main.dart';
 import 'package:krishidoc_app/src/app_services.dart';
+import 'package:krishidoc_app/src/home_screen.dart';
 import 'package:krishidoc_app/src/providers.dart';
 
 /// Dev utility for the screen review cycle, not a verification.
@@ -77,7 +78,9 @@ Future<void> _hold(WidgetTester tester, int seconds) async {
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('hold home, then history, for review', (tester) async {
+  testWidgets('hold home, then Records and disease scans, for review', (
+    tester,
+  ) async {
     tester.platformDispatcher.textScaleFactorTestValue = _scale;
     addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
 
@@ -93,9 +96,16 @@ void main() {
     );
     await _hold(tester, _holdSeconds);
 
-    // Navigation is driven through the app's own widget tree, which is what
-    // keeps this inside the automation boundary.
-    await tester.tap(find.byIcon(Icons.history_outlined));
+    // Navigation is driven through the app's own visible Records UI, which is
+    // what keeps this inside the automation boundary.
+  await tester.tap(find.byKey(homeProfileTabKey));
+    await _hold(tester, _holdSeconds);
+    final scansTile = find.ancestor(
+      of: find.byIcon(Icons.document_scanner_outlined),
+      matching: find.byType(ListTile),
+    );
+    expect(scansTile, findsOneWidget);
+    await tester.tap(scansTile);
     await _hold(tester, _holdSeconds);
   });
 }

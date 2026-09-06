@@ -54,10 +54,15 @@ void main() {
       // window was whatever the ROM chose, and black on a dark-mode device.
       expect(xml.contains('?android:colorBackground'), isFalse, reason: path);
       expect(xml.contains('@android:color/white'), isFalse, reason: path);
+      expect(
+        xml.contains('@drawable/kd_splash_mark'),
+        isTrue,
+        reason: '$path does not include the KrishiDoc splash mark',
+      );
     }
   });
 
-  test('every theme in both configurations uses the canvas', () {
+  test('pre-31 themes use the branded launch drawable and normal canvas', () {
     for (final path in const ['values/styles.xml', 'values-night/styles.xml']) {
       final xml = declarations(path);
       expect(
@@ -67,13 +72,32 @@ void main() {
             '$path still lets the device theme paint the window behind the '
             'Flutter UI',
       );
-      // LaunchTheme and NormalTheme, both configurations: four settings, and
-      // the dark-mode pair is the one that produced the black-then-flash.
+      expect(
+        xml.contains('Theme.Black'),
+        isFalse,
+        reason: '$path must not promise a dark system surface for a light app',
+      );
+      expect(
+        RegExp('@drawable/launch_background').allMatches(xml).length,
+        1,
+        reason: '$path LaunchTheme must paint the branded drawable',
+      );
       expect(
         RegExp('@color/kd_canvas').allMatches(xml).length,
-        2,
-        reason: '$path must set both LaunchTheme and NormalTheme',
+        1,
+        reason: '$path NormalTheme must keep the Flutter canvas behind UI',
       );
+    }
+  });
+
+  test('Android 12 splash keeps the same canvas and brand mark', () {
+    for (final path in const [
+      'values-v31/styles.xml',
+      'values-night-v31/styles.xml',
+    ]) {
+      final xml = declarations(path);
+      expect(xml.contains('@color/kd_canvas'), isTrue, reason: path);
+      expect(xml.contains('@drawable/kd_splash_mark'), isTrue, reason: path);
     }
   });
 }

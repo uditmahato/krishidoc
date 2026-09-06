@@ -1,15 +1,35 @@
-/// Turns a model label key into something a farmer can read.
-///
-/// **This is a stopgap and it is the wrong place for this to live.** D-35 says
-/// display names come from the reviewed knowledge base, because a disease name
-/// is content: it has a register, a regional variant, and a native reviewer.
-/// Deriving it from the classifier key means the name shown is whatever an ML
-/// label happened to be called, and it can only ever produce English.
-///
-/// It exists because the alternative today is showing `tomato_late_blight` to a
-/// farmer, which is worse. It is deleted by the handbook module, and the
-/// signature is deliberately awkward to build on so that deletion is easy.
-String stopgapLabelName(String labelKey, {String? cropKey}) {
+import '../../l10n/gen/app_localizations.dart';
+
+/// Farmer-facing names for every class enabled by the experimental pack.
+/// Unknown/sample keys still degrade to readable English during development;
+/// no raw snake-case model key is shown.
+String localizedLabelName(
+  AppLocalizations l10n,
+  String labelKey, {
+  String? cropKey,
+}) => switch (labelKey) {
+  'maize_cercospora_leaf_spot_gray_leaf_spot' => l10n.diseaseMaizeGrayLeafSpot,
+  'maize_common_rust' => l10n.diseaseMaizeCommonRust,
+  'maize_northern_leaf_blight' => l10n.diseaseMaizeNorthernLeafBlight,
+  'maize_healthy' => l10n.diseaseMaizeHealthy,
+  'potato_early_blight' => l10n.diseasePotatoEarlyBlight,
+  'potato_late_blight' => l10n.diseasePotatoLateBlight,
+  'potato_healthy' => l10n.diseasePotatoHealthy,
+  'tomato_bacterial_spot' => l10n.diseaseTomatoBacterialSpot,
+  'tomato_early_blight' => l10n.diseaseTomatoEarlyBlight,
+  'tomato_late_blight' => l10n.diseaseTomatoLateBlight,
+  'tomato_leaf_mold' => l10n.diseaseTomatoLeafMold,
+  'tomato_septoria_leaf_spot' => l10n.diseaseTomatoSeptoria,
+  'tomato_spider_mites_two_spotted_spider_mite' =>
+    l10n.diseaseTomatoSpiderMites,
+  'tomato_target_spot' => l10n.diseaseTomatoTargetSpot,
+  'tomato_yellow_leaf_curl_virus' => l10n.diseaseTomatoYellowLeafCurlVirus,
+  'tomato_mosaic_virus' => l10n.diseaseTomatoMosaicVirus,
+  'tomato_healthy' => l10n.diseaseTomatoHealthy,
+  _ => _readableFallback(labelKey, cropKey: cropKey),
+};
+
+String _readableFallback(String labelKey, {String? cropKey}) {
   var key = labelKey;
   // Labels are prefixed with their crop, which the screen already states, so
   // repeating it reads as stuttering: "Tomato: Tomato late blight".

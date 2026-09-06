@@ -1,18 +1,28 @@
+import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 
+import '../l10n/gen/app_localizations.dart';
+import 'assistant/assistant_route_screen.dart';
 import 'capture/capture_screen.dart';
+import 'diagnosis/disease_scan_intro_screen.dart';
 import 'diagnosis/result_screen.dart';
 import 'history_screen.dart';
 import 'home_screen.dart';
 import 'notebook/notebook_screen.dart';
 import 'notebook/observation_screen.dart';
 import 'result_preview_screen.dart';
+import 'weather/weather.dart';
+import 'weather/weather_l10n.dart';
 import 'welcome/welcome_about_screen.dart';
 import 'welcome/welcome_language_screen.dart';
 
 abstract final class AppRoutes {
   static const String home = '/';
   static const String capture = '/capture';
+  static const String diagnose = '/diagnose';
+  static const String diagnoseCapture = '$diagnose/camera';
+  static const String assistant = '/assistant';
+  static const String weather = '/weather';
   static const String history = '/history';
 
   /// First contact. The chooser is unskippable by construction: it has no
@@ -68,18 +78,33 @@ GoRouter createAppRouter({String initialLocation = AppRoutes.home}) => GoRouter(
     ),
     GoRoute(
       path: AppRoutes.capture,
-      // Notebook by default. `?diagnose=1` selects the classifying path,
-      // which only a debug entry offers, because every answer it can give
-      // today is a hash of the image bytes.
-      builder: (context, state) => CaptureScreen(
-        mode: state.uri.queryParameters['diagnose'] == '1'
-            ? CaptureMode.diagnose
-            : CaptureMode.notebook,
-      ),
+      builder: (context, state) => const CaptureScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.diagnose,
+      builder: (context, state) => const DiseaseScanIntroScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.diagnoseCapture,
+      builder: (context, state) =>
+          const CaptureScreen(mode: CaptureMode.diagnose),
     ),
     GoRoute(
       path: AppRoutes.notebook,
       builder: (context, state) => const NotebookScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.weather,
+      builder: (context, state) => NepalWeatherScreen(
+        strings: localizedWeatherStrings(AppLocalizations.of(context)),
+      ),
+    ),
+    GoRoute(
+      path: AppRoutes.assistant,
+      builder: (context, state) => AssistantRouteScreen(
+        cropKey: state.uri.queryParameters['crop'],
+        candidateLabelKey: state.uri.queryParameters['candidate'],
+      ),
     ),
     GoRoute(
       path: AppRoutes.observation,
@@ -95,9 +120,11 @@ GoRouter createAppRouter({String initialLocation = AppRoutes.home}) => GoRouter(
       builder: (context, state) =>
           ResultScreen(diagnosisId: state.pathParameters['id']!),
     ),
-    GoRoute(
-      path: AppRoutes.devResultPreview,
-      builder: (context, state) => const ResultPreviewScreen(),
-    ),
+    if (kDebugMode) ...[
+      GoRoute(
+        path: AppRoutes.devResultPreview,
+        builder: (context, state) => const ResultPreviewScreen(),
+      ),
+    ],
   ],
 );

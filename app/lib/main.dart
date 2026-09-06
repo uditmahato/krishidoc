@@ -8,6 +8,7 @@ import 'l10n/gen/app_localizations.dart';
 import 'src/app_services.dart';
 import 'src/diagnosis/photo_store.dart';
 import 'src/locale_scope.dart';
+import 'src/market/market.dart';
 import 'src/providers.dart';
 import 'src/router.dart';
 import 'src/welcome/first_run.dart';
@@ -16,6 +17,14 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final services = await AppServices.open();
   final photos = await FilePhotoStore.open();
+  MarketSnapshotCache marketCache;
+  try {
+    marketCache = await FileMarketSnapshotCache.open();
+  } on Object {
+    // A read-only or damaged support directory must not stop the app from
+    // loading live prices; only cold-start offline availability is reduced.
+    marketCache = MemoryMarketSnapshotCache();
+  }
   // Read the saved language BEFORE the first frame. Restoring it afterwards
   // meant a Nepali-only user saw an English home screen flash on every cold
   // start, and the type theme is locale dependent, so the first frame also
@@ -50,6 +59,7 @@ Future<void> main() async {
       overrides: [
         servicesProvider.overrideWithValue(services),
         photoStoreProvider.overrideWithValue(photos),
+        marketSnapshotCacheProvider.overrideWithValue(marketCache),
       ],
       child: KrishiDocApp(
         initialLocale: saved == null ? null : Locale(saved.code),

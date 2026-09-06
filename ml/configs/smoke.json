@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "run_name": "maize_mobilenet_v3_smoke",
+  "seed": 20260804,
+  "manifest": "ml/data/prepared/manifest.csv",
+  "crop": "maize",
+  "architecture": "mobilenet_v3_large",
+  "pretrained": true,
+  "image_size": 224,
+  "batch_size": 16,
+  "num_workers": 2,
+  "epochs": 1,
+  "freeze_backbone_epochs": 0,
+  "learning_rate": 0.0003,
+  "weight_decay": 0.0001,
+  "label_smoothing": 0.05,
+  "mixup_alpha": 0.0,
+  "amp": true,
+  "max_train_samples": 256,
+  "max_eval_samples": 512,
+  "early_stopping_patience": 2,
+  "monitor": "condition_macro_f1",
+  "unconfigured_conditions": "as_unknown",
+  "known_labels": [
+    "maize_common_rust",
+    "maize_healthy"
+  ],
+  "unknown_label": "maize_other_unknown"
+}

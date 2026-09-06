@@ -160,7 +160,11 @@ void main() {
 
       // The About screen is now rendering, and it is rendering in Nepali.
       expect(
-        find.text('यो एप गोलभेँडा, आलु र मकैका पातका लागि हो।'),
+        find.text(
+          'गोलभेँडा, आलु र मकैका लागि काम योजना, नेपाल-केन्द्रित बाली '
+          'मार्गदर्शन, स्थानीय मौसम र कालीमाटीको आधिकारिक थोक मूल्य '
+          'हेर्नुहोस्।',
+        ),
         findsOneWidget,
       );
     },

@@ -51,71 +51,68 @@ class _StateCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Card(
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border(
-            left: BorderSide(color: rail, width: KdSpacing.sm),
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Tone band behind the heading, so the state is visible before a
-            // single word is read.
-            ColoredBox(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          DecoratedBox(
+            decoration: BoxDecoration(
               color: band,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: KdLayout.cardPadding,
-                  vertical: KdSpacing.smd,
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      icon,
-                      color: ink,
-                      size: kdScaledIcon(context, KdIconSize.md),
+              border: Border(bottom: BorderSide(color: rail, width: 2)),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(KdSpacing.lmd),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: KdColors.surface,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: rail),
                     ),
-                    const SizedBox(width: KdSpacing.smd),
-                    Expanded(
-                      child: Text(
-                        heading,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: ink,
-                        ),
+                    child: SizedBox.square(
+                      dimension: 52,
+                      child: Icon(
+                        icon,
+                        color: ink,
+                        size: kdScaledIcon(context, KdIconSize.md),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: KdSpacing.smd),
+                  Expanded(
+                    child: Text(
+                      heading,
+                      style: theme.textTheme.titleLarge?.copyWith(color: ink),
+                    ),
+                  ),
+                ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(KdLayout.cardPadding),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: children,
-              ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(KdSpacing.lmd),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: children,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
 
-/// The route to a person. Rendered on every state, by construction.
+/// The route to bounded next-step guidance. Rendered on every state.
 class _EscalationButton extends StatelessWidget {
   const _EscalationButton(this.presentation);
 
   final DiagnosisPresentation presentation;
 
   @override
-  Widget build(BuildContext context) => OutlinedButton.icon(
+  Widget build(BuildContext context) => FilledButton.icon(
     onPressed: presentation.onEscalate,
-    // A headset is a call centre. The person this refers to stands in a field,
-    // so the glyph is a person rather than a switchboard.
-    icon: const Icon(Icons.person_search_outlined),
+    icon: const Icon(Icons.menu_book_outlined),
     label: Text(presentation.escalationLabel),
   );
 }
@@ -132,11 +129,11 @@ class _ConfidentCard extends StatelessWidget {
       rail: KdColors.stateConfidentRail,
       band: KdColors.stateConfidentBand,
       ink: KdColors.stateConfidentInk,
-      // Three filled circles at three sizes: the level is legible as a shape,
-      // for a farmer who cannot read the sentence beside it.
+      // Investigation imagery, not a success checkmark: an experimental
+      // possible match must never look like a confirmed diagnosis.
       icon: switch (presentation.certainty) {
-        CertaintyLevel.high => Icons.check_circle,
-        CertaintyLevel.moderate => Icons.check_circle_outline,
+        CertaintyLevel.high => Icons.manage_search_rounded,
+        CertaintyLevel.moderate => Icons.travel_explore_rounded,
         CertaintyLevel.low => Icons.help_outline,
       },
       // The whole statement, disease name inline: "This looks like late
@@ -144,9 +141,20 @@ class _ConfidentCard extends StatelessWidget {
       // above a name, which asks the reader to assemble the meaning.
       heading: presentation.certaintyLabel,
       children: [
-        Text(
-          presentation.caveat,
-          style: theme.textTheme.bodyMedium?.copyWith(color: KdColors.inkMuted),
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: KdColors.surfaceSunken,
+            borderRadius: BorderRadius.circular(KdRadius.md),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(KdSpacing.smd),
+            child: Text(
+              presentation.caveat,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: KdColors.inkBody,
+              ),
+            ),
+          ),
         ),
         const SizedBox(height: KdSpacing.md),
         _EscalationButton(presentation),
@@ -179,14 +187,22 @@ class _UncertainCard extends StatelessWidget {
       heading: presentation.title,
       children: [
         for (final alternative in presentation.alternatives)
-          Padding(
-            padding: const EdgeInsets.only(bottom: KdSpacing.sm),
+          Container(
+            margin: const EdgeInsets.only(bottom: KdSpacing.sm),
+            padding: const EdgeInsets.all(KdSpacing.smd),
+            decoration: BoxDecoration(
+              color: KdColors.stateUncertainBand,
+              borderRadius: BorderRadius.circular(KdRadius.md),
+            ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // A hanging indent, so a wrapped Devanagari line does not run
-                // back under the bullet.
-                Text('•  ', style: theme.textTheme.bodyLarge),
+                const Icon(
+                  Icons.radio_button_unchecked,
+                  color: KdColors.stateUncertainRail,
+                  size: KdIconSize.sm,
+                ),
+                const SizedBox(width: KdSpacing.smd),
                 Expanded(
                   child: Text(alternative, style: theme.textTheme.bodyLarge),
                 ),

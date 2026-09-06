@@ -59,5 +59,47 @@ class SampleNotice extends StatelessWidget {
   }
 }
 
+/// Persistent warning for a real model whose field performance has not been
+/// validated for Nepal. Unlike [SampleNotice], this output does come from a
+/// neural model; the warning explains the evidence boundary around it.
+class ExperimentalModelNotice extends StatelessWidget {
+  const ExperimentalModelNotice({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: KdColors.stateUncertainBand,
+        borderRadius: BorderRadius.circular(KdRadius.md),
+        border: Border.all(color: KdColors.stateUncertainRail),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(KdLayout.cardPadding),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(
+              experimentalMarkerIcon,
+              color: KdColors.stateUncertainInk,
+              size: kdScaledIcon(context, KdIconSize.md),
+            ),
+            const SizedBox(width: KdSpacing.smd),
+            Expanded(
+              child: Text(
+                l10n.possibleMatchNotice,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: KdColors.stateUncertainInk,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 /// The glyph that marks sample-derived output wherever it is rendered.
 const IconData sampleMarkerIcon = Icons.science_outlined;
+const IconData experimentalMarkerIcon = Icons.biotech_outlined;

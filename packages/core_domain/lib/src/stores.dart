@@ -33,4 +33,8 @@ abstract final class SettingsKeys {
   /// Last crop the farmer diagnosed: the remembered default that keeps the
   /// capture flow to one tap (D-16).
   static const String selectedCrop = 'selected_crop';
+
+  /// Last Nepal city the farmer explicitly selected for weather. This is a
+  /// city-level forecast context, never an inferred or GPS field location.
+  static const String weatherLocation = 'weather_location';
 }

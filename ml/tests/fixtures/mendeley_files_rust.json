@@ -1,0 +1,15 @@
+[
+  {
+    "filename": "leaf-001.jpg",
+    "id": "file-leaf-001",
+    "content_details": {
+      "sha256_hash": "bef57ec7f53a6d40beb640a780a639c83bc29ac8a9816f1fc6c5c6dcd93c4721",
+      "content_type": "image/jpeg",
+      "size": 6,
+      "download_url": "https://data.example/leaf-001.jpg"
+    },
+    "size": 6,
+    "status": "COMPLETED"
+  }
+]
+

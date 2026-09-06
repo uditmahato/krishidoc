@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "issued_on": "2026-09-02",
+  "status": "invalidated",
+  "fail_closed": true,
+  "release_use_allowed": false,
+  "deployment_performed": false,
+  "app_model_replaced": false,
+  "scope_rule": "Any checkpoint, calibration, evaluation, comparison, export, or benchmark whose recorded manifest_sha256 equals an affected_manifest_sha256 is invalid as promotion or deployment evidence.",
+  "affected_manifests": [
+    {
+      "manifest_sha256": "8bb7dc0355d1e2fa09a178695e9db6311dc6f215708ae27495a56c0d80ff7cae",
+      "manifest_name": "manifest_8bb7dc0355d1.csv",
+      "conflicting_group_count": 21,
+      "conflicting_row_count": 42,
+      "all_conflicts_are_exact_sha256_duplicates": true,
+      "groups_by_crop": {
+        "maize": 9,
+        "tomato": 12
+      },
+      "groups_by_split": {
+        "train": 17,
+        "validation": 3,
+        "calibration": 1
+      }
+    },
+    {
+      "manifest_sha256": "6005e4828b1c3f9f0edc314c123755e9707f6d08faf7cbf5cc6ff2f3c75059b9",
+      "manifest_name": "manifest_field_v2_pldd_up.csv",
+      "quarantined_mixed_condition_group_count": 87,
+      "quarantined_row_count": 293
+    }
+  ],
+  "invalid_evidence_types": [
+    "checkpoint",
+    "calibration",
+    "evaluation",
+    "candidate_comparison",
+    "export",
+    "benchmark"
+  ],
+  "required_recovery": [
+    "Use a separately identified manifest that passes the strengthened mixed-canonical-condition-group audit.",
+    "Retrain from scratch without reusing affected checkpoints.",
+    "Recalibrate and repeat internal, external, export, and physical-device gates."
+  ],
+  "human_readable_notice": "MODEL_INVALIDATION_2026-09-02.md"
+}

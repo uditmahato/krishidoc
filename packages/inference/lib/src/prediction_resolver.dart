@@ -114,6 +114,8 @@ final class PredictionResolver {
   ClassificationOutcome resolve({
     required List<double> probabilities,
     required ModelPack pack,
+    Set<String>? allowedLabelKeys,
+    bool forceOutOfScope = false,
   }) {
     if (probabilities.length != pack.labelCount) {
       throw ModelPackFormatException(
@@ -122,7 +124,23 @@ final class PredictionResolver {
       );
     }
 
-    final ranked = <RankedPrediction>[
+    if (allowedLabelKeys != null) {
+      if (allowedLabelKeys.isEmpty) {
+        throw const ModelPackFormatException(
+          'allowedLabelKeys must not be empty',
+        );
+      }
+      final packKeys = pack.labels.map((label) => label.key).toSet();
+      final unknown = allowedLabelKeys.difference(packKeys);
+      if (unknown.isNotEmpty) {
+        throw ModelPackFormatException(
+          'allowedLabelKeys contains labels absent from the pack: '
+          '${unknown.join(', ')}',
+        );
+      }
+    }
+
+    final globalRanked = <RankedPrediction>[
       for (var i = 0; i < probabilities.length; i++)
         RankedPrediction(
           label: pack.labels[i].key,
@@ -131,8 +149,13 @@ final class PredictionResolver {
         ),
     ]..sort((a, b) => b.probability.compareTo(a.probability));
 
-    final leader = ranked.first;
-    final runnerUp = ranked.length > 1 ? ranked[1] : null;
+    final leader = globalRanked.first;
+    final runnerUp = globalRanked.length > 1 ? globalRanked[1] : null;
+    final ranked = allowedLabelKeys == null
+        ? globalRanked
+        : globalRanked
+              .where((candidate) => allowedLabelKeys.contains(candidate.label))
+              .toList(growable: false);
     final threshold = pack.labels
         .firstWhere((label) => label.key == leader.label)
         .threshold;
@@ -162,7 +185,21 @@ final class PredictionResolver {
       );
     }
 
+    // A separate validity/OOD head has precedence over every condition score.
+    // A rejected image must never become an uncertain list of diseases merely
+    // because the condition head is forced to choose one of its known labels.
+    if (forceOutOfScope) return outOfScope();
+
+    // Crop scope is checked against the GLOBAL winner before any candidate is
+    // hidden. Otherwise filtering then renormalising a maize-leading output to
+    // tomato labels could manufacture a tomato match from a crop mismatch.
+    if (allowedLabelKeys != null && !allowedLabelKeys.contains(leader.label)) {
+      return outOfScope();
+    }
     if (leader.probability < pack.rejectionFloor) return outOfScope();
+    if (pack.decisionMode == ModelDecisionMode.possibleMatchOnly) {
+      return uncertain();
+    }
     if (leader.probability < threshold) return uncertain();
     if (runnerUp != null &&
         leader.probability - runnerUp.probability < pack.minMargin) {

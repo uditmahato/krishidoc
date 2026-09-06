@@ -22,6 +22,9 @@ abstract interface class PhotoStore {
   /// under pressure, and a history entry whose photo has been evicted must
   /// still open.
   Future<Uint8List?> read(String path);
+
+  /// Removes a stored photo. Missing files are already deleted.
+  Future<void> delete(String path);
 }
 
 final class FilePhotoStore implements PhotoStore {
@@ -51,6 +54,12 @@ final class FilePhotoStore implements PhotoStore {
     if (!file.existsSync()) return null;
     return file.readAsBytes();
   }
+
+  @override
+  Future<void> delete(String path) async {
+    final file = File(path);
+    if (file.existsSync()) await file.delete();
+  }
 }
 
 /// In-memory implementation for tests.
@@ -66,4 +75,7 @@ final class MemoryPhotoStore implements PhotoStore {
 
   @override
   Future<Uint8List?> read(String path) async => _files[path];
+
+  @override
+  Future<void> delete(String path) async => _files.remove(path);
 }
