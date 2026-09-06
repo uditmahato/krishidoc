@@ -11,20 +11,27 @@ void main() {
   test(
     'export actual mobile preprocessing for desktop reference evaluation',
     () async {
-      final assets = Directory(const String.fromEnvironment(
-        'KD_AUDIT_INPUT', defaultValue: 'test_assets/mobile_audit'));
+      final assets = Directory(
+        const String.fromEnvironment(
+          'KD_AUDIT_INPUT',
+          defaultValue: 'test_assets/mobile_audit',
+        ),
+      );
       final manifest =
           jsonDecode(File('${assets.path}/manifest.json').readAsStringSync())
               as Map<String, dynamic>;
       final output = Directory(
-        const String.fromEnvironment('KD_AUDIT_OUTPUT',
-          defaultValue: '../ml/artifacts/mobile_audit_20260906/host_inputs'),
+        const String.fromEnvironment(
+          'KD_AUDIT_OUTPUT',
+          defaultValue: '../ml/artifacts/mobile_audit_20260906/host_inputs',
+        ),
       )..createSync(recursive: true);
       final rows = <Map<String, dynamic>>[];
       const crop = String.fromEnvironment('KD_AUDIT_CROP');
       final samples = (manifest['samples'] as List<dynamic>)
           .cast<Map<String, dynamic>>()
-          .where((sample) => crop.isEmpty || sample['crop'] == crop).toList();
+          .where((sample) => crop.isEmpty || sample['crop'] == crop)
+          .toList();
       for (final sample in samples) {
         final bytes = File(
           '${assets.path}/${sample['file']}',
