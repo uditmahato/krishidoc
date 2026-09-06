@@ -23,6 +23,7 @@ void main() {
     'tileSettings',
     'comingSoon',
     'historyEmpty',
+    'aboutNotReadyBody',
   ];
 
   Map<String, dynamic> load(String locale) =>

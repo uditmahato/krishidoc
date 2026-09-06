@@ -55,44 +55,45 @@ ThemeData kdLightTheme({Locale locale = const Locale('en')}) {
     colorScheme: scheme,
     textTheme: text,
     scaffoldBackgroundColor: KdColors.canvas,
+    canvasColor: KdColors.canvas,
     splashFactory: InkRipple.splashFactory,
+    visualDensity: VisualDensity.standard,
 
     appBarTheme: AppBarTheme(
-      backgroundColor: KdColors.surface,
+      backgroundColor: KdColors.canvas,
       foregroundColor: KdColors.inkStrong,
       elevation: 0,
       scrolledUnderElevation: 0,
-      // The app bar is the top edge of a white surface against a tinted
-      // canvas, so it needs a drawn boundary for the same reason cards do.
-      shape: const Border(bottom: BorderSide(color: KdColors.border, width: 1)),
+      surfaceTintColor: Colors.transparent,
+      toolbarHeight: 64,
       titleTextStyle: text.titleLarge?.copyWith(color: KdColors.inkStrong),
     ),
 
-    // White fill, a real border, no margin. M3's defaults gave a #F1F5EB card
-    // on a #F7FBF1 scaffold, which measured 1.05:1: the edge was carried
-    // entirely by a 1dp shadow, the first cue to disappear on a cheap LCD in
-    // sunlight. The default `EdgeInsets.all(4)` margin also stacked on every
-    // explicit gap, so a list that read as 8dp apart in the source was
-    // actually 16dp apart on screen.
+    // Editorial surfaces use a quiet edge and depth. Functional controls and
+    // safety states still use the stronger KdColors.border token explicitly.
     cardTheme: CardThemeData(
       color: KdColors.surface,
       surfaceTintColor: Colors.transparent,
-      elevation: 0,
+      shadowColor: const Color(0x1A0E3C28),
+      elevation: 1,
       margin: EdgeInsets.zero,
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(KdRadius.lg),
-        side: const BorderSide(color: KdColors.border),
+        side: const BorderSide(color: KdColors.outlineSoft),
       ),
     ),
 
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
-        minimumSize: const Size(KdSpacing.xxxl, KdSpacing.minTouchTarget),
-        padding: const EdgeInsets.symmetric(horizontal: KdSpacing.lmd),
+        minimumSize: const Size(KdSpacing.xxxl, 54),
+        padding: const EdgeInsets.symmetric(
+          horizontal: KdSpacing.lg,
+          vertical: KdSpacing.smd,
+        ),
         textStyle: text.labelLarge,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(KdRadius.md),
+          borderRadius: BorderRadius.circular(KdRadius.xl),
         ),
         // Disabled has to stay readable. M3's default is a 12 percent ghost,
         // and the shutter, the most important control in the app, is disabled
@@ -106,13 +107,13 @@ ThemeData kdLightTheme({Locale locale = const Locale('en')}) {
 
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        minimumSize: const Size(KdSpacing.xxxl, KdSpacing.minTouchTarget),
+        minimumSize: const Size(KdSpacing.xxxl, 52),
         padding: const EdgeInsets.symmetric(horizontal: KdSpacing.lmd),
         textStyle: text.labelLarge,
         foregroundColor: KdColors.primaryPressed,
-        side: const BorderSide(color: KdColors.border),
+        side: const BorderSide(color: KdColors.primary, width: 1.2),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(KdRadius.md),
+          borderRadius: BorderRadius.circular(KdRadius.xl),
         ),
       ),
     ),
@@ -135,7 +136,8 @@ ThemeData kdLightTheme({Locale locale = const Locale('en')}) {
     // the capture screen the one a farmer taps with muddy hands.
     chipTheme: ChipThemeData(
       backgroundColor: KdColors.surface,
-      side: const BorderSide(color: KdColors.border),
+      selectedColor: KdColors.primarySoft,
+      side: const BorderSide(color: KdColors.outlineSoft),
       labelStyle: text.labelLarge?.copyWith(color: KdColors.inkBody),
       padding: const EdgeInsets.symmetric(
         horizontal: KdSpacing.smd,
@@ -148,14 +150,133 @@ ThemeData kdLightTheme({Locale locale = const Locale('en')}) {
 
     listTileTheme: ListTileThemeData(
       minVerticalPadding: KdSpacing.smd,
+      minLeadingWidth: KdSpacing.xl,
+      iconColor: KdColors.primaryPressed,
       titleTextStyle: text.bodyLarge,
       subtitleTextStyle: text.bodySmall?.copyWith(color: KdColors.inkMuted),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(KdRadius.md),
+      ),
     ),
 
-    bottomSheetTheme: const BottomSheetThemeData(
+    bottomSheetTheme: BottomSheetThemeData(
       backgroundColor: KdColors.surface,
       surfaceTintColor: Colors.transparent,
       showDragHandle: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(KdRadius.xl)),
+      ),
+    ),
+
+    navigationBarTheme: NavigationBarThemeData(
+      height: 76,
+      backgroundColor: KdColors.navigation,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      shadowColor: Colors.transparent,
+      indicatorColor: KdColors.primarySoft,
+      indicatorShape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(KdRadius.pill),
+      ),
+      iconTheme: WidgetStateProperty.resolveWith((states) {
+        return IconThemeData(
+          color: states.contains(WidgetState.selected)
+              ? KdColors.primaryPressed
+              : KdColors.inkMuted,
+          size: KdIconSize.md,
+        );
+      }),
+      labelTextStyle: WidgetStateProperty.resolveWith((states) {
+        return text.labelMedium?.copyWith(
+          color: states.contains(WidgetState.selected)
+              ? KdColors.primaryPressed
+              : KdColors.inkMuted,
+          fontWeight: states.contains(WidgetState.selected)
+              ? FontWeight.w700
+              : FontWeight.w600,
+        );
+      }),
+      labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+    ),
+
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: KdColors.surface,
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: KdSpacing.md,
+        vertical: KdSpacing.smd,
+      ),
+      labelStyle: text.bodyMedium?.copyWith(color: KdColors.inkMuted),
+      hintStyle: text.bodyMedium?.copyWith(color: KdColors.inkMuted),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(KdRadius.md),
+        borderSide: const BorderSide(color: KdColors.border),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(KdRadius.md),
+        borderSide: const BorderSide(color: KdColors.border),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(KdRadius.md),
+        borderSide: const BorderSide(color: KdColors.primary, width: 2),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(KdRadius.md),
+        borderSide: const BorderSide(color: KdColors.danger),
+      ),
+    ),
+
+    iconButtonTheme: IconButtonThemeData(
+      style: IconButton.styleFrom(
+        foregroundColor: KdColors.inkStrong,
+        minimumSize: const Size.square(KdSpacing.minTouchTarget),
+      ),
+    ),
+
+    popupMenuTheme: PopupMenuThemeData(
+      color: KdColors.surface,
+      surfaceTintColor: Colors.transparent,
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(KdRadius.lg),
+        side: const BorderSide(color: KdColors.outlineSoft),
+      ),
+      textStyle: text.bodyMedium,
+    ),
+
+    dialogTheme: DialogThemeData(
+      backgroundColor: KdColors.surface,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(KdRadius.xl),
+      ),
+      titleTextStyle: text.titleLarge?.copyWith(color: KdColors.inkStrong),
+      contentTextStyle: text.bodyMedium?.copyWith(color: KdColors.inkBody),
+    ),
+
+    checkboxTheme: CheckboxThemeData(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+      side: const BorderSide(color: KdColors.border, width: 1.5),
+      fillColor: WidgetStateProperty.resolveWith(
+        (states) => states.contains(WidgetState.selected)
+            ? KdColors.primary
+            : Colors.transparent,
+      ),
+    ),
+
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: KdColors.primary,
+      foregroundColor: KdColors.onPrimary,
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(KdRadius.lg)),
+      ),
+    ),
+
+    progressIndicatorTheme: const ProgressIndicatorThemeData(
+      color: KdColors.primary,
+      linearTrackColor: KdColors.surfaceSunken,
+      circularTrackColor: KdColors.surfaceSunken,
     ),
 
     snackBarTheme: SnackBarThemeData(
@@ -165,7 +286,7 @@ ThemeData kdLightTheme({Locale locale = const Locale('en')}) {
     ),
 
     dividerTheme: const DividerThemeData(
-      color: KdColors.border,
+      color: KdColors.outlineSoft,
       space: 1,
       thickness: 1,
     ),

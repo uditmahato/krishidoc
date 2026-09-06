@@ -59,14 +59,14 @@ abstract final class KdType {
   // has the same box in Nepali, so the extra ink is absorbed by leading rather
   // than by reflowing the screen into a different shape.
   static final TextTheme _latin = TextTheme(
-    displaySmall: _s(36, FontWeight.w600, 1.20, 0),
-    headlineMedium: _s(28, FontWeight.w600, 1.25, 0),
-    headlineSmall: _s(24, FontWeight.w600, 1.28, 0),
-    titleLarge: _s(22, FontWeight.w600, 1.30, 0),
+    displaySmall: _s(38, FontWeight.w700, 1.16, -0.4),
+    headlineMedium: _s(30, FontWeight.w700, 1.20, -0.2),
+    headlineSmall: _s(24, FontWeight.w700, 1.25, -0.1),
+    titleLarge: _s(22, FontWeight.w700, 1.28, 0),
     titleMedium: _s(18, FontWeight.w600, 1.33, 0.1),
     titleSmall: _s(16, FontWeight.w600, 1.38, 0.1),
-    bodyLarge: _s(18, FontWeight.w400, 1.45, 0.1),
-    bodyMedium: _s(16, FontWeight.w400, 1.45, 0.1),
+    bodyLarge: _s(17, FontWeight.w400, 1.48, 0.1),
+    bodyMedium: _s(15, FontWeight.w400, 1.48, 0.1),
     bodySmall: _s(14, FontWeight.w400, 1.45, 0.2),
     labelLarge: _s(16, FontWeight.w600, 1.25, 0.1),
     labelMedium: _s(14, FontWeight.w600, 1.30, 0.2),
@@ -74,14 +74,14 @@ abstract final class KdType {
   );
 
   static final TextTheme _devanagari = TextTheme(
-    displaySmall: _s(36, FontWeight.w600, 1.45, 0),
-    headlineMedium: _s(28, FontWeight.w600, 1.45, 0),
-    headlineSmall: _s(24, FontWeight.w600, 1.48, 0),
-    titleLarge: _s(22, FontWeight.w600, 1.50, 0),
+    displaySmall: _s(38, FontWeight.w700, 1.45, 0),
+    headlineMedium: _s(30, FontWeight.w700, 1.45, 0),
+    headlineSmall: _s(24, FontWeight.w700, 1.48, 0),
+    titleLarge: _s(22, FontWeight.w700, 1.50, 0),
     titleMedium: _s(18, FontWeight.w600, 1.52, 0),
     titleSmall: _s(16, FontWeight.w600, 1.55, 0),
-    bodyLarge: _s(18, FontWeight.w400, 1.60, 0),
-    bodyMedium: _s(16, FontWeight.w400, 1.60, 0),
+    bodyLarge: _s(17, FontWeight.w400, 1.60, 0),
+    bodyMedium: _s(15, FontWeight.w400, 1.60, 0),
     bodySmall: _s(14, FontWeight.w400, 1.60, 0),
     labelLarge: _s(16, FontWeight.w600, 1.45, 0),
     labelMedium: _s(14, FontWeight.w600, 1.45, 0),

@@ -80,10 +80,8 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
     );
     if (confirmed != true || !mounted) return;
 
+    await ref.read(photoStoreProvider).delete(entry.imagePath);
     await ref.read(servicesProvider).observationStore.delete(entry.id);
-    // The file outlives the row deliberately for now: PhotoStore has no
-    // delete, and adding one here would give two owners to the same bytes.
-    // Reclaiming orphaned files is a sweep, not a per-row side effect.
     if (mounted) context.pop();
   }
 

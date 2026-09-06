@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "policy_type": "candidate_evidence_bundle_promotion",
+  "policy_name": "maize_public_field_provisional_v1",
+  "crop": "maize",
+  "status": "provisional_public_field_evidence_only",
+  "promotion_allowed": false,
+  "required_evidence_roles": [
+    "internal_test",
+    "external_test"
+  ],
+  "external_required_labels": [
+    "maize_common_rust",
+    "maize_healthy"
+  ],
+  "split_policy": {
+    "future_nepal_test_source": "nepal_field_locked_v1"
+  },
+  "acceptance_gates": {
+    "minimum_field_macro_f1": 0.8,
+    "minimum_worst_known_class_recall": 0.7,
+    "minimum_per_class_support": 50,
+    "maximum_expected_calibration_error": 0.08,
+    "maximum_ood_false_accept_rate_at_operating_point": 0.05,
+    "minimum_external_known_accept_rate": 0.7,
+    "minimum_external_field_macro_f1": 0.75,
+    "minimum_external_condition_balanced_accuracy": 0.7,
+    "minimum_external_known_support": 200,
+    "minimum_external_per_class_support": 75,
+    "maximum_int8_model_bytes_per_crop": 8000000,
+    "maximum_p95_device_inference_ms": 500,
+    "nepal_field_gate_required_for_confident_results": true
+  },
+  "limitations": [
+    "This is a standalone promotion policy and is not a training configuration.",
+    "Passing public internal and independent external evidence is insufficient without a locked, independently labelled Nepal field evaluation.",
+    "promotion_allowed remains false until the missing condition coverage and Nepal evidence are reviewed and this policy is explicitly superseded."
+  ]
+}

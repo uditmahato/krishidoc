@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- A compact sprout over cultivated rows. The complete mark stays inside
+         the adaptive-icon safe zone so OEM circle and squircle masks do not
+         clip the identity. -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M52.8,58.2C43.5,57.8 35.4,51.3 32.6,40.7C42.3,38.5 51.4,43.5 55.4,51.6C56.1,53.1 56.5,54.7 56.6,56.3C55.3,57.4 54.1,58 52.8,58.2Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M58.1,49.5C59,39.2 66.9,30.8 78.2,28.5C79.1,39.5 72.3,48.9 62.1,52.6C60.1,53.3 58.2,53.6 56.4,53.5C56.5,52.1 57.1,50.7 58.1,49.5Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M51.9,69.8C51.9,61.6 53.2,54.9 56,49.5C59.1,43.4 64,38.2 70.6,34.1L73.4,38.1C67.5,41.8 63.3,46.3 60.7,51.4C58.2,56.2 57,62.3 57,69.8Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M29.8,66.5C42.7,60.7 65.3,60.7 78.2,66.5C80.1,67.4 80.8,69.6 79.8,71.3C78.9,72.8 77,73.4 75.4,72.7C64,67.6 44,67.6 32.6,72.7C31,73.4 29.1,72.8 28.2,71.3C27.2,69.6 27.9,67.4 29.8,66.5Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M35.2,77.1C45.9,72.6 62.1,72.6 72.8,77.1C74.7,77.9 75.5,80 74.6,81.7C73.8,83.3 71.9,83.9 70.3,83.2C61.2,79.4 46.8,79.4 37.7,83.2C36.1,83.9 34.2,83.3 33.4,81.7C32.5,80 33.3,77.9 35.2,77.1Z" />
+</vector>

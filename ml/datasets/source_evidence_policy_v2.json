@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "policy_id": "krishidoc-source-evidence-v2",
+  "description": "Fail-closed source eligibility for model evaluation and promotion evidence. Version 2 adds the reviewed Central Java source as training/open-set development only. Eligibility remains necessary but not sufficient.",
+  "aliases": {
+    "digigreen-crop-disease-images": "farmer_chat_india",
+    "farmer_chat_india_development_v1": "farmer_chat_india",
+    "potato_central_java": "potato-central-java"
+  },
+  "sources": {
+    "farmer_chat_india": {
+      "title": "Digital Green Crop Disease Expert Annotations",
+      "evidence_role": "external_development",
+      "selection_independent": false,
+      "promotion_eligible": false,
+      "reason": "This source has already been inspected and used to diagnose domain shift and choose subsequent data and modelling work. It is development evidence, not an untouched promotion holdout."
+    },
+    "maize-figshare-29298275": {
+      "title": "Maize Leaf Dataset on Figshare",
+      "evidence_role": "training_or_internal_development",
+      "selection_independent": false,
+      "promotion_eligible": false,
+      "reason": "This source is admitted for training/internal development and cannot provide independent promotion evidence."
+    },
+    "pldd-up": {
+      "title": "PLDD-UP",
+      "evidence_role": "training_or_internal_development",
+      "selection_independent": false,
+      "promotion_eligible": false,
+      "reason": "This source contributes potato training and internal grouped splits; source-shared evaluation is not independent external evidence."
+    },
+    "tom2024-original": {
+      "title": "TOM2024 originals",
+      "evidence_role": "training_or_internal_development",
+      "selection_independent": false,
+      "promotion_eligible": false,
+      "reason": "This source contributes training and internal grouped splits and cannot provide independent promotion evidence."
+    },
+    "nepal_field_locked_v1": {
+      "title": "Future locked Nepal field evaluation source",
+      "evidence_role": "external_test",
+      "selection_independent": true,
+      "promotion_eligible": true,
+      "reason": "This reserved source identifier may provide promotion evidence only when the report also proves the source is locked, disjoint from internal sources, and passes every configured Nepal and quality gate."
+    },
+    "potato-central-java": {
+      "title": "Central Java potato leaf field dataset",
+      "evidence_role": "training_or_internal_development",
+      "selection_independent": false,
+      "promotion_eligible": false,
+      "reason": "This source is admitted only as training-time field-domain and explicit unknown-condition exposure; it cannot provide independent evaluation or Nepal promotion evidence."
+    }
+  }
+}

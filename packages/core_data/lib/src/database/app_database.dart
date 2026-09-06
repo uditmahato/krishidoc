@@ -19,6 +19,8 @@ class Diagnoses extends Table {
   TextColumn get resultState => textEnum<ResultState>()();
   TextColumn get predictionsJson => text()();
   TextColumn get modelVersion => text()();
+  TextColumn get thresholdSetVersion =>
+      text().withDefault(const Constant('legacy-unknown'))();
   TextColumn get imagePath => text().nullable()();
 
   /// Epoch milliseconds UTC.
@@ -64,12 +66,28 @@ class Settings extends Table {
   Set<Column<Object>> get primaryKey => {key};
 }
 
-@DriftDatabase(tables: [Diagnoses, Observations, Settings])
+@DataClassName('FarmTaskRow')
+@TableIndex(name: 'idx_farm_tasks_created', columns: {#createdAtMs})
+class FarmTasks extends Table {
+  TextColumn get id => text()();
+  TextColumn get title => text()();
+  TextColumn get kind => textEnum<FarmTaskKind>()();
+  TextColumn get status => textEnum<FarmTaskStatus>()();
+  TextColumn get cropKey => text().nullable()();
+  IntColumn get createdAtMs => integer()();
+  IntColumn get dueAtMs => integer().nullable()();
+  IntColumn get completedAtMs => integer().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+@DriftDatabase(tables: [Diagnoses, Observations, Settings, FarmTasks])
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.executor);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -87,6 +105,12 @@ class AppDatabase extends _$AppDatabase {
       if (from < 2) {
         await m.createTable(observations);
       }
+      if (from < 3) {
+        await m.createTable(farmTasks);
+      }
+      if (from < 4) {
+        await m.addColumn(diagnoses, diagnoses.thresholdSetVersion);
+      }
     },
   );
 }
@@ -101,6 +125,7 @@ extension DiagnosisRowMapping on DiagnosisRow {
         .map((e) => TopPrediction.fromJson((e as Map).cast<String, Object?>()))
         .toList(growable: false),
     modelVersion: modelVersion,
+    thresholdSetVersion: thresholdSetVersion,
     createdAt: DateTime.fromMillisecondsSinceEpoch(createdAtMs, isUtc: true),
     cropKey: cropKey,
     imagePath: imagePath,
@@ -126,6 +151,34 @@ ObservationsCompanion observationToRow(Observation observation) =>
       createdAtMs: observation.createdAt.millisecondsSinceEpoch,
     );
 
+extension FarmTaskRowMapping on FarmTaskRow {
+  FarmTask toDomain() => FarmTask(
+    id: id,
+    title: title,
+    kind: kind,
+    status: status,
+    cropKey: cropKey,
+    createdAt: DateTime.fromMillisecondsSinceEpoch(createdAtMs, isUtc: true),
+    dueAt: dueAtMs == null
+        ? null
+        : DateTime.fromMillisecondsSinceEpoch(dueAtMs!, isUtc: true),
+    completedAt: completedAtMs == null
+        ? null
+        : DateTime.fromMillisecondsSinceEpoch(completedAtMs!, isUtc: true),
+  );
+}
+
+FarmTasksCompanion farmTaskToRow(FarmTask task) => FarmTasksCompanion.insert(
+  id: task.id,
+  title: task.title,
+  kind: task.kind,
+  status: task.status,
+  cropKey: Value(task.cropKey),
+  createdAtMs: task.createdAt.millisecondsSinceEpoch,
+  dueAtMs: Value(task.dueAt?.millisecondsSinceEpoch),
+  completedAtMs: Value(task.completedAt?.millisecondsSinceEpoch),
+);
+
 DiagnosesCompanion diagnosisToRow(DiagnosisRecord record) =>
     DiagnosesCompanion.insert(
       id: record.id,
@@ -135,6 +188,7 @@ DiagnosesCompanion diagnosisToRow(DiagnosisRecord record) =>
         for (final p in record.predictions) p.toJson(),
       ]),
       modelVersion: record.modelVersion,
+      thresholdSetVersion: Value(record.thresholdSetVersion),
       imagePath: Value(record.imagePath),
       createdAtMs: record.createdAt.millisecondsSinceEpoch,
     );

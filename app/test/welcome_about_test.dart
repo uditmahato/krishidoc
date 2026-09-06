@@ -168,18 +168,47 @@ void main() {
   });
 
   testWidgets(
+    'the introduction names the working crop-help and market paths',
+    timeout: _timeout,
+    (tester) async {
+      await _pumpAbout(tester, locale: 'en', first: true);
+
+      await tester.scrollUntilVisible(
+        find.byKey(aboutLeafCheckKey),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.byKey(aboutLeafCheckKey), findsOneWidget);
+      expect(find.byKey(aboutCropGuideKey), findsOneWidget);
+      expect(find.byKey(aboutWeatherKey), findsOneWidget);
+      expect(find.byKey(aboutMarketKey), findsOneWidget);
+      expect(find.textContaining('possible matches'), findsOneWidget);
+      expect(find.textContaining('not a field measurement'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.textContaining('does not upload'),
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.textContaining('does not upload'), findsOneWidget);
+      expect(find.byType(TextButton), findsNothing, reason: 'no Skip action');
+    },
+  );
+
+  testWidgets(
     'every block reads as one statement to a screen reader',
     timeout: _timeout,
     (tester) async {
       final handle = tester.ensureSemantics();
       await _pumpAbout(tester, locale: 'en', first: true);
 
-      // Three coherent statements, not eight fragments a reader has to
+      // Coherent statements, not fragments a reader has to
       // reassemble and cannot resume between.
       expect(
         find.bySemanticsLabel(
-          'This app is for the leaves of tomato, potato and maize. '
-          'It cannot look at fruit, at roots, or at any other crop.',
+          'Plan work, use Nepal crop guidance, check local weather and see '
+          'official Kalimati wholesale prices for tomato, potato and maize. '
+          'Photo scanning is experimental, covers tomato, potato and maize, '
+          'and does not confirm a diagnosis.',
         ),
         findsOneWidget,
       );

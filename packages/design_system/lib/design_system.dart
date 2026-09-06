@@ -2,6 +2,7 @@
 library;
 
 export 'src/contrast.dart';
+export 'src/components.dart';
 export 'src/diagnosis_presentation.dart';
 export 'src/diagnosis_result_view.dart';
 export 'src/haptics.dart';

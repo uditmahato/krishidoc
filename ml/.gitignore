@@ -1,0 +1,6 @@
+# Dataset payloads and generated ML artifacts are local-only.
+/data/
+/cache/
+/runs/
+/artifacts/
+/.pytest_tmp/

@@ -1,0 +1,364 @@
+{
+  "schema_version": 1,
+  "review_id": "plantcity-pakistan-v2-test-review-v1",
+  "source_id": "plantcity-pakistan-v2",
+  "source_version": 2,
+  "doi": "10.17632/w8kh2xkspx.2",
+  "reviewed_at": "2026-09-03T11:42:31+05:45",
+  "review_mode": "completed_test_artifacts_only",
+  "scope": {
+    "archive": "ml/data/raw/plantcity-pakistan-v2/Images/test.zip",
+    "extracted_tree": "ml/data/raw/plantcity-pakistan-v2/extracted/Images/test/test",
+    "included": [
+      "Completed test.zip archive hash",
+      "Every regular file in the completed extracted test tree",
+      "Decode, dimensions, JPEG metadata, SHA-256, 64-bit DCT pHash, filename patterns, and manual visual samples"
+    ],
+    "excluded": [
+      "The incomplete train.zip.part archive and all of its content",
+      "Cross-archive original-to-derivative lineage analysis",
+      "Agronomist label adjudication",
+      "Admission to any prepared manifest or model run"
+    ]
+  },
+  "archive_integrity": {
+    "file_name": "test.zip",
+    "byte_size": 1128347591,
+    "sha256": "db1bd5624f42aceebff4d8ff08f99257b0608ac712a8bf5bf7f1e676d68bfffa"
+  },
+  "tree_inventory": {
+    "file_count": 10667,
+    "total_bytes": 1132646255,
+    "sha256": "c657238e1837a41b4352c603f79aafc06337bca5c041a4777af72979ef2ffdbe",
+    "digest_algorithm": "sha256(sorted utf8 relative_posix_path + NUL + decimal_byte_size + NUL + lowercase_file_sha256 + LF), v1"
+  },
+  "publisher_claim_alignment": {
+    "reported_original_images": 10667,
+    "reported_post_augmentation_images": 52219,
+    "observed_test_tree_images": 10667,
+    "inference": "The exact count match and absence of augmentation-style filenames support treating TEST as the provider's original-candidate collection, but duplicates, recompression, Photoshop metadata, standardized dimensions, and stripped EXIF prevent certifying it as untouched raw-camera originals."
+  },
+  "decode_and_encoding": {
+    "decoded_ok": 10667,
+    "decode_failures": 0,
+    "actual_formats": {
+      "JPEG": 10667
+    },
+    "pixel_modes": {
+      "RGB": 10667
+    },
+    "file_suffixes": [
+      {
+        "suffix": ".jpg",
+        "count": 8415
+      },
+      {
+        "suffix": ".JPG",
+        "count": 1904
+      },
+      {
+        "suffix": ".jpeg",
+        "count": 348
+      }
+    ]
+  },
+  "crop_inventory": {
+    "apple": {
+      "class_count": 3,
+      "image_count": 573,
+      "classes": {
+        "Apple black_spot": 102,
+        "Apple Brown_spot": 265,
+        "Apple Normal": 206
+      }
+    },
+    "apricot": {
+      "class_count": 3,
+      "image_count": 461,
+      "classes": {
+        "Apricot blight leaf disease": 90,
+        "Apricot Normal": 163,
+        "Apricot shot_hole": 208
+      }
+    },
+    "bean": {
+      "class_count": 4,
+      "image_count": 639,
+      "classes": {
+        "Bean bean rust image": 124,
+        "Bean Fungal_leaf disease": 194,
+        "Bean Normal leaf": 223,
+        "Bean shot_hole": 98
+      }
+    },
+    "cherry": {
+      "class_count": 5,
+      "image_count": 999,
+      "classes": {
+        "Cherry brown_spot": 242,
+        "Cherry Leaf Scorch": 282,
+        "Cherry Normal leaf": 125,
+        "Cherry purple leaf spot": 240,
+        "Cherry_shot hole disease": 110
+      }
+    },
+    "maize": {
+      "class_count": 4,
+      "image_count": 465,
+      "classes": {
+        "Corn Fungal leaf": 83,
+        "Corn gray leaf spot": 132,
+        "Corn holcus_ leaf spot": 108,
+        "Corn Normal leaf": 142
+      }
+    },
+    "fig": {
+      "class_count": 4,
+      "image_count": 573,
+      "classes": {
+        "Fig Blight_leaf disease": 191,
+        "Fig Brown spot": 107,
+        "Fig normal leaf": 150,
+        "Fig_rust leaf": 125
+      }
+    },
+    "grape": {
+      "class_count": 7,
+      "image_count": 1575,
+      "classes": {
+        "Grape Anthracnose leaf": 249,
+        "Grape Brown spot leaf": 160,
+        "Grape Downy mildew leaf": 155,
+        "Grape Mites_leaf disease": 125,
+        "Grape Normal_leaf": 372,
+        "Grape Powdery_mildew leaf": 301,
+        "Grape shot hole leaf disease": 213
+      }
+    },
+    "loquat": {
+      "class_count": 2,
+      "image_count": 327,
+      "classes": {
+        "lokat Leaf_spot": 198,
+        "Lokat Normal leaf": 129
+      }
+    },
+    "pear": {
+      "class_count": 3,
+      "image_count": 512,
+      "classes": {
+        "Pear Black spot _ leaf disease": 226,
+        "Pear fire blight": 95,
+        "Pear Normal _leaf": 191
+      }
+    },
+    "persimmon": {
+      "class_count": 1,
+      "image_count": 166,
+      "classes": {
+        "persimmons Brown_spot": 166
+      }
+    },
+    "tomato": {
+      "class_count": 11,
+      "image_count": 3369,
+      "classes": {
+        "tomato Fusarium Wilt": 89,
+        "tomato spider mites": 127,
+        "tomato verticillium wilt": 105,
+        "tomato_bacterial_spot": 400,
+        "tomato_early_blight": 400,
+        "tomato_healthy_leaf": 400,
+        "tomato_late_blight": 294,
+        "tomato_leaf_curl": 413,
+        "tomato_leaf_miner": 400,
+        "tomato_leaf_mold": 400,
+        "tomato_septoria_leaf": 341
+      }
+    },
+    "walnut": {
+      "class_count": 5,
+      "image_count": 1008,
+      "classes": {
+        "Walnut Anthracnose_leaf disease": 162,
+        "Walnut Blotch_leaf disease": 339,
+        "Walnut leaf gall mite": 98,
+        "Walnut Normal_leaf": 178,
+        "Walnut Shot_hole": 231
+      }
+    }
+  },
+  "product_scope_counts": {
+    "maize_images": 465,
+    "tomato_images": 3369,
+    "maize_and_tomato_images": 3834,
+    "other_crop_images": 6833
+  },
+  "resolution_profile": {
+    "unique_width_height_pairs": 28,
+    "minimum_width": 573,
+    "maximum_width": 3264,
+    "minimum_height": 717,
+    "maximum_height": 3264,
+    "most_common": {
+      "800x1000": 7135,
+      "1200x800": 2075,
+      "800x1200": 1078,
+      "800x800": 212,
+      "1000x800": 102,
+      "3088x3088": 20,
+      "2448x3264": 10,
+      "1280x1280": 7,
+      "3264x2448": 6,
+      "1500x1000": 4,
+      "all_other_dimensions": 18
+    },
+    "top_three_dimension_image_count": 10288,
+    "top_three_dimension_fraction": 0.964469860316865,
+    "interpretation": "The strong resolution cohorts indicate standardized export or resize pipelines and must not be mistaken for independent camera provenance."
+  },
+  "metadata_profile": {
+    "images_with_exif": 115,
+    "images_without_exif": 10552,
+    "software_adobe_photoshop_7_0": 115,
+    "canon_eos_1200d_make_model": 4,
+    "gps_info_present": 4,
+    "artist_present": 4,
+    "copyright_present": 4,
+    "exif_by_class": {
+      "Apricot blight leaf disease": 12,
+      "Grape Normal_leaf": 18,
+      "tomato Fusarium Wilt": 74,
+      "tomato_septoria_leaf": 11
+    },
+    "privacy_note": "Derived training assets must not retain unnecessary GPS, artist, or camera metadata. Raw-source attribution and licence evidence must remain separately auditable."
+  },
+  "filename_profile": {
+    "numeric_only": 9449,
+    "tomato_N": 1156,
+    "IMG_N": 24,
+    "other_tomato_fusarium_N": 38,
+    "augmentation_token_matches": 0,
+    "interpretation": "Per-class counters and mixed renamed/raw-camera patterns do not preserve reliable original-to-derivative or capture-session lineage."
+  },
+  "duplicate_analysis": {
+    "sha256": {
+      "duplicate_group_count": 66,
+      "duplicate_image_membership_count": 132,
+      "largest_group_size": 2,
+      "cross_class_group_count": 7,
+      "cross_class_image_membership_count": 14,
+      "unique_file_sha256_count": 10601
+    },
+    "phash_64_dct_identical": {
+      "duplicate_group_count": 194,
+      "duplicate_image_membership_count": 392,
+      "largest_group_size": 3,
+      "cross_class_group_count": 9
+    },
+    "phash_64_dct_distance_at_most_4": {
+      "connected_component_count": 344,
+      "component_image_membership_count": 713,
+      "largest_component_size": 4,
+      "cross_class_component_count": 16,
+      "matching_pair_count": 384
+    },
+    "maize_tomato_phash_distance_at_most_4": {
+      "connected_component_count": 183,
+      "component_image_membership_count": 382,
+      "cross_class_component_count": 9,
+      "matching_pair_count": 208,
+      "same_class_pair_count": 198,
+      "same_class_numeric_filename_gap_at_most_3_pair_count": 186
+    },
+    "method_note": "pHash matches are candidate visual-dependence links, not proof of identical pixels or identical labels. Counts use transitive connected components at Hamming distance <= 4."
+  },
+  "named_contradictions": {
+    "exact_sha256_cross_class": [
+      [
+        "Cherry brown_spot/17.jpg",
+        "Cherry Leaf Scorch/44.jpg"
+      ],
+      [
+        "Cherry Normal leaf/17.jpg",
+        "Cherry_shot hole disease/1.jpg"
+      ],
+      [
+        "tomato verticillium wilt/9.JPG",
+        "tomato_late_blight/13.JPG"
+      ],
+      [
+        "tomato verticillium wilt/10.JPG",
+        "tomato_late_blight/14.JPG"
+      ],
+      [
+        "tomato verticillium wilt/11.JPG",
+        "tomato_late_blight/15.JPG"
+      ],
+      [
+        "tomato verticillium wilt/45.JPG",
+        "tomato_late_blight/73.JPG"
+      ],
+      [
+        "tomato verticillium wilt/99.JPG",
+        "tomato_late_blight/190.JPG"
+      ]
+    ],
+    "phash_distance_at_most_4_cross_class_examples": [
+      [
+        "Corn Fungal leaf/52.jpg",
+        "Corn gray leaf spot/132.jpg"
+      ],
+      [
+        "Corn holcus_ leaf spot/35.jpg",
+        "Corn Normal leaf/103.jpg"
+      ],
+      [
+        "tomato Fusarium Wilt/34.JPG",
+        "tomato_septoria_leaf/tomato_243.jpg"
+      ],
+      [
+        "tomato spider mites/IMG_3672.JPG",
+        "tomato_leaf_mold/327.JPG",
+        "tomato_leaf_mold/328.JPG"
+      ]
+    ]
+  },
+  "manual_visual_review": {
+    "minimum_images_reviewed": 30,
+    "findings": [
+      "The corpus mixes in-field and canopy images with handheld and detached leaves on white paper, rugs, concrete, black tire-like material, and tree stumps.",
+      "Sequential files frequently show the same leaf or plant with small viewpoint changes; Corn Normal leaf/109.jpg through 112.jpg are a clear capture-burst example rather than four independent plants.",
+      "Other repeated-session examples include Apple Brown_spot/1.jpg through 3.jpg, Walnut Blotch_leaf disease/1.jpg and 2.jpg, tomato Fusarium Wilt/1.JPG and 2.JPG, and Corn gray leaf spot/1.jpg and 2.jpg.",
+      "No visible watermark or text overlay was observed in the manual sample, but no corpus-wide absence claim is made.",
+      "Several broad folder labels and sampled maize presentations require agronomist adjudication before canonical disease mapping."
+    ]
+  },
+  "decision": "original_candidate_training_only_not_admitted",
+  "decision_rationale": [
+    "The test tree count is consistent with the publisher's collected-image count, but original-to-derivative lineage cannot be established until the separate training archive is complete and audited.",
+    "Exact byte-identical images occur under contradictory class labels.",
+    "Capture bursts, recompressed repetitions, and pHash-connected components violate an independent-image assumption.",
+    "Provider folder names and the provider test boundary are not sufficient evidence for canonical labels or an independent evaluation split.",
+    "Pakistan regional imagery can improve development diversity but cannot substitute for locked, independently labelled Nepal evidence."
+  ],
+  "prohibited_uses": [
+    "Locked internal test evidence",
+    "Independent external test evidence",
+    "Nepal field evidence",
+    "Promotion or deployment claims",
+    "Direct training before required remediation"
+  ],
+  "potential_future_role": "Training-only or development-diagnostic public data after every remediation item passes",
+  "required_remediation": [
+    "Wait for train.zip to complete; verify archive checksums, archive integrity, licence evidence, and exact provider version without reading a partial archive.",
+    "Build cross-archive lineage using exact hashes, pHash, and geometric or photometric derivative matching. Exclude augmented derivatives or bind every derivative to its original's train-only group.",
+    "Quarantine every whole mixed-label exact or near-duplicate component. Require agronomist adjudication before restoring any member.",
+    "Group same-leaf, same-plant, and capture-burst sequences before split assignment using pHash, sequential-name evidence, dimensions, backgrounds, and manual review; filename adjacency alone is insufficient.",
+    "Discard the provider train/test boundary and create any development split only after grouping. Never present this inspected public source as a pristine external holdout.",
+    "Map only reviewed maize and tomato labels into canonical KrishiDoc keys. Treat vague or unsupported conditions as explicit unknown; map all other crop species only as wrong-crop or OOD evidence.",
+    "Perform a representative agronomist label audit, with heightened review of maize gray/fungal/holcus folders and tomato Verticillium/late-blight conflicts.",
+    "Complete a corpus-wide rights, watermark, and privacy review. Strip unnecessary EXIF/GPS from derived model inputs without losing source attribution records.",
+    "Re-run the fail-closed manifest audit and record a new immutable manifest hash before any experiment starts."
+  ]
+}

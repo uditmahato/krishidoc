@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "policy_type": "candidate_evidence_bundle_promotion",
+  "policy_name": "potato_pldd_up_public_field_provisional_v1",
+  "source_experiment": "potato_pldd_up_provisional_v1",
+  "crop": "potato",
+  "status": "provisional_public_field_evidence_only",
+  "promotion_allowed": false,
+  "known_labels": [
+    "potato_early_blight",
+    "potato_late_blight",
+    "potato_healthy"
+  ],
+  "required_evidence_roles": [
+    "internal_test",
+    "external_test",
+    "deployment_benchmark",
+    "export"
+  ],
+  "external_required_labels": [
+    "potato_early_blight",
+    "potato_late_blight",
+    "potato_healthy"
+  ],
+  "split_policy": {
+    "future_nepal_test_source": "nepal_field_locked_v1"
+  },
+  "acceptance_gates": {
+    "minimum_field_macro_f1": 0.8,
+    "minimum_worst_known_class_recall": 0.75,
+    "minimum_worst_known_class_recall_lower_95": 0.65,
+    "minimum_per_class_support": 100,
+    "minimum_accepted_set_per_class_precision_lower_95": 0.9,
+    "minimum_healthy_precision_lower_95": 0.95,
+    "minimum_usable_target_leaf_recall": 0.95,
+    "maximum_expected_calibration_error": 0.05,
+    "maximum_ood_false_accept_rate_at_operating_point": 0.05,
+    "minimum_external_known_accept_rate": 0.7,
+    "minimum_external_field_macro_f1": 0.75,
+    "minimum_external_condition_balanced_accuracy": 0.7,
+    "minimum_external_known_support": 300,
+    "minimum_external_per_class_support": 75,
+    "maximum_int8_field_macro_f1_drop": 0.01,
+    "maximum_int8_accepted_risk_drop": 0.01,
+    "maximum_int8_model_bytes_per_crop": 6000000,
+    "maximum_p95_device_inference_ms": 750,
+    "maximum_cold_device_inference_ms": 2000,
+    "nepal_field_gate_required_for_confident_results": true
+  },
+  "evidence_requirements": {
+    "internal": "A frozen, grouped PLDD-UP test partition with no filename-family, perceptual-duplicate, source, plant, or capture-burst leakage into training or calibration; each provisional class must meet the configured support floor.",
+    "external": "At least one source-locked field domain independent of PLDD-UP and training, containing all three provisional labels with the configured total and per-class support.",
+    "acceptance": "Per-class accepted-set confusion counts at the frozen refusal threshold; unfiltered closed-set precision or headline accuracy is not a substitute.",
+    "ood": "Wrong-crop, other-plant, unsuitable-view, unsupported potato condition, and non-plant cases with false-accept numerator and denominator, judged by the upper 95% Wilson bound.",
+    "calibration": "Temperatures and the refusal threshold fitted only on the locked calibration partition, followed by untouched internal and external test ECE reporting.",
+    "device_and_int8": "A hash-matched full-integer INT8 export, float-versus-INT8 field and accepted-risk parity, and non-emulated Android warm/cold timing evidence.",
+    "nepal": "The expected locked Nepal potato field set must be independently labelled, source-locked, and explicitly pass before promotion can be reconsidered."
+  },
+  "limitations": [
+    "This is a standalone candidate-bundle policy for potato_pldd_up_provisional_v1; it does not modify or control that training experiment.",
+    "Only potato early blight, late blight, and healthy are provisional known labels. Other diseases, pests, deficiencies, mixed symptoms, wrong subjects, and unsuitable images remain open-set or refused.",
+    "PLDD-UP operational-field performance is Indian-domain evidence and is not treated as independent external or Nepal evidence.",
+    "Currently available independent public potato evidence is not assumed to satisfy all three exact labels or the support floors; missing or broad labels must fail closed rather than be relabelled.",
+    "Passing public internal, independent-external, acceptance, calibration, OOD, INT8, and device gates remains insufficient without locked independently labelled Nepal field evidence.",
+    "promotion_allowed remains false until agronomy, localized safety, Nepal field, export/runtime, and rollout reviews explicitly supersede this policy."
+  ]
+}

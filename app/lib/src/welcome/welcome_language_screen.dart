@@ -15,7 +15,7 @@ import 'language_choice.dart';
 Key languageTargetKey(AppLanguage language) =>
     Key('welcome.language.${language.code}');
 
-/// The first screen of the app, before its first localisable sentence.
+/// The first localised screen of the app, before a reading language is known.
 ///
 /// No AppBar, no back, no skip, no preselection, no Continue button. One tap
 /// is the whole screen. It is reached by being the initial location rather
@@ -31,13 +31,17 @@ class _WelcomeLanguageScreenState extends State<WelcomeLanguageScreen> {
   /// Guards against a double tap writing twice. Set before the await, so the
   /// second tap of an impatient double tap is dropped rather than queued.
   bool _busy = false;
+  AppLanguage? _pendingLanguage;
 
   Future<void> _choose(LanguageChoice choice) async {
     if (_busy) return;
     // Fired before the await so the confirmation arrives with the tap rather
     // than with the result of the tap.
     unawaited(KdHaptics.selected());
-    setState(() => _busy = true);
+    setState(() {
+      _busy = true;
+      _pendingLanguage = choice.language;
+    });
 
     // Awaited, not started. Navigating on completion is what guarantees the
     // next screen cannot be reached in a state where the language is on
@@ -50,7 +54,12 @@ class _WelcomeLanguageScreenState extends State<WelcomeLanguageScreen> {
     // so a wrong tap costs one back press and one tap, with no reading
     // required at either step.
     await context.push('${AppRoutes.welcomeAbout}?first=1');
-    if (mounted) setState(() => _busy = false);
+    if (mounted) {
+      setState(() {
+        _busy = false;
+        _pendingLanguage = null;
+      });
+    }
   }
 
   @override
@@ -69,34 +78,55 @@ class _WelcomeLanguageScreenState extends State<WelcomeLanguageScreen> {
             child: ConstrainedBox(
               constraints: BoxConstraints(minHeight: constraints.maxHeight),
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: KdLayout.pageGutter,
-                  vertical: KdSpacing.lg,
+                padding: const EdgeInsets.fromLTRB(
+                  KdSpacing.lg,
+                  KdSpacing.xl,
+                  KdSpacing.lg,
+                  KdSpacing.lg,
                 ),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Center(
-                      child: Icon(
-                        Icons.translate,
-                        size: kdScaledIcon(context, KdIconSize.xxl),
-                        color: KdColors.primary,
-                        // First in traversal, and the closest thing to a
-                        // pre-language prompt that can exist on a screen
-                        // whose whole purpose is that no language is known
-                        // yet. It resolves in the device locale, which is
-                        // right: a screen-reader user's device language is
-                        // their language.
-                        semanticLabel: l10n.a11yLanguageChooser,
-                      ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        KdBrandMark(size: 56, semanticLabel: l10n.appTitle),
+                        const SizedBox(height: KdSpacing.lg),
+                        Text(
+                          l10n.languageGreeting,
+                          style: Theme.of(context).textTheme.headlineMedium
+                              ?.copyWith(color: KdColors.primaryPressed),
+                        ),
+                        const SizedBox(height: KdSpacing.xs),
+                        Text(
+                          l10n.a11yLanguageChooser,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: KdSpacing.sm),
+                        Text(
+                          l10n.languageChoiceHint,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: KdColors.inkMuted),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: KdSpacing.xl),
-                    for (final choice in kLanguageChoices) ...[
-                      if (choice != kLanguageChoices.first)
-                        const SizedBox(height: KdSpacing.smd),
-                      _LanguageTarget(choice: choice, onChoose: _choose),
-                    ],
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        for (final choice in kLanguageChoices) ...[
+                          if (choice != kLanguageChoices.first)
+                            const SizedBox(height: KdSpacing.smd),
+                          _LanguageTarget(
+                            choice: choice,
+                            onChoose: _choose,
+                            busy: _busy,
+                            pending: _pendingLanguage == choice.language,
+                          ),
+                        ],
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -109,10 +139,17 @@ class _WelcomeLanguageScreenState extends State<WelcomeLanguageScreen> {
 }
 
 class _LanguageTarget extends StatelessWidget {
-  const _LanguageTarget({required this.choice, required this.onChoose});
+  const _LanguageTarget({
+    required this.choice,
+    required this.onChoose,
+    required this.busy,
+    required this.pending,
+  });
 
   final LanguageChoice choice;
   final void Function(LanguageChoice choice) onChoose;
+  final bool busy;
+  final bool pending;
 
   @override
   Widget build(BuildContext context) {
@@ -128,45 +165,65 @@ class _LanguageTarget extends StatelessWidget {
       // excluded subtree: TalkBack announces "button" and double tap does
       // nothing. On an unskippable first-run gate that is a hard lock for a
       // blind user.
-      onTap: () => onChoose(choice),
+      onTap: busy ? null : () => onChoose(choice),
       excludeSemantics: true,
-      child: Card(
-        child: InkWell(
-          key: languageTargetKey(choice.language),
-          borderRadius: BorderRadius.circular(KdRadius.lg),
-          onTap: () => onChoose(choice),
-          child: ConstrainedBox(
-            // Well above the 48dp floor. This is the one screen where a
-            // mis-tap costs the user the whole app.
-            constraints: const BoxConstraints(minHeight: 72),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: KdSpacing.lmd,
-                vertical: KdSpacing.md,
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      label,
-                      // The choice's OWN script metrics, never the ambient
-                      // theme. At this moment no language has been chosen, so
-                      // the app themes with English metrics and both
-                      // Devanagari endonyms would paint at Latin line height
-                      // with letter spacing, collapsing the shirorekha on the
-                      // one screen whose whole job is to be readable in that
-                      // script.
-                      style: KdType.forLocale(
-                        choice.locale,
-                      ).headlineSmall!.copyWith(color: KdColors.inkStrong),
+      child: AnimatedOpacity(
+        opacity: busy && !pending ? 0.52 : 1,
+        duration: kdDuration(context, KdMotion.quick),
+        child: Card(
+          elevation: pending ? 0 : 1,
+          color: pending ? KdColors.primarySoft : KdColors.surface,
+          child: InkWell(
+            key: languageTargetKey(choice.language),
+            borderRadius: BorderRadius.circular(KdRadius.lg),
+            onTap: busy ? null : () => onChoose(choice),
+            child: ConstrainedBox(
+              // Well above the 48dp floor. This is the one screen where a
+              // mis-tap costs the user the whole app.
+              constraints: const BoxConstraints(minHeight: 72),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: KdSpacing.lmd,
+                  vertical: KdSpacing.smd,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        label,
+                        // The choice's OWN script metrics, never the ambient
+                        // theme. At this moment no language has been chosen,
+                        // so both Devanagari endonyms need explicit metrics.
+                        style: KdType.forLocale(
+                          choice.locale,
+                        ).headlineSmall!.copyWith(color: KdColors.inkStrong),
+                      ),
                     ),
-                  ),
-                  Icon(
-                    Icons.arrow_forward,
-                    size: kdScaledIcon(context, KdIconSize.md),
-                    color: KdColors.primary,
-                  ),
-                ],
+                    if (pending)
+                      SizedBox.square(
+                        dimension: KdIconSize.md,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: KdColors.primaryPressed,
+                        ),
+                      )
+                    else
+                      DecoratedBox(
+                        decoration: const BoxDecoration(
+                          color: KdColors.primarySoft,
+                          shape: BoxShape.circle,
+                        ),
+                        child: SizedBox.square(
+                          dimension: 40,
+                          child: Icon(
+                            Icons.arrow_forward_rounded,
+                            size: kdScaledIcon(context, KdIconSize.md),
+                            color: KdColors.primaryPressed,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
           ),

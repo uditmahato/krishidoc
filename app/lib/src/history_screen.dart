@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 
 import '../l10n/gen/app_localizations.dart';
 import 'diagnosis/sample_notice.dart';
+import 'diagnosis/label_names.dart';
 import 'providers.dart';
 import 'router.dart';
 
@@ -49,21 +50,36 @@ class HistoryScreen extends ConsumerWidget {
                   ))
                     const Padding(
                       padding: EdgeInsets.fromLTRB(
-                        KdSpacing.md,
-                        KdSpacing.md,
-                        KdSpacing.md,
+                        KdLayout.pageGutter,
+                        KdLayout.pageGutter,
+                        KdLayout.pageGutter,
                         0,
                       ),
                       child: SampleNotice(),
                     ),
+                  if (records.any(
+                    (record) => isExperimentalModelVersion(record.modelVersion),
+                  ))
+                    const Padding(
+                      padding: EdgeInsets.fromLTRB(
+                        KdLayout.pageGutter,
+                        KdLayout.pageGutter,
+                        KdLayout.pageGutter,
+                        0,
+                      ),
+                      child: ExperimentalModelNotice(),
+                    ),
                   Expanded(
-                    child: ListView.separated(
-                      padding: const EdgeInsets.all(KdSpacing.md),
-                      itemCount: records.length,
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(height: KdSpacing.sm),
-                      itemBuilder: (context, index) =>
-                          _HistoryTile(record: records[index]),
+                    child: ListView(
+                      padding: const EdgeInsets.all(KdLayout.pageGutter),
+                      children: [
+                        KdGroupedSurface(
+                          children: [
+                            for (final record in records)
+                              _HistoryTile(record: record),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -102,10 +118,19 @@ class _EmptyHistory extends StatelessWidget {
             children: [
               ExcludeSemantics(
                 child: Center(
-                  child: Icon(
-                    Icons.eco_outlined,
-                    size: kdScaledIcon(context, KdIconSize.xxl),
-                    color: KdColors.inkMuted,
+                  child: DecoratedBox(
+                    decoration: const BoxDecoration(
+                      color: KdColors.primarySoft,
+                      shape: BoxShape.circle,
+                    ),
+                    child: SizedBox.square(
+                      dimension: 112,
+                      child: Icon(
+                        Icons.document_scanner_outlined,
+                        size: kdScaledIcon(context, KdIconSize.xxl),
+                        color: KdColors.primaryPressed,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -140,20 +165,27 @@ class _EmptyHistory extends StatelessWidget {
         ),
         // Outside the scroll view, same rule as About.
         //
-        // Deliberately NOT "Take your first photo", disabled or otherwise. No
-        // model exists, so a disabled primary here would be the coming-soon
-        // tile wearing different clothes. When inference ships this becomes
-        // `label: takePhoto, onPressed: () => context.push(AppRoutes.capture)`
-        // at this same widget key: a one-line change, recorded now so it is
-        // not rediscovered.
-        SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.all(KdLayout.pageGutter),
-            child: FilledButton(
-              key: historyEmptyActionKey,
-              onPressed: () => context.push(AppRoutes.welcomeAbout),
-              child: Text(l10n.historyEmptyAction),
+        DecoratedBox(
+          decoration: const BoxDecoration(
+            color: KdColors.surface,
+            border: Border(top: BorderSide(color: KdColors.outlineSoft)),
+          ),
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.all(KdLayout.pageGutter),
+              child: SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  key: historyEmptyActionKey,
+                  onPressed: () => context.push(AppRoutes.diagnose),
+                  child: Text(
+                    l10n.historyEmptyAction,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                  ),
+                ),
+              ),
             ),
           ),
         ),
@@ -173,7 +205,7 @@ class _HistoryTile extends StatelessWidget {
     final locale = Localizations.localeOf(context).toLanguageTag();
     final (icon, rail, stateName) = switch (record.state) {
       ResultState.confident => (
-        Icons.check_circle_outline,
+        Icons.manage_search_rounded,
         KdColors.stateConfidentRail,
         l10n.a11yStateConfident,
       ),
@@ -193,12 +225,17 @@ class _HistoryTile extends StatelessWidget {
     // until the capture module ships.
     final title = record.predictions.isEmpty
         ? l10n.historyNoIdentification
-        : record.predictions.first.label;
+        : localizedLabelName(
+            l10n,
+            record.predictions.first.label,
+            cropKey: record.cropKey,
+          );
     final when = DateFormat.yMMMd(
       locale,
     ).add_jm().format(record.createdAt.toLocal());
 
     final isSample = isSampleModelVersion(record.modelVersion);
+    final isExperimental = isExperimentalModelVersion(record.modelVersion);
 
     return Semantics(
       // All three states used to produce byte-identical semantics, so the
@@ -211,10 +248,12 @@ class _HistoryTile extends StatelessWidget {
       // and the marker glyph alone says nothing aloud.
       label: isSample
           ? '$stateName. $title. $when. ${l10n.sampleDataNotice}'
+          : isExperimental
+          ? '$stateName. $title. $when. ${l10n.possibleMatchNotice}'
           : '$stateName. $title. $when',
       button: true,
       child: ExcludeSemantics(
-        child: Card(
+        child: DecoratedBox(
           // The rail is a border rather than a sibling box: a stretched child
           // inside a list gets unbounded height, and an IntrinsicHeight here
           // would add a layout pass per row for something a border already
@@ -222,30 +261,43 @@ class _HistoryTile extends StatelessWidget {
           // state name, because three colours that each stay dark enough to
           // read on white cannot separate from each other by more than about
           // 3.5:1. Colour is support here, never the signal.
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              border: Border(
-                left: BorderSide(color: rail, width: KdSpacing.xs),
-              ),
+          decoration: BoxDecoration(
+            border: Border(
+              left: BorderSide(color: rail, width: KdSpacing.xs),
             ),
-            child: ListTile(
-              leading: Icon(icon, color: rail),
-              title: Text(title),
-              subtitle: Text(when),
-              // Marks exactly the rows the banner is about. Without it a
-              // mixed list would carry one sentence over rows it does not
-              // apply to, which is a different kind of lie from the one the
-              // notice exists to prevent.
-              trailing: isSample
-                  ? const Icon(
-                      sampleMarkerIcon,
-                      color: KdColors.stateUncertainRail,
-                    )
-                  : null,
-              // The row looked tappable for four modules and was inert. Now it
-              // opens the result it summarises.
-              onTap: () => context.push('${AppRoutes.resultBase}/${record.id}'),
+          ),
+          child: ListTile(
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: KdSpacing.smd,
+              vertical: KdSpacing.sm,
             ),
+            leading: KdIconWell(
+              icon: icon,
+              backgroundColor: switch (record.state) {
+                ResultState.confident => KdColors.stateConfidentBand,
+                ResultState.uncertain => KdColors.stateUncertainBand,
+                ResultState.outOfScope => KdColors.stateOutOfScopeBand,
+              },
+              foregroundColor: rail,
+              size: 52,
+            ),
+            title: Text(title),
+            subtitle: Padding(
+              padding: const EdgeInsets.only(top: KdSpacing.xs),
+              child: Text('$stateName  ·  $when'),
+            ),
+            // Marks exactly the rows the banner is about. Without it a mixed
+            // list would carry one sentence over rows it does not apply to,
+            // which is a different kind of lie from the one the notice exists
+            // to prevent.
+            trailing: isSample || isExperimental
+                ? Icon(
+                    isSample ? sampleMarkerIcon : experimentalMarkerIcon,
+                    color: KdColors.stateUncertainRail,
+                  )
+                : const Icon(Icons.chevron_right_rounded),
+            // Opens the result it summarises.
+            onTap: () => context.push('${AppRoutes.resultBase}/${record.id}'),
           ),
         ),
       ),

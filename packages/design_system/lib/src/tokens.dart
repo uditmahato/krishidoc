@@ -3,21 +3,17 @@ import 'package:flutter/painting.dart' show BoxShadow, Color, Offset;
 
 /// Colour tokens.
 ///
-/// Every ratio noted below is asserted in `test/contrast_test.dart` against
-/// the surface it is actually painted on. Nothing here is a remembered number:
-/// the previous version of this file claimed 8.6:1 for the primary green when
-/// the real figure is 7.87:1, and the theme then threw the token away and
-/// seeded a different green anyway, so the audited colour had never once
-/// reached the screen.
+/// Functional foreground/background pairs are asserted in
+/// `test/contrast_test.dart`. Decorative tones are deliberately kept out of
+/// those pairings rather than being mistaken for readable text colours.
 ///
 /// Two constraints shaped the palette and are worth stating because they are
 /// not obvious:
 ///
 /// 1. **The app is used in open sunlight.** Veiling glare compresses on-screen
-///    contrast hard, so body text sits near black on near white rather than on
-///    a tinted surface, and boundaries are drawn with a real border instead of
-///    a shadow. A 1dp shadow is the first thing to disappear on a 720p LCD in
-///    a field.
+///    contrast hard, so body text sits near black on near white. Form controls
+///    and safety states retain strong boundaries; editorial cards may use
+///    spacing, a soft edge and depth because they are not input affordances.
 ///
 /// 2. **Colour cannot carry the three-way diagnosis state.** For a rail to
 ///    read as a boundary on white it needs at least 3:1 against white, which
@@ -28,27 +24,35 @@ import 'package:flutter/painting.dart' show BoxShadow, Color, Offset;
 ///    support only. WCAG 1.4.1 asks for exactly this, and here it is forced.
 abstract final class KdColors {
   // Surfaces.
-  /// Page background. Slightly tinted so white cards read as raised.
-  static const Color canvas = Color(0xFFF1F3EC);
+  /// Warm page background. The slight soil tint keeps the product from
+  /// looking clinical while preserving strong outdoor contrast.
+  static const Color canvas = Color(0xFFF7F5EC);
 
-  /// Card and sheet fill. Pure white maximises text contrast in sunlight.
-  static const Color surface = Color(0xFFFFFFFF);
+  /// Card and sheet fill.
+  static const Color surface = Color(0xFFFFFEFA);
+
+  /// A warmer surface for branded and editorial sections.
+  static const Color surfaceWarm = Color(0xFFFFF8E8);
 
   /// Recessed fill: disabled controls, skeletons, inactive tracks.
-  static const Color surfaceSunken = Color(0xFFE4E7DC);
+  static const Color surfaceSunken = Color(0xFFE8ECE2);
 
-  /// Card and divider boundary. 3.88:1 on white and 3.47:1 on canvas, so it
-  /// clears the 3:1 non-text minimum on both sides of every edge it draws.
+  /// Functional control and safety-state boundary. It clears the 3:1
+  /// non-text minimum on the surfaces where it is used.
   static const Color border = Color(0xFF7C8474);
 
+  /// Decorative separation for cards. Unlike [border], this is not used as
+  /// the only edge of a form control or safety-critical status.
+  static const Color outlineSoft = Color(0xFFD6DCCF);
+
   // Ink.
-  /// Headings. 18.54:1 on white.
+  /// Headings; held near black for sunlight readability.
   static const Color inkStrong = Color(0xFF12140F);
 
-  /// Body copy. 17.16:1 on white, 15.34:1 on canvas.
+  /// Body copy; held near black for sunlight readability.
   static const Color inkBody = Color(0xFF1A1C19);
 
-  /// Secondary copy: timestamps, captions. 9.36:1 on white.
+  /// Secondary copy: timestamps and captions.
   static const Color inkMuted = Color(0xFF44483F);
 
   /// Disabled label. 5.01:1 on [surfaceSunken], which is deliberate: WCAG
@@ -59,15 +63,36 @@ abstract final class KdColors {
   static const Color inkDisabled = Color(0xFF5A6353);
 
   // Brand.
-  /// 7.87:1 on white, 7.03:1 on canvas.
+  /// Main action colour; audited on surface, canvas and white text.
   static const Color primary = Color(0xFF1B5E20);
 
-  /// Pressed and high-emphasis variant. 10.79:1 on white.
-  static const Color primaryPressed = Color(0xFF14471A);
+  /// Pressed and high-emphasis variant.
+  static const Color primaryPressed = Color(0xFF123F24);
 
   /// Tinted primary fill for quiet emphasis.
-  static const Color primarySoft = Color(0xFFDCEBDA);
+  static const Color primarySoft = Color(0xFFE1F0DE);
   static const Color onPrimary = Color(0xFFFFFFFF);
+
+  /// Bright tonal green reserved for the product's primary crop action.
+  /// Dark ink on this surface measures well above AA; the colour is therefore
+  /// usable in sunlight without falling back to a dark promotional banner.
+  static const Color actionLeaf = Color(0xFFB9E9B2);
+
+  /// Quiet persistent-navigation surface. It is intentionally distinct from
+  /// both the page canvas and white cards without looking like a fourth card.
+  static const Color navigation = Color(0xFFEEF1E5);
+
+  // Product identity. These colours are used as fills and illustration
+  // accents; body copy never relies on the lighter accents for contrast.
+  static const Color brandForest = Color(0xFF0E3C28);
+  static const Color brandLeaf = Color(0xFF4A7C42);
+  static const Color brandGold = Color(0xFFF2C75C);
+  static const Color brandGoldSoft = Color(0xFFFFF0BE);
+  static const Color brandGoldInk = Color(0xFF5C4100);
+  static const Color skySoft = Color(0xFFDDEBF1);
+  static const Color skyInk = Color(0xFF244D5D);
+  static const Color earthSoft = Color(0xFFF2E2D2);
+  static const Color earthInk = Color(0xFF69401F);
 
   // Semantic accents.
   /// 6.33:1 on white.
@@ -135,7 +160,7 @@ abstract final class KdSpacing {
 abstract final class KdLayout {
   /// Horizontal page margin. Card padding is deliberately smaller so that
   /// text inside a card still lines up with text outside one.
-  static const double pageGutter = KdSpacing.md;
+  static const double pageGutter = KdSpacing.lmd;
   static const double cardPadding = KdSpacing.md;
   static const double sectionGap = KdSpacing.lg;
   static const double itemGap = KdSpacing.smd;
@@ -149,9 +174,11 @@ abstract final class KdLayout {
 /// one screen: 12 on cards, 8 on chips, and a fully round stadium on buttons.
 abstract final class KdRadius {
   static const double sm = 8;
-  static const double md = 12;
-  static const double lg = 16;
-  static const double xl = 24;
+  static const double md = 14;
+  static const double lg = 20;
+  static const double xl = 28;
+  static const double hero = 32;
+  static const double pill = 999;
 }
 
 /// Icon sizes.
@@ -202,9 +229,9 @@ abstract final class KdMotion {
 abstract final class KdElevation {
   static const List<BoxShadow> none = <BoxShadow>[];
   static const List<BoxShadow> raised = <BoxShadow>[
-    BoxShadow(color: Color(0x14000000), blurRadius: 3, offset: Offset(0, 1)),
+    BoxShadow(color: Color(0x120E3C28), blurRadius: 12, offset: Offset(0, 4)),
   ];
   static const List<BoxShadow> floating = <BoxShadow>[
-    BoxShadow(color: Color(0x1F000000), blurRadius: 10, offset: Offset(0, 4)),
+    BoxShadow(color: Color(0x240E3C28), blurRadius: 24, offset: Offset(0, 10)),
   ];
 }

@@ -1,7 +1,7 @@
 name: krishidoc_app
 description: KrishiDoc V2 farmer app (Android-first).
 publish_to: none
-version: 0.1.0+1
+version: 0.3.2+5
 resolution: workspace
 
 environment:
@@ -20,20 +20,30 @@ dependencies:
     sdk: flutter
   flutter_riverpod: ^2.6.0
   go_router: ^15.0.0
+  html: ^0.15.5
+  http: ^1.3.0
+  image: ^4.2.0
+  image_picker: ^1.1.2
   inference: ^0.1.0
   intl: ^0.20.2
   path: ^1.9.0
   path_provider: ^2.1.0
   sqlite3_flutter_libs: ^0.5.24
+  tflite_flutter: ^0.12.1
 
 dev_dependencies:
   flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter
-  image: ^4.2.0
   integration_test:
     sdk: flutter
 
 flutter:
   uses-material-design: true
   generate: true
+  assets:
+    - assets/models/THIRD_PARTY_NOTICES.txt
+    - assets/models/plant_disease_experimental.metadata.json
+    - assets/models/plant_disease_experimental.tflite
+    - assets/models/potato_field_v3_efficientnet_b0.metadata.json
+    - assets/models/potato_field_v3_efficientnet_b0_float32.tflite

@@ -1,12 +1,15 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:core_domain/core_domain.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:krishidoc_app/src/app_services.dart';
 import 'package:krishidoc_app/src/capture/camera_session.dart';
 import 'package:krishidoc_app/src/capture/capture_screen.dart';
 import 'package:design_system/design_system.dart';
+import 'package:krishidoc_app/src/diagnosis/photo_store.dart';
 import 'package:krishidoc_app/src/diagnosis/result_screen.dart';
 import 'package:krishidoc_app/src/home_screen.dart';
 import 'package:krishidoc_app/src/providers.dart';
@@ -48,7 +51,7 @@ Future<AppServices> _pumpCapture(
     locale: locale,
     seed: seed,
     overrides: [
-      cameraSessionProvider.overrideWithValue(camera),
+      cameraSessionProvider.overrideWithValue(() => camera),
       frameAssessmentIntervalProvider.overrideWithValue(Duration.zero),
       imagePreparationProvider.overrideWithValue(
         (original) async => Uint8List(preparedSize),
@@ -84,7 +87,8 @@ void main() {
       await _pumpCapture(tester, FakeCameraSession(failOnStart: true));
 
       expect(find.textContaining('Allow camera access'), findsOneWidget);
-      expect(find.byKey(shutterKey), findsNothing);
+      expect(_shutter(tester).onPressed, isNull);
+      expect(find.byKey(galleryKey).hitTestable(), findsOneWidget);
     });
 
     testWidgets('leaving the screen stops the camera', (tester) async {
@@ -96,6 +100,73 @@ void main() {
       await tester.pump();
 
       expect(camera.didStop, isTrue);
+    });
+
+    testWidgets('leaving and reopening capture creates a fresh session', (
+      tester,
+    ) async {
+      final first = FakeCameraSession();
+      final second = FakeCameraSession();
+      final sessions = [first, second];
+      var nextSession = 0;
+      addTearDown(first.close);
+      addTearDown(second.close);
+
+      await pumpApp(
+        tester,
+        locale: const Locale('en'),
+        overrides: [
+          cameraSessionProvider.overrideWithValue(
+            () => sessions[nextSession++],
+          ),
+          frameAssessmentIntervalProvider.overrideWithValue(Duration.zero),
+        ],
+      );
+
+      final router = GoRouter.of(tester.element(find.byType(HomeScreen)));
+      unawaited(router.push('/capture'));
+      await tester.pumpAndSettle();
+      expect(first.didStart, isTrue);
+
+      router.pop();
+      await tester.pumpAndSettle();
+      expect(first.didStop, isTrue);
+
+      unawaited(router.push('/capture'));
+      await tester.pumpAndSettle();
+      expect(second.didStart, isTrue);
+      expect(nextSession, 2);
+
+      await _emit(tester, second, _goodFrame);
+      expect(_shutter(tester).onPressed, isNotNull);
+    });
+
+    testWidgets('backgrounding releases the camera and resume reacquires it', (
+      tester,
+    ) async {
+      final camera = FakeCameraSession();
+      await _pumpCapture(tester, camera);
+      addTearDown(
+        () => tester.binding.handleAppLifecycleStateChanged(
+          AppLifecycleState.resumed,
+        ),
+      );
+
+      await _emit(tester, camera, _goodFrame);
+      expect(_shutter(tester).onPressed, isNotNull);
+
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+      await tester.pump();
+      expect(camera.pauseCount, 1);
+      expect(_shutter(tester).onPressed, isNull);
+
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pump();
+      expect(camera.resumeCount, 1);
+      expect(_shutter(tester).onPressed, isNull);
+
+      await _emit(tester, camera, _goodFrame);
+      expect(_shutter(tester).onPressed, isNotNull);
     });
   });
 
@@ -234,8 +305,12 @@ void main() {
       final services = await pumpApp(
         tester,
         locale: locale,
+        startAt: '/diagnose/camera',
         overrides: [
-          cameraSessionProvider.overrideWithValue(camera),
+          // This group verifies the explicit crop path; auto mode has separate
+          // confirmation/correction tests in gallery_capture_test.dart.
+          autoDetectCropProvider.overrideWith((ref) => false),
+          cameraSessionProvider.overrideWithValue(() => camera),
           frameAssessmentIntervalProvider.overrideWithValue(Duration.zero),
           imagePreparationProvider.overrideWithValue(
             (original) async => Uint8List.fromList(
@@ -244,12 +319,6 @@ void main() {
           ),
         ],
       );
-      // The debug-only door. The Diagnose tile that used to lead here was
-      // deleted in Module 13, because Home must not offer a farmer a
-      // diagnosis this build cannot honestly give. Keyed rather than found by
-      // icon: the not-ready row now carries the camera glyph too.
-      await tester.tap(find.byKey(homeDebugCaptureKey));
-      await tester.pumpAndSettle();
       return services;
     }
 
@@ -304,9 +373,9 @@ void main() {
       );
     });
 
-    testWidgets('every result offers a way to reach a person', (tester) async {
-      // Whatever the state, escalation is present. This is the behavioural
-      // half of putting escalation on the sealed base class.
+    testWidgets('camera pauses under the result and resumes on return', (
+      tester,
+    ) async {
       final camera = FakeCameraSession();
       await pumpLoop(tester, camera);
 
@@ -314,7 +383,33 @@ void main() {
       await tester.tap(find.byKey(shutterKey));
       await tester.pumpAndSettle();
 
-      expect(find.text('See crop experts near you'), findsOneWidget);
+      expect(find.byType(ResultScreen), findsOneWidget);
+      expect(camera.pauseCount, 1);
+      expect(camera.resumeCount, 0);
+
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+
+      expect(find.byType(CaptureScreen), findsOneWidget);
+      expect(camera.resumeCount, 1);
+      expect(_shutter(tester).onPressed, isNull);
+
+      await _emit(tester, camera, _goodFrame);
+      expect(_shutter(tester).onPressed, isNotNull);
+    });
+
+    testWidgets('every result offers safe next steps', (tester) async {
+      final camera = FakeCameraSession();
+      await pumpLoop(tester, camera);
+
+      await _emit(tester, camera, _goodFrame);
+      await tester.tap(find.byKey(shutterKey));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('See treatment, prevention and control guidance'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('the new diagnosis reaches History', timeout: _timeout, (
@@ -327,12 +422,7 @@ void main() {
       await tester.tap(find.byKey(shutterKey));
       await tester.pumpAndSettle();
 
-      // Back out of the result, back out of the camera, then into History.
-      await tester.pageBack();
-      await tester.pumpAndSettle();
-      await tester.pageBack();
-      await tester.pumpAndSettle();
-      await tester.tap(find.byIcon(Icons.history_outlined));
+      GoRouter.of(tester.element(find.byType(ResultScreen))).go('/history');
       await tester.pumpAndSettle();
 
       expect(find.byType(ListTile), findsOneWidget);
@@ -357,5 +447,58 @@ void main() {
             'evaporate',
       );
     });
+
+    testWidgets('a failed diagnosis write rolls its saved photo back', (
+      tester,
+    ) async {
+      final camera = FakeCameraSession();
+      final diagnoses = FakeDiagnosisStore()..failOnUpsert = true;
+      final photos = _TrackingPhotoStore();
+      addTearDown(camera.close);
+      await pumpApp(
+        tester,
+        locale: const Locale('en'),
+        startAt: '/diagnose/camera',
+        diagnosisStore: diagnoses,
+        photoStore: photos,
+        overrides: [
+          autoDetectCropProvider.overrideWith((ref) => false),
+          cameraSessionProvider.overrideWithValue(() => camera),
+          frameAssessmentIntervalProvider.overrideWithValue(Duration.zero),
+          imagePreparationProvider.overrideWithValue(
+            (original) async => original,
+          ),
+        ],
+      );
+
+      await _emit(tester, camera, _goodFrame);
+      await tester.tap(find.byKey(shutterKey));
+      await tester.pumpAndSettle();
+
+      expect(photos.saved, isEmpty);
+      expect(photos.deleteCount, 1);
+      expect(find.textContaining('Something went wrong'), findsOneWidget);
+    });
   });
+}
+
+final class _TrackingPhotoStore implements PhotoStore {
+  final Map<String, Uint8List> saved = {};
+  var deleteCount = 0;
+
+  @override
+  Future<String> save(String diagnosisId, Uint8List bytes) async {
+    final path = 'memory://photos/$diagnosisId.jpg';
+    saved[path] = bytes;
+    return path;
+  }
+
+  @override
+  Future<Uint8List?> read(String path) async => saved[path];
+
+  @override
+  Future<void> delete(String path) async {
+    deleteCount++;
+    saved.remove(path);
+  }
 }

@@ -10,6 +10,7 @@ import 'package:image/image.dart' as img;
 import 'package:integration_test/integration_test.dart';
 import 'package:krishidoc_app/main.dart' as app;
 import 'package:krishidoc_app/src/app_services.dart';
+import 'package:krishidoc_app/src/home_screen.dart';
 import 'package:krishidoc_app/src/providers.dart';
 
 /// On-device verification of what widget tests cannot reach: the real SQLite
@@ -81,7 +82,9 @@ void main() {
       await bootApp(tester);
 
       expect(find.text('KrishiDoc'), findsOneWidget);
-      expect(find.text('Identify disease'), findsOneWidget);
+      await tester.tap(find.byKey(homeAskTabKey));
+      await pumpUntil(tester, find.byKey(homeDetectDiseaseKey));
+      expect(find.byKey(homeDetectDiseaseKey), findsOneWidget);
     });
 
     testWidgets('settings survive a real SQLite round trip', (tester) async {
@@ -102,7 +105,7 @@ void main() {
     ) async {
       final services = await bootApp(tester);
 
-      final marker = 'device_check_${services.ids.newId().substring(0, 8)}';
+      final marker = 'Device-check-${services.ids.newId().substring(0, 8)}';
       await services.diagnosisStore.upsert(
         DiagnosisRecord(
           id: services.ids.newId(),
@@ -113,10 +116,14 @@ void main() {
         ),
       );
 
-      final historyTile = find.byIcon(Icons.history);
-      await tester.ensureVisible(historyTile);
-      await tester.pump();
-      await tester.tap(historyTile);
+    await tester.tap(find.byKey(homeProfileTabKey));
+      await pumpUntil(tester, find.byIcon(Icons.document_scanner_outlined));
+      final scansTile = find.ancestor(
+        of: find.byIcon(Icons.document_scanner_outlined),
+        matching: find.byType(ListTile),
+      );
+      expect(scansTile, findsOneWidget);
+      await tester.tap(scansTile);
 
       await pumpUntil(tester, find.text(marker));
       expect(find.text(marker), findsOneWidget);

@@ -22,12 +22,37 @@ final class PlatformCameraSession implements CameraSession {
   final StreamController<LumaFrame> _frames =
       StreamController<LumaFrame>.broadcast();
   CameraController? _controller;
+  Future<void> _lifecycle = Future<void>.value();
 
   @override
   Stream<LumaFrame> get frames => _frames.stream;
 
   @override
-  Future<void> start() async {
+  Future<void> start() => _enqueue(_activate);
+
+  /// Serialises activation, still capture, pause and final teardown.
+  ///
+  /// Permission prompts and camera initialisation can outlive the route that
+  /// started them. Without this queue, `dispose -> stop` can run while
+  /// `start` is still awaiting Android and the late completion can reopen the
+  /// sensor after the screen has gone away.
+  Future<T> _enqueue<T>(Future<T> Function() operation) {
+    final result = _lifecycle.then<T>(
+      (_) => operation(),
+      onError: (Object _, StackTrace __) => operation(),
+    );
+    _lifecycle = result.then<void>(
+      (_) {},
+      onError: (Object _, StackTrace __) {},
+    );
+    return result;
+  }
+
+  Future<void> _activate() async {
+    if (_frames.isClosed) {
+      throw StateError('camera session has already been stopped');
+    }
+    if (_controller != null) return;
     final cameras = await availableCameras();
     if (cameras.isEmpty) {
       throw CameraException('no_camera', 'This device reports no cameras.');
@@ -52,7 +77,9 @@ final class PlatformCameraSession implements CameraSession {
   }
 
   @override
-  Future<Uint8List> capturePhoto() async {
+  Future<Uint8List> capturePhoto() => _enqueue(_capturePhoto);
+
+  Future<Uint8List> _capturePhoto() async {
     final controller = _controller;
     if (controller == null || !controller.value.isInitialized) {
       throw CameraException('not_started', 'The camera is not running.');
@@ -87,7 +114,12 @@ final class PlatformCameraSession implements CameraSession {
   }
 
   @override
-  Future<void> stop() async {
+  Future<void> pause() => _enqueue(_deactivate);
+
+  @override
+  Future<void> resume() => _enqueue(_activate);
+
+  Future<void> _deactivate() async {
     final controller = _controller;
     _controller = null;
     if (controller != null) {
@@ -96,6 +128,13 @@ final class PlatformCameraSession implements CameraSession {
       }
       await controller.dispose();
     }
+  }
+
+  @override
+  Future<void> stop() => _enqueue(_stop);
+
+  Future<void> _stop() async {
+    await _deactivate();
     if (!_frames.isClosed) {
       await _frames.close();
     }

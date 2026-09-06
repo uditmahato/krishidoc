@@ -52,6 +52,7 @@ final class DiagnosisRecord {
     required this.predictions,
     required this.modelVersion,
     required this.createdAt,
+    this.thresholdSetVersion = 'legacy-unknown',
     this.cropKey,
     this.imagePath,
   }) {
@@ -76,6 +77,11 @@ final class DiagnosisRecord {
   final ResultState state;
   final List<TopPrediction> predictions;
   final String modelVersion;
+
+  /// Exact decision-threshold set used for this stored outcome. Older rows
+  /// predate this field and are explicitly marked `legacy-unknown` rather
+  /// than being silently attributed to today's thresholds.
+  final String thresholdSetVersion;
   final DateTime createdAt;
   final String? cropKey;
 

@@ -13,6 +13,7 @@ final class AppServices {
   AppServices._(AppDatabase db)
     : _db = db,
       diagnosisStore = DriftDiagnosisStore(db),
+      farmTaskStore = DriftFarmTaskStore(db),
       observationStore = DriftObservationStore(db),
       settingsStore = DriftSettingsStore(db),
       ids = const IdGenerator();
@@ -21,6 +22,7 @@ final class AppServices {
   /// use this (never a live drift database under fake async).
   AppServices.forTest({
     required this.diagnosisStore,
+    required this.farmTaskStore,
     required this.observationStore,
     required this.settingsStore,
     this.ids = const IdGenerator(),
@@ -28,6 +30,7 @@ final class AppServices {
 
   final AppDatabase? _db;
   final DiagnosisStore diagnosisStore;
+  final FarmTaskStore farmTaskStore;
 
   /// The field notebook. Separate port from [diagnosisStore] because an
   /// observation makes no claim about a plant and therefore has none of the

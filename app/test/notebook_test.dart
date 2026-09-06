@@ -35,6 +35,13 @@ Future<void> _emit(WidgetTester tester, FakeCameraSession camera) async {
   await tester.pump();
 }
 
+Future<void> _openNotebook(WidgetTester tester) async {
+  await tester.tap(find.byKey(homeProfileTabKey));
+  await tester.pumpAndSettle();
+  await tester.tap(find.byKey(homeViewAllPhotosKey));
+  await tester.pumpAndSettle();
+}
+
 /// The first task in this app a farmer can actually finish.
 ///
 /// Everything here is reachable in a RELEASE build, which is the point. The
@@ -52,7 +59,7 @@ void main() {
       tester,
       locale: locale,
       overrides: [
-        cameraSessionProvider.overrideWithValue(camera),
+        cameraSessionProvider.overrideWithValue(() => camera),
         frameAssessmentIntervalProvider.overrideWithValue(Duration.zero),
         imagePreparationProvider.overrideWithValue(
           (original) async => Uint8List.fromList(
@@ -69,8 +76,7 @@ void main() {
     (tester) async {
       await pumpApp(tester, locale: const Locale('en'));
 
-      await tester.tap(find.byKey(homeNotebookKey));
-      await tester.pumpAndSettle();
+      await _openNotebook(tester);
 
       expect(find.byType(NotebookScreen), findsOneWidget);
       expect(find.text('You have no photos yet.'), findsOneWidget);
@@ -84,8 +90,7 @@ void main() {
       final camera = FakeCameraSession();
       final services = await pumpLoop(tester, camera);
 
-      await tester.tap(find.byKey(homeNotebookKey));
-      await tester.pumpAndSettle();
+      await _openNotebook(tester);
       await tester.tap(find.byKey(notebookCaptureKey));
       await tester.pumpAndSettle();
 
@@ -119,8 +124,7 @@ void main() {
       final camera = FakeCameraSession();
       final services = await pumpLoop(tester, camera);
 
-      await tester.tap(find.byKey(homeNotebookKey));
-      await tester.pumpAndSettle();
+      await _openNotebook(tester);
       await tester.tap(find.byKey(notebookCaptureKey));
       await tester.pumpAndSettle();
       await _emit(tester, camera);
@@ -150,8 +154,7 @@ void main() {
       ),
     );
 
-    await tester.tap(find.byKey(homeNotebookKey));
-    await tester.pumpAndSettle();
+    await _openNotebook(tester);
 
     expect(find.text('Tomato'), findsOneWidget);
     expect(find.text('wilting'), findsOneWidget);
@@ -172,8 +175,7 @@ void main() {
         ),
       );
 
-      await tester.tap(find.byKey(homeNotebookKey));
-      await tester.pumpAndSettle();
+      await _openNotebook(tester);
 
       expect(find.text('No note'), findsOneWidget);
     },
@@ -193,8 +195,7 @@ void main() {
         ),
       );
 
-      await tester.tap(find.byKey(homeNotebookKey));
-      await tester.pumpAndSettle();
+      await _openNotebook(tester);
       await tester.tap(find.byType(InkWell).first);
       await tester.pumpAndSettle();
 
@@ -223,8 +224,7 @@ void main() {
       ),
     );
 
-    await tester.tap(find.byKey(homeNotebookKey));
-    await tester.pumpAndSettle();
+    await _openNotebook(tester);
     await tester.tap(find.byType(InkWell).first);
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(observationDeleteKey));

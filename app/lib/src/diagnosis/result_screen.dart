@@ -7,6 +7,7 @@ import 'package:inference/inference.dart';
 
 import '../../l10n/gen/app_localizations.dart';
 import '../providers.dart';
+import '../router.dart';
 import 'certainty.dart';
 import 'diagnosis_presenter.dart';
 import 'sample_notice.dart';
@@ -51,13 +52,27 @@ class _Pending extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Center(
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const CircularProgressIndicator(),
-        const SizedBox(height: KdSpacing.md),
-        Text(message, textAlign: TextAlign.center),
-      ],
+    child: Padding(
+      padding: const EdgeInsets.all(KdLayout.pageGutter),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(KdSpacing.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const KdIconWell(icon: Icons.document_scanner_outlined),
+              const SizedBox(height: KdSpacing.md),
+              const CircularProgressIndicator(),
+              const SizedBox(height: KdSpacing.md),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ],
+          ),
+        ),
+      ),
     ),
   );
 }
@@ -70,13 +85,29 @@ class _Stated extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Center(
     child: Padding(
-      padding: const EdgeInsets.all(KdSpacing.lg),
-      child: Text(
-        message,
-        textAlign: TextAlign.center,
-        style: Theme.of(
-          context,
-        ).textTheme.bodyLarge?.copyWith(color: KdColors.danger),
+      padding: const EdgeInsets.all(KdLayout.pageGutter),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(KdSpacing.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              KdIconWell(
+                icon: Icons.error_outline,
+                backgroundColor: Theme.of(context).colorScheme.errorContainer,
+                foregroundColor: KdColors.danger,
+              ),
+              const SizedBox(height: KdSpacing.md),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(color: KdColors.danger),
+              ),
+            ],
+          ),
+        ),
       ),
     ),
   );
@@ -90,8 +121,8 @@ class _Result extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
     final cropKey = record.cropKey;
+    final cropLabel = _cropLabel(l10n, cropKey);
 
     // The pack is read only to recover the certainty band. `certaintyFor`
     // refuses to reinterpret a probability against thresholds that have since
@@ -103,14 +134,8 @@ class _Result extends ConsumerWidget {
       record: record,
       l10n: l10n,
       certainty: certaintyFor(record, pack),
-      // UNBUILT, and deliberately not faked. The clinic directory is a
-      // recorded seam (docs/seams/clinics.md) and the correction path needs a
-      // record type that does not exist yet. Both are wired as no-ops rather
-      // than sent somewhere plausible, because a button that navigates to an
-      // invented destination is harder to find and remove later than one that
-      // visibly does nothing. Closing these is the next module's work.
-      onEscalate: () {},
-      onCorrect: () {},
+      onEscalate: () => _openAssistant(context, ref),
+      onCorrect: () => context.push(AppRoutes.diagnose),
       // Reachable only for an unreadable photo, which the resolver does not
       // currently produce. Popping returns to the camera the result was
       // pushed from.
@@ -133,19 +158,60 @@ class _Result extends ConsumerWidget {
           const SampleNotice(),
           const SizedBox(height: KdLayout.itemGap),
         ],
+        if (isExperimentalModelVersion(record.modelVersion)) ...[
+          const ExperimentalModelNotice(),
+          const SizedBox(height: KdLayout.itemGap),
+        ],
+        if (cropLabel != null) ...[
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: KdStatusPill(
+              icon: Icons.spa_outlined,
+              label: l10n.diseaseSelectedCrop(cropLabel),
+            ),
+          ),
+          const SizedBox(height: KdLayout.itemGap),
+        ],
         if (imagePath != null) ...[
           _Photo(path: imagePath),
           const SizedBox(height: KdLayout.itemGap),
         ],
         DiagnosisResultView(presentation: presentation),
         const SizedBox(height: KdLayout.itemGap),
-        Text(
-          l10n.savedOffline,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.bodySmall?.copyWith(color: KdColors.inkMuted),
+        Align(
+          child: KdStatusPill(
+            icon: Icons.offline_pin_outlined,
+            label: l10n.savedOffline,
+            backgroundColor: KdColors.surfaceSunken,
+            foregroundColor: KdColors.inkMuted,
+          ),
         ),
       ],
     );
+  }
+
+  Future<void> _openAssistant(BuildContext context, WidgetRef ref) async {
+    final crop = record.cropKey == null
+        ? null
+        : ref.read(cropCatalogProvider).byKey(record.cropKey);
+    if (crop != null) {
+      await ref.read(selectedCropProvider.notifier).select(crop);
+    }
+    if (context.mounted) {
+      final parameters = <String, String>{};
+      if (record.cropKey case final cropKey?) {
+        parameters['crop'] = cropKey;
+      }
+      if (record.predictions case [final top, ...]) {
+        parameters['candidate'] = top.label;
+      }
+      await context.push(
+        Uri(
+          path: AppRoutes.assistant,
+          queryParameters: parameters.isEmpty ? null : parameters,
+        ).toString(),
+      );
+    }
   }
 }
 
@@ -169,8 +235,7 @@ class _Photo extends ConsumerWidget {
       // the screen.
       data: (data) => data == null
           ? const SizedBox.shrink()
-          : ClipRRect(
-              borderRadius: BorderRadius.circular(KdRadius.md),
+          : Card(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxHeight: 240),
                 child: Image.memory(
@@ -189,3 +254,10 @@ class _Photo extends ConsumerWidget {
     );
   }
 }
+
+String? _cropLabel(AppLocalizations l10n, String? cropKey) => switch (cropKey) {
+  'tomato' => l10n.cropTomato,
+  'potato' => l10n.cropPotato,
+  'maize' => l10n.cropMaize,
+  _ => null,
+};

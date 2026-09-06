@@ -14,5 +14,6 @@
         dark launch window would be a promise the first Dart frame immediately
         breaks.
     -->
-    <color name="kd_canvas">#F1F3EC</color>
+    <color name="kd_canvas">#F7F5EC</color>
+    <color name="kd_brand_forest">#0E3C28</color>
 </resources>

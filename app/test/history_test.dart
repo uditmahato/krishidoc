@@ -1,9 +1,11 @@
 import 'package:core_domain/core_domain.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:krishidoc_app/src/app_services.dart';
 import 'package:krishidoc_app/src/history_screen.dart';
-import 'package:krishidoc_app/src/welcome/welcome_about_screen.dart';
+import 'package:krishidoc_app/src/home_screen.dart';
+import 'package:krishidoc_app/src/diagnosis/disease_scan_intro_screen.dart';
 
 import 'helpers/pump_app.dart';
 
@@ -11,16 +13,9 @@ import 'helpers/pump_app.dart';
 const _timeout = Timeout(Duration(minutes: 1));
 
 Future<void> _openHistory(WidgetTester tester) async {
-  // Locale-independent target; the tile can sit below the test viewport.
-  final tile = find.byIcon(Icons.history_outlined);
-  await tester.scrollUntilVisible(
-    tile,
-    200,
-    scrollable: find.byType(Scrollable).first,
-  );
-  await tester.ensureVisible(tile);
-  await tester.pumpAndSettle();
-  await tester.tap(tile);
+  // Diagnosis history is an internal/sample surface now, so tests address it
+  // directly instead of requiring a misleading farmer-shell entry point.
+  GoRouter.of(tester.element(find.byType(HomeScreen))).go('/history');
   await tester.pumpAndSettle();
 }
 
@@ -53,20 +48,19 @@ void main() {
     },
   );
 
-  testWidgets('the empty state funnels to the explanation', timeout: _timeout, (
-    tester,
-  ) async {
-    await pumpApp(tester, locale: const Locale('en'));
-    await _openHistory(tester);
+  testWidgets(
+    'the empty state funnels to disease scan setup',
+    timeout: _timeout,
+    (tester) async {
+      await pumpApp(tester, locale: const Locale('en'));
+      await _openHistory(tester);
 
-    await tester.tap(find.byKey(historyEmptyActionKey));
-    await tester.pumpAndSettle();
+      await tester.tap(find.byKey(historyEmptyActionKey));
+      await tester.pumpAndSettle();
 
-    // Deliberately not a disabled "take your first photo": no model exists,
-    // and a disabled primary here would be the coming-soon tile in new
-    // clothes. It goes somewhere true instead.
-    expect(find.byType(WelcomeAboutScreen), findsOneWidget);
-  });
+      expect(find.byType(DiseaseScanIntroScreen), findsOneWidget);
+    },
+  );
 
   group('the empty-state action stays reachable', () {
     // Same rule as About: the button lives outside the scroll view, so it
@@ -131,9 +125,9 @@ void main() {
 
       await _openHistory(tester);
 
-      expect(find.text('late_blight'), findsOneWidget);
+      expect(find.text('Late blight'), findsOneWidget);
       expect(find.text('Could not identify'), findsOneWidget);
-      expect(find.byIcon(Icons.check_circle_outline), findsOneWidget);
+      expect(find.byIcon(Icons.manage_search_rounded), findsOneWidget);
       // `search_off`, not `image_not_supported`. The out-of-scope state means
       // "this app does not cover that plant yet", and a broken-image glyph
       // blames the farmer's photo for a gap in our coverage.
@@ -169,7 +163,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('early_blight'), findsOneWidget);
+      expect(find.text('Early blight'), findsOneWidget);
     },
   );
 

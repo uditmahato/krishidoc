@@ -1,0 +1,843 @@
+{
+  "schema_version": 1,
+  "validity_labels": [
+    "usable_target_leaf",
+    "unsuitable_target_crop_view",
+    "wrong_crop_leaf",
+    "other_plant",
+    "non_plant"
+  ],
+  "profiles": {
+    "safe_defaults": {
+      "exclude_globs": [
+        "**/.git/**",
+        "**/__MACOSX/**",
+        "**/thumbs/**"
+      ],
+      "derivative_globs": [
+        "**/aug/**",
+        "**/aug_*",
+        "**/augmented/**",
+        "**/augmentation/**",
+        "**/synthetic/**",
+        "**/generated/**",
+        "**/patches/**"
+      ]
+    },
+    "maize_single_crop": {
+      "class_aliases": {
+        "healthy": {
+          "crop": "maize",
+          "condition_label": "maize_healthy",
+          "validity_label": "usable_target_leaf"
+        },
+        "maize healthy": {
+          "crop": "maize",
+          "condition_label": "maize_healthy",
+          "validity_label": "usable_target_leaf"
+        },
+        "corn healthy": {
+          "crop": "maize",
+          "condition_label": "maize_healthy",
+          "validity_label": "usable_target_leaf"
+        },
+        "common rust": {
+          "crop": "maize",
+          "condition_label": "maize_common_rust",
+          "validity_label": "usable_target_leaf"
+        },
+        "corn rust leaf": {
+          "crop": "maize",
+          "condition_label": "maize_common_rust",
+          "validity_label": "usable_target_leaf"
+        },
+        "cercospora leaf spot gray leaf spot": {
+          "crop": "maize",
+          "condition_label": "maize_cercospora_leaf_spot_gray_leaf_spot",
+          "validity_label": "usable_target_leaf"
+        },
+        "gray leaf spot": {
+          "crop": "maize",
+          "condition_label": "maize_cercospora_leaf_spot_gray_leaf_spot",
+          "validity_label": "usable_target_leaf"
+        },
+        "corn gray leaf spot": {
+          "crop": "maize",
+          "condition_label": "maize_cercospora_leaf_spot_gray_leaf_spot",
+          "validity_label": "usable_target_leaf"
+        },
+        "northern leaf blight": {
+          "crop": "maize",
+          "condition_label": "maize_northern_leaf_blight",
+          "validity_label": "usable_target_leaf"
+        },
+        "other": {
+          "crop": "maize",
+          "condition_label": "maize_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        "unknown": {
+          "crop": "maize",
+          "condition_label": "maize_other_unknown",
+          "validity_label": "usable_target_leaf"
+        }
+      }
+    },
+    "potato_single_crop": {
+      "class_aliases": {
+        "healthy": {
+          "crop": "potato",
+          "condition_label": "potato_healthy",
+          "validity_label": "usable_target_leaf"
+        },
+        "potato healthy": {
+          "crop": "potato",
+          "condition_label": "potato_healthy",
+          "validity_label": "usable_target_leaf"
+        },
+        "eb": {
+          "crop": "potato",
+          "condition_label": "potato_early_blight",
+          "validity_label": "usable_target_leaf"
+        },
+        "early blight": {
+          "crop": "potato",
+          "condition_label": "potato_early_blight",
+          "validity_label": "usable_target_leaf"
+        },
+        "potato early blight": {
+          "crop": "potato",
+          "condition_label": "potato_early_blight",
+          "validity_label": "usable_target_leaf"
+        },
+        "lb": {
+          "crop": "potato",
+          "condition_label": "potato_late_blight",
+          "validity_label": "usable_target_leaf"
+        },
+        "late blight": {
+          "crop": "potato",
+          "condition_label": "potato_late_blight",
+          "validity_label": "usable_target_leaf"
+        },
+        "potato late blight": {
+          "crop": "potato",
+          "condition_label": "potato_late_blight",
+          "validity_label": "usable_target_leaf"
+        },
+        "fungal late blight": {
+          "crop": "potato",
+          "condition_label": "potato_late_blight",
+          "validity_label": "usable_target_leaf"
+        },
+        "bacteria": {
+          "crop": "potato",
+          "condition_label": "potato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        "bacterial soft rot": {
+          "crop": "potato",
+          "condition_label": "potato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        "fungi": {
+          "crop": "potato",
+          "condition_label": "potato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        "nematode": {
+          "crop": "potato",
+          "condition_label": "potato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        "pest": {
+          "crop": "potato",
+          "condition_label": "potato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        "virus": {
+          "crop": "potato",
+          "condition_label": "potato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        "leaf roll": {
+          "crop": "potato",
+          "condition_label": "potato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        "potato leaf roll": {
+          "crop": "potato",
+          "condition_label": "potato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        "viral leaf roll": {
+          "crop": "potato",
+          "condition_label": "potato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        "pvx": {
+          "crop": "potato",
+          "condition_label": "potato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        "pvy": {
+          "crop": "potato",
+          "condition_label": "potato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        "viral pvx": {
+          "crop": "potato",
+          "condition_label": "potato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        "viral pvy": {
+          "crop": "potato",
+          "condition_label": "potato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        "other": {
+          "crop": "potato",
+          "condition_label": "potato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        "unknown": {
+          "crop": "potato",
+          "condition_label": "potato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        }
+      }
+    },
+    "pldd_up_numeric_capture_bursts": {
+      "filename_numeric_capture_group": {
+        "regex": "^(?P<prefix>[a-z-]+)\\s*\\((?P<number>\\d+)\\)$",
+        "maximum_adjacent_gap": 1,
+        "maximum_phash_distance": 12,
+        "scope": "parent"
+      }
+    },
+    "central_java_capture_bursts": {
+      "filename_time_bucket": {
+        "bucket_seconds": 600,
+        "timezone_offset_minutes": 420,
+        "scope": "source"
+      }
+    },
+    "tomato_single_crop": {
+      "class_aliases": {
+        "healthy": {
+          "crop": "tomato",
+          "condition_label": "tomato_healthy",
+          "validity_label": "usable_target_leaf"
+        },
+        "tomato healthy": {
+          "crop": "tomato",
+          "condition_label": "tomato_healthy",
+          "validity_label": "usable_target_leaf"
+        },
+        "bacterial spot": {
+          "crop": "tomato",
+          "condition_label": "tomato_bacterial_spot",
+          "validity_label": "usable_target_leaf"
+        },
+        "bacterial_spot": {
+          "crop": "tomato",
+          "condition_label": "tomato_bacterial_spot",
+          "validity_label": "usable_target_leaf"
+        },
+        "early blight": {
+          "crop": "tomato",
+          "condition_label": "tomato_early_blight",
+          "validity_label": "usable_target_leaf"
+        },
+        "late blight": {
+          "crop": "tomato",
+          "condition_label": "tomato_late_blight",
+          "validity_label": "usable_target_leaf"
+        },
+        "leaf mold": {
+          "crop": "tomato",
+          "condition_label": "tomato_leaf_mold",
+          "validity_label": "usable_target_leaf"
+        },
+        "septoria leaf spot": {
+          "crop": "tomato",
+          "condition_label": "tomato_septoria_leaf_spot",
+          "validity_label": "usable_target_leaf"
+        },
+        "spider mites": {
+          "crop": "tomato",
+          "condition_label": "tomato_spider_mites_two_spotted_spider_mite",
+          "validity_label": "usable_target_leaf"
+        },
+        "two spotted spider mite": {
+          "crop": "tomato",
+          "condition_label": "tomato_spider_mites_two_spotted_spider_mite",
+          "validity_label": "usable_target_leaf"
+        },
+        "tomato two spotted spider mites leaf": {
+          "crop": "tomato",
+          "condition_label": "tomato_spider_mites_two_spotted_spider_mite",
+          "validity_label": "usable_target_leaf"
+        },
+        "target spot": {
+          "crop": "tomato",
+          "condition_label": "tomato_target_spot",
+          "validity_label": "usable_target_leaf"
+        },
+        "tomato yellow leaf curl virus": {
+          "crop": "tomato",
+          "condition_label": "tomato_yellow_leaf_curl_virus",
+          "validity_label": "usable_target_leaf"
+        },
+        "yellow leaf curl virus": {
+          "crop": "tomato",
+          "condition_label": "tomato_yellow_leaf_curl_virus",
+          "validity_label": "usable_target_leaf"
+        },
+        "tomato leaf yellow virus": {
+          "crop": "tomato",
+          "condition_label": "tomato_yellow_leaf_curl_virus",
+          "validity_label": "usable_target_leaf"
+        },
+        "tomato mosaic virus": {
+          "crop": "tomato",
+          "condition_label": "tomato_mosaic_virus",
+          "validity_label": "usable_target_leaf"
+        },
+        "mosaic virus": {
+          "crop": "tomato",
+          "condition_label": "tomato_mosaic_virus",
+          "validity_label": "usable_target_leaf"
+        },
+        "tomato leaf mosaic virus": {
+          "crop": "tomato",
+          "condition_label": "tomato_mosaic_virus",
+          "validity_label": "usable_target_leaf"
+        },
+        "leaf miner": {
+          "crop": "tomato",
+          "condition_label": "tomato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        "powdery mildew": {
+          "crop": "tomato",
+          "condition_label": "tomato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        "whitefly": {
+          "crop": "tomato",
+          "condition_label": "tomato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        "mixed": {
+          "crop": "tomato",
+          "condition_label": "tomato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        "unhealthy": {
+          "crop": "tomato",
+          "condition_label": "tomato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        "diseased": {
+          "crop": "tomato",
+          "condition_label": "tomato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        "other": {
+          "crop": "tomato",
+          "condition_label": "tomato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        "unknown": {
+          "crop": "tomato",
+          "condition_label": "tomato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        }
+      }
+    },
+    "tom2024_cata": {
+      "include_globs": [
+        "extracted/CATA-English/**"
+      ],
+      "path_rules": [
+        {
+          "glob": "**/maize_diseases/Healthy_leaf/**",
+          "crop": "maize",
+          "condition_label": "maize_healthy",
+          "validity_label": "usable_target_leaf"
+        },
+        {
+          "glob": "**/maize_diseases/Rust-D/**",
+          "crop": "maize",
+          "condition_label": "maize_common_rust",
+          "validity_label": "usable_target_leaf"
+        },
+        {
+          "glob": "**/maize_diseases/**",
+          "crop": "maize",
+          "condition_label": "maize_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        {
+          "glob": "**/maize_pests*/**",
+          "crop": "maize",
+          "condition_label": "not_applicable",
+          "validity_label": "unsuitable_target_crop_view"
+        },
+        {
+          "glob": "**/onion_diseases/**",
+          "crop": "unknown",
+          "condition_label": "not_applicable",
+          "validity_label": "wrong_crop_leaf"
+        },
+        {
+          "glob": "**/onion_pests/**",
+          "crop": "unknown",
+          "condition_label": "not_applicable",
+          "validity_label": "other_plant"
+        },
+        {
+          "glob": "**/tomato_diseases/alternaria_d/**",
+          "crop": "tomato",
+          "condition_label": "tomato_early_blight",
+          "validity_label": "usable_target_leaf"
+        },
+        {
+          "glob": "**/tomato_diseases/tomato_late_blight_d/**",
+          "crop": "tomato",
+          "condition_label": "tomato_late_blight",
+          "validity_label": "usable_target_leaf"
+        },
+        {
+          "glob": "**/tomato_diseases/healthy_leaf/**",
+          "crop": "tomato",
+          "condition_label": "tomato_healthy",
+          "validity_label": "usable_target_leaf"
+        },
+        {
+          "glob": "**/tomato_diseases/healthy_fruit/**",
+          "crop": "tomato",
+          "condition_label": "not_applicable",
+          "validity_label": "unsuitable_target_crop_view"
+        },
+        {
+          "glob": "**/tomato_diseases/Blossom_end_rot_d/**",
+          "crop": "tomato",
+          "condition_label": "not_applicable",
+          "validity_label": "unsuitable_target_crop_view"
+        },
+        {
+          "glob": "**/tomato_diseases/**",
+          "crop": "tomato",
+          "condition_label": "tomato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        {
+          "glob": "**/tomato_pests/**",
+          "crop": "tomato",
+          "condition_label": "not_applicable",
+          "validity_label": "unsuitable_target_crop_view"
+        }
+      ]
+    },
+    "three_crop_prefixed": {
+      "class_aliases": {
+        "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot": {
+          "crop": "maize",
+          "condition_label": "maize_cercospora_leaf_spot_gray_leaf_spot",
+          "validity_label": "usable_target_leaf"
+        },
+        "Corn_(maize)___Common_rust_": {
+          "crop": "maize",
+          "condition_label": "maize_common_rust",
+          "validity_label": "usable_target_leaf"
+        },
+        "Corn_(maize)___Northern_Leaf_Blight": {
+          "crop": "maize",
+          "condition_label": "maize_northern_leaf_blight",
+          "validity_label": "usable_target_leaf"
+        },
+        "Corn_(maize)___healthy": {
+          "crop": "maize",
+          "condition_label": "maize_healthy",
+          "validity_label": "usable_target_leaf"
+        },
+        "Corn Gray leaf spot": {
+          "crop": "maize",
+          "condition_label": "maize_cercospora_leaf_spot_gray_leaf_spot",
+          "validity_label": "usable_target_leaf"
+        },
+        "Corn rust leaf": {
+          "crop": "maize",
+          "condition_label": "maize_common_rust",
+          "validity_label": "usable_target_leaf"
+        },
+        "Potato___Early_blight": {
+          "crop": "potato",
+          "condition_label": "potato_early_blight",
+          "validity_label": "usable_target_leaf"
+        },
+        "Potato___Late_blight": {
+          "crop": "potato",
+          "condition_label": "potato_late_blight",
+          "validity_label": "usable_target_leaf"
+        },
+        "Potato___healthy": {
+          "crop": "potato",
+          "condition_label": "potato_healthy",
+          "validity_label": "usable_target_leaf"
+        },
+        "Potato leaf early blight": {
+          "crop": "potato",
+          "condition_label": "potato_early_blight",
+          "validity_label": "usable_target_leaf"
+        },
+        "Potato leaf late blight": {
+          "crop": "potato",
+          "condition_label": "potato_late_blight",
+          "validity_label": "usable_target_leaf"
+        },
+        "Tomato___Bacterial_spot": {
+          "crop": "tomato",
+          "condition_label": "tomato_bacterial_spot",
+          "validity_label": "usable_target_leaf"
+        },
+        "Tomato___Early_blight": {
+          "crop": "tomato",
+          "condition_label": "tomato_early_blight",
+          "validity_label": "usable_target_leaf"
+        },
+        "Tomato___Late_blight": {
+          "crop": "tomato",
+          "condition_label": "tomato_late_blight",
+          "validity_label": "usable_target_leaf"
+        },
+        "Tomato___Leaf_Mold": {
+          "crop": "tomato",
+          "condition_label": "tomato_leaf_mold",
+          "validity_label": "usable_target_leaf"
+        },
+        "Tomato___Septoria_leaf_spot": {
+          "crop": "tomato",
+          "condition_label": "tomato_septoria_leaf_spot",
+          "validity_label": "usable_target_leaf"
+        },
+        "Tomato___Spider_mites Two-spotted_spider_mite": {
+          "crop": "tomato",
+          "condition_label": "tomato_spider_mites_two_spotted_spider_mite",
+          "validity_label": "usable_target_leaf"
+        },
+        "Tomato___Target_Spot": {
+          "crop": "tomato",
+          "condition_label": "tomato_target_spot",
+          "validity_label": "usable_target_leaf"
+        },
+        "Tomato___Tomato_Yellow_Leaf_Curl_Virus": {
+          "crop": "tomato",
+          "condition_label": "tomato_yellow_leaf_curl_virus",
+          "validity_label": "usable_target_leaf"
+        },
+        "Tomato___Tomato_mosaic_virus": {
+          "crop": "tomato",
+          "condition_label": "tomato_mosaic_virus",
+          "validity_label": "usable_target_leaf"
+        },
+        "Tomato___healthy": {
+          "crop": "tomato",
+          "condition_label": "tomato_healthy",
+          "validity_label": "usable_target_leaf"
+        },
+        "Tomato leaf bacterial spot": {
+          "crop": "tomato",
+          "condition_label": "tomato_bacterial_spot",
+          "validity_label": "usable_target_leaf"
+        },
+        "Tomato Early blight leaf": {
+          "crop": "tomato",
+          "condition_label": "tomato_early_blight",
+          "validity_label": "usable_target_leaf"
+        },
+        "Tomato leaf late blight": {
+          "crop": "tomato",
+          "condition_label": "tomato_late_blight",
+          "validity_label": "usable_target_leaf"
+        },
+        "Tomato mold leaf": {
+          "crop": "tomato",
+          "condition_label": "tomato_leaf_mold",
+          "validity_label": "usable_target_leaf"
+        },
+        "Tomato Septoria leaf spot": {
+          "crop": "tomato",
+          "condition_label": "tomato_septoria_leaf_spot",
+          "validity_label": "usable_target_leaf"
+        },
+        "Tomato two spotted spider mites leaf": {
+          "crop": "tomato",
+          "condition_label": "tomato_spider_mites_two_spotted_spider_mite",
+          "validity_label": "usable_target_leaf"
+        },
+        "Tomato leaf yellow virus": {
+          "crop": "tomato",
+          "condition_label": "tomato_yellow_leaf_curl_virus",
+          "validity_label": "usable_target_leaf"
+        },
+        "Tomato leaf mosaic virus": {
+          "crop": "tomato",
+          "condition_label": "tomato_mosaic_virus",
+          "validity_label": "usable_target_leaf"
+        }
+      }
+    },
+    "central_java_open_set_v2": {
+      "include_globs": [
+        "extracted/ptz377bwb8-v1-direct/Potato Leaf Disease Dataset in Uncontrolled Environment/**"
+      ],
+      "path_rules": [
+        {
+          "glob": "**/Healthy/**",
+          "crop": "potato",
+          "condition_label": "potato_healthy",
+          "validity_label": "usable_target_leaf"
+        },
+        {
+          "glob": "**/Bacteria/**",
+          "crop": "potato",
+          "condition_label": "potato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        {
+          "glob": "**/Fungi/**",
+          "crop": "potato",
+          "condition_label": "potato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        {
+          "glob": "**/Nematode/**",
+          "crop": "potato",
+          "condition_label": "potato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        {
+          "glob": "**/Pest/**",
+          "crop": "potato",
+          "condition_label": "potato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        {
+          "glob": "**/Phytopthora/**",
+          "crop": "potato",
+          "condition_label": "potato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        },
+        {
+          "glob": "**/Virus/**",
+          "crop": "potato",
+          "condition_label": "potato_other_unknown",
+          "validity_label": "usable_target_leaf"
+        }
+      ],
+      "filename_time_bucket": {
+        "bucket_seconds": 600,
+        "timezone_offset_minutes": 420,
+        "scope": "parent"
+      }
+    }
+  },
+  "sources": {
+    "plantvillage-official": {
+      "is_field": false,
+      "profiles": [
+        "safe_defaults",
+        "three_crop_prefixed"
+      ],
+      "fallback_label": {
+        "crop": "unknown",
+        "condition_label": "not_applicable",
+        "validity_label": "other_plant"
+      }
+    },
+    "plantdoc-field": {
+      "is_field": true,
+      "profiles": [
+        "safe_defaults",
+        "three_crop_prefixed"
+      ],
+      "fallback_label": {
+        "crop": "unknown",
+        "condition_label": "not_applicable",
+        "validity_label": "other_plant"
+      }
+    },
+    "pldd-up": {
+      "is_field": true,
+      "profiles": [
+        "safe_defaults",
+        "potato_single_crop",
+        "pldd_up_numeric_capture_bursts"
+      ]
+    },
+    "potato-bangladesh": {
+      "is_field": true,
+      "profiles": [
+        "safe_defaults",
+        "potato_single_crop"
+      ],
+      "exclude_globs": [
+        "**/aug_*"
+      ]
+    },
+    "potato-central-java": {
+      "is_field": true,
+      "profiles": [
+        "safe_defaults",
+        "central_java_open_set_v2"
+      ],
+      "locked_split": "train"
+    },
+    "potato_central_java": {
+      "is_field": true,
+      "profiles": [
+        "safe_defaults",
+        "central_java_open_set_v2"
+      ],
+      "canonical_source_id": "potato-central-java",
+      "locked_split": "train"
+    },
+    "maize-figshare-29298275": {
+      "is_field": false,
+      "profiles": [
+        "safe_defaults",
+        "maize_single_crop"
+      ],
+      "locked_split": "train"
+    },
+    "figshare_maize": {
+      "is_field": false,
+      "profiles": [
+        "safe_defaults",
+        "three_crop_prefixed"
+      ],
+      "canonical_source_id": "maize-figshare-29298275",
+      "locked_split": "train",
+      "fallback_label": {
+        "crop": "unknown",
+        "condition_label": "not_applicable",
+        "validity_label": "other_plant"
+      }
+    },
+    "tomato-bangladesh": {
+      "is_field": true,
+      "profiles": [
+        "safe_defaults",
+        "tomato_single_crop"
+      ]
+    },
+    "tomato-realworld-binary": {
+      "is_field": true,
+      "profiles": [
+        "safe_defaults",
+        "tomato_single_crop"
+      ]
+    },
+    "ccmt-field": {
+      "is_field": true,
+      "profiles": [
+        "safe_defaults",
+        "three_crop_prefixed"
+      ],
+      "include_globs": [
+        "Raw Data/**",
+        "**/Raw Data/**"
+      ],
+      "exclude_globs": [
+        "**/augmented/**",
+        "**/Augmented Data/**"
+      ],
+      "fallback_label": {
+        "crop": "unknown",
+        "condition_label": "not_applicable",
+        "validity_label": "other_plant"
+      }
+    },
+    "tom2024-original": {
+      "is_field": true,
+      "profiles": [
+        "safe_defaults",
+        "tom2024_cata"
+      ]
+    },
+    "tom2024": {
+      "is_field": true,
+      "profiles": [
+        "safe_defaults",
+        "tom2024_cata"
+      ],
+      "canonical_source_id": "tom2024-original"
+    },
+    "tomato-boxes": {
+      "is_field": true,
+      "profiles": [
+        "safe_defaults",
+        "tomato_single_crop"
+      ]
+    },
+    "digigreen-crop-disease-images": {
+      "is_field": true,
+      "profiles": [
+        "safe_defaults"
+      ],
+      "requires_metadata": true,
+      "locked_split": "external_test"
+    },
+    "farmer_chat_india": {
+      "is_field": true,
+      "profiles": [
+        "safe_defaults"
+      ],
+      "metadata_files": [
+        "annotations.csv"
+      ],
+      "metadata_adapter": "crop_diagnosis_v1",
+      "metadata_crop_aliases": {
+        "Maize": "maize",
+        "Potato": "potato",
+        "Tomato": "tomato"
+      },
+      "metadata_diagnosis_aliases": {
+        "maize": {
+          "Healthy": "maize_healthy",
+          "Turcicum Leaf Blight": "maize_northern_leaf_blight"
+        },
+        "potato": {
+          "Healthy": "potato_healthy",
+          "Early Blight": "potato_early_blight",
+          "Late Blight": "potato_late_blight"
+        },
+        "tomato": {
+          "Healthy": "tomato_healthy",
+          "Early Blight": "tomato_early_blight",
+          "Late Blight": "tomato_late_blight"
+        }
+      },
+      "metadata_unknown_conditions": {
+        "maize": "maize_other_unknown",
+        "potato": "potato_other_unknown",
+        "tomato": "tomato_other_unknown"
+      },
+      "conflicting_crop_policy": "skip",
+      "skip_unmapped": true,
+      "requires_metadata": true,
+      "locked_split": "external_test"
+    },
+    "nepal_field_locked_v1": {
+      "is_field": true,
+      "profiles": [
+        "safe_defaults"
+      ],
+      "requires_metadata": true,
+      "locked_split": "external_test"
+    }
+  }
+}

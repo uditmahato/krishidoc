@@ -7,6 +7,7 @@ import 'package:krishidoc_app/l10n/gen/app_localizations.dart';
 import 'package:krishidoc_app/main.dart';
 import 'package:krishidoc_app/src/app_services.dart';
 import 'package:krishidoc_app/src/diagnosis/photo_store.dart';
+import 'package:krishidoc_app/src/market/market.dart';
 import 'package:krishidoc_app/src/providers.dart';
 import 'package:krishidoc_app/src/welcome/first_run.dart';
 
@@ -47,10 +48,15 @@ Future<AppServices> pumpApp(
   List<Override> overrides = const [],
   bool firstRun = false,
   SettingsStore? settingsStore,
+  DiagnosisStore? diagnosisStore,
+  PhotoStore? photoStore,
+  MarketService? marketService,
+  MarketSnapshotCache? marketCache,
   String? startAt,
 }) async {
   final services = AppServices.forTest(
-    diagnosisStore: FakeDiagnosisStore(),
+    diagnosisStore: diagnosisStore ?? FakeDiagnosisStore(),
+    farmTaskStore: FakeFarmTaskStore(),
     observationStore: FakeObservationStore(),
     // Injectable so a test can supply a deliberately slow store. Without one,
     // "the write is awaited" is untestable: an instant fake completes in a
@@ -72,7 +78,13 @@ Future<AppServices> pumpApp(
     ProviderScope(
       overrides: [
         servicesProvider.overrideWithValue(services),
-        photoStoreProvider.overrideWithValue(MemoryPhotoStore()),
+        photoStoreProvider.overrideWithValue(photoStore ?? MemoryPhotoStore()),
+        marketServiceProvider.overrideWithValue(
+          marketService ?? _OfflineMarketService(),
+        ),
+        marketSnapshotCacheProvider.overrideWithValue(
+          marketCache ?? MemoryMarketSnapshotCache(),
+        ),
         ...overrides,
       ],
       child: KrishiDocApp(
@@ -100,9 +112,12 @@ Future<AppServices> pumpScreen(
   Locale locale = const Locale('en'),
   Future<void> Function(AppServices services)? seed,
   List<Override> overrides = const [],
+  MarketService? marketService,
+  MarketSnapshotCache? marketCache,
 }) async {
   final services = AppServices.forTest(
     diagnosisStore: FakeDiagnosisStore(),
+    farmTaskStore: FakeFarmTaskStore(),
     observationStore: FakeObservationStore(),
     settingsStore: FakeSettingsStore(),
   );
@@ -114,6 +129,12 @@ Future<AppServices> pumpScreen(
       overrides: [
         servicesProvider.overrideWithValue(services),
         photoStoreProvider.overrideWithValue(MemoryPhotoStore()),
+        marketServiceProvider.overrideWithValue(
+          marketService ?? _OfflineMarketService(),
+        ),
+        marketSnapshotCacheProvider.overrideWithValue(
+          marketCache ?? MemoryMarketSnapshotCache(),
+        ),
         ...overrides,
       ],
       child: MaterialApp(
@@ -127,4 +148,10 @@ Future<AppServices> pumpScreen(
   );
   await tester.pumpAndSettle();
   return services;
+}
+
+final class _OfflineMarketService implements MarketService {
+  @override
+  Future<MarketSnapshot> fetch() =>
+      Future.error(const MarketServiceException(MarketFailureKind.network));
 }

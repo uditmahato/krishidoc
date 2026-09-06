@@ -13,6 +13,7 @@ import 'package:krishidoc_app/src/capture/camera_session.dart';
 final class FakeDiagnosisStore implements DiagnosisStore {
   final Map<String, DiagnosisRecord> _records = {};
   final StreamController<void> _changes = StreamController<void>.broadcast();
+  bool failOnUpsert = false;
 
   List<DiagnosisRecord> _snapshot(int limit) {
     final all = _records.values.toList()
@@ -22,6 +23,7 @@ final class FakeDiagnosisStore implements DiagnosisStore {
 
   @override
   Future<void> upsert(DiagnosisRecord record) async {
+    if (failOnUpsert) throw StateError('diagnosis write failed');
     _records[record.id] = record;
     _changes.add(null);
   }
@@ -78,6 +80,41 @@ final class FakeObservationStore implements ObservationStore {
   }
 }
 
+final class FakeFarmTaskStore implements FarmTaskStore {
+  final Map<String, FarmTask> _rows = {};
+  final StreamController<void> _changes = StreamController<void>.broadcast();
+
+  List<FarmTask> _snapshot(int limit) {
+    final all = _rows.values.toList()
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return all.take(limit).toList(growable: false);
+  }
+
+  @override
+  Future<void> upsert(FarmTask task) async {
+    _rows[task.id] = task;
+    _changes.add(null);
+  }
+
+  @override
+  Future<FarmTask?> byId(String id) async => _rows[id];
+
+  @override
+  Future<List<FarmTask>> recent({int limit = 100}) async => _snapshot(limit);
+
+  @override
+  Stream<List<FarmTask>> watchRecent({int limit = 100}) async* {
+    yield _snapshot(limit);
+    yield* _changes.stream.map((_) => _snapshot(limit));
+  }
+
+  @override
+  Future<void> delete(String id) async {
+    _rows.remove(id);
+    _changes.add(null);
+  }
+}
+
 /// Scriptable [CameraSession]: the test drives frames and failures, so the
 /// screen's coaching and gating are exercised without a device.
 final class FakeCameraSession implements CameraSession {
@@ -89,6 +126,8 @@ final class FakeCameraSession implements CameraSession {
 
   bool didStart = false;
   bool didStop = false;
+  int pauseCount = 0;
+  int resumeCount = 0;
   int captureCount = 0;
 
   /// Bytes handed back by [capturePhoto]; tests override the preparation
@@ -124,6 +163,12 @@ final class FakeCameraSession implements CameraSession {
     }
     return photoBytes;
   }
+
+  @override
+  Future<void> pause() async => pauseCount++;
+
+  @override
+  Future<void> resume() async => resumeCount++;
 
   @override
   Future<void> stop() async => didStop = true;

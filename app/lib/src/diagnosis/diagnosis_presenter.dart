@@ -23,7 +23,7 @@ DiagnosisPresentation presentDiagnosis({
   final top = record.predictions.isEmpty ? null : record.predictions.first;
   final name = top == null
       ? ''
-      : stopgapLabelName(top.label, cropKey: record.cropKey);
+      : localizedLabelName(l10n, top.label, cropKey: record.cropKey);
 
   return switch (record.state) {
     ResultState.confident => ConfidentDiagnosis(
@@ -41,16 +41,16 @@ DiagnosisPresentation presentDiagnosis({
       caveat: l10n.confidentCaveat,
       correctionLabel: l10n.resultNotMyProblem,
       onCorrect: onCorrect,
-      escalationLabel: l10n.escalateToClinic,
+      escalationLabel: l10n.resultOpenAssistant,
       onEscalate: onEscalate,
     ),
     ResultState.uncertain => UncertainDiagnosis(
       title: l10n.resultUncertainTitle,
       alternatives: [
         for (final prediction in record.predictions)
-          stopgapLabelName(prediction.label, cropKey: record.cropKey),
+          localizedLabelName(l10n, prediction.label, cropKey: record.cropKey),
       ],
-      escalationLabel: l10n.escalateToClinic,
+      escalationLabel: l10n.resultOpenAssistant,
       onEscalate: onEscalate,
     ),
     // Out of scope always means coverage here, never a bad photograph. The
@@ -63,7 +63,7 @@ DiagnosisPresentation presentDiagnosis({
       cause: OutOfScopeCause.notCovered,
       retryLabel: l10n.retryCapture,
       onRetry: onRetry,
-      escalationLabel: l10n.escalateToClinic,
+      escalationLabel: l10n.resultOpenAssistant,
       onEscalate: onEscalate,
     ),
   };

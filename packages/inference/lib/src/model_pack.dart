@@ -20,6 +20,13 @@ final class ModelPackFormatException implements Exception {
 /// concept and would happily generate "treatment plans for tomato healthy".
 enum LabelKind { disease, healthy }
 
+/// Whether a pack is permitted to make a confident classification.
+///
+/// Experimental models without field calibration are structurally limited to
+/// possible matches. This belongs in the pack rather than in UI copy so no
+/// caller can accidentally turn a high softmax value into a confident claim.
+enum ModelDecisionMode { calibrated, possibleMatchOnly }
+
 /// One class the model can emit.
 final class LabelSpec {
   const LabelSpec({
@@ -53,6 +60,7 @@ final class ModelPack {
     required this.temperature,
     required this.rejectionFloor,
     required this.minMargin,
+    this.decisionMode = ModelDecisionMode.calibrated,
   }) {
     if (labels.length < 2) {
       throw const ModelPackFormatException(
@@ -120,6 +128,10 @@ final class ModelPack {
   /// carry different treatments, so a coin flip is reported as uncertainty.
   final double minMargin;
 
+  /// [possibleMatchOnly] prevents a confident outcome even when floating-point
+  /// softmax rounds a leading value to exactly 1.0.
+  final ModelDecisionMode decisionMode;
+
   int get labelCount => labels.length;
 
   factory ModelPack.fromJson(Map<String, Object?> json) {
@@ -156,6 +168,13 @@ final class ModelPack {
         orElse: defaultRejectionFloor(labels.length),
       ),
       minMargin: requireNumber('minMargin', orElse: 0.1),
+      decisionMode: switch (json['decisionMode']) {
+        null || 'calibrated' => ModelDecisionMode.calibrated,
+        'possibleMatchOnly' => ModelDecisionMode.possibleMatchOnly,
+        final value => throw ModelPackFormatException(
+          'unknown decisionMode "$value"',
+        ),
+      },
       labels: labels,
     );
   }

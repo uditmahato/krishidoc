@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "format": "RFC 4180-compatible CSV with a header row and UTF-8 encoding",
+  "columns": {
+    "image_path": {
+      "required": true,
+      "type": "string",
+      "description": "Absolute path or portable repository-relative path. Relative paths resolve from config.image_root; when omitted, training and audit use the repository root."
+    },
+    "crop": {
+      "required": true,
+      "type": "enum",
+      "values": ["maize", "potato", "tomato", "unknown"],
+      "description": "Observed crop, not the model pack. Other observed crops are dynamically mapped to wrong_crop_leaf for each crop-specific pack."
+    },
+    "condition_label": {
+      "required": true,
+      "type": "string",
+      "description": "Stable taxonomy key, <crop>_other_unknown for open-set target leaves, or not_applicable when no crop condition applies."
+    },
+    "validity_label": {
+      "required": true,
+      "type": "enum",
+      "values": [
+        "usable_target_leaf",
+        "unsuitable_target_crop_view",
+        "wrong_crop_leaf",
+        "other_plant",
+        "non_plant"
+      ]
+    },
+    "split": {
+      "required": true,
+      "type": "enum",
+      "values": [
+        "train",
+        "validation",
+        "calibration",
+        "test",
+        "external_test"
+      ]
+    },
+    "source_id": {
+      "required": true,
+      "type": "string"
+    },
+    "group_id": {
+      "required": true,
+      "type": "string",
+      "description": "Source/farm/plant/capture family identifier locked to exactly one split. It may be the transitive union of explicit lineage, exact hashes, near-duplicate pHashes, and source-configured filename capture evidence."
+    },
+    "sha256": {
+      "required": false,
+      "type": "lowercase hex",
+      "description": "Exact byte-duplicate family; one value must never cross splits."
+    },
+    "phash": {
+      "required": false,
+      "type": "16-character hex"
+    },
+    "duplicate_group": {
+      "required": false,
+      "type": "string"
+    },
+    "is_derivative": {
+      "required": false,
+      "type": "boolean"
+    },
+    "source_locked_split": {
+      "required": false,
+      "type": "string"
+    },
+    "is_field": {
+      "required": false,
+      "type": "boolean"
+    }
+  },
+  "split_purposes": {
+    "train": "gradient updates only",
+    "validation": "early stopping and architecture selection only",
+    "calibration": "temperature and refusal-threshold fitting only",
+    "test": "one final in-domain report after model and thresholds freeze",
+    "external_test": "source-held-out or Nepal field evaluation; never used for selection"
+  },
+  "source_grouping_contracts": {
+    "filename_numeric_capture_group": {
+      "purpose": "Group ambiguous duplicate numeric stems and visually corroborated adjacent captures before split assignment.",
+      "required_fields": [
+        "regex with a named number group",
+        "maximum_adjacent_gap",
+        "maximum_phash_distance"
+      ],
+      "allowed_scope": ["source", "parent"],
+      "safety_bounds": {
+        "maximum_adjacent_gap": [1, 3],
+        "maximum_phash_distance": [0, 16]
+      },
+      "key_isolation": [
+        "source_id",
+        "crop",
+        "condition_label",
+        "validity_label",
+        "filename prefix",
+        "parent directory when scope=parent",
+        "exact filename suffix for adjacent-stem grouping"
+      ]
+    }
+  },
+  "invariants": [
+    "Every source_id plus group_id pair belongs to exactly one split.",
+    "Every non-empty sha256 and duplicate_group belongs to exactly one split.",
+    "Every group may carry at most one canonical condition_label, including crop-specific unknown labels and not_applicable. No waiver is accepted by the default auditor; any future exception requires documented, group-specific adjudication and must remain excluded from evaluation.",
+    "Condition cross-entropy is applied only to usable_target_leaf rows whose condition_label is in the selected crop's known taxonomy.",
+    "A usable_target_leaf row labelled <crop>_other_unknown is an OOD example and receives no condition cross-entropy.",
+    "Generated, augmented, or derivative images may not appear in validation, calibration, test, or external_test.",
+    "A configured duplicate numeric stem is one conservative lineage group regardless of extension or visual distance; adjacent numeric stems join only within the isolated source/class/exact-suffix sequence and only when their pHash distance satisfies the bounded source rule."
+  ]
+}

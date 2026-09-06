@@ -15,24 +15,21 @@ enum CertaintyLevel { high, moderate, low }
 /// choosing one of the three certainty states, and each state forces the data
 /// its rendering needs. A certainty-free result screen is a compile error.
 ///
-/// **Escalation is now on the base class, and that is the point.** The original
-/// hierarchy gave the escalation route to uncertain and out-of-scope only, on
-/// the reasoning that a confident answer does not need a human. That reasoning
-/// is backwards. Confident-and-wrong is the case that costs money and puts
-/// chemicals on a healthy crop, and it was the one state with no way out: a
-/// name, a chip, and nothing to do. Worse, the absence was pinned by a test
-/// asserting no buttons existed, so the gap read as intent.
+/// **Safe next-step guidance is on the base class.** The original hierarchy
+/// gave an onward route to uncertain and out-of-scope only. Confident-and-wrong
+/// is the case that can cost money and put chemicals on a healthy crop, so
+/// every state must provide a way to question the result and see bounded
+/// treatment, prevention and control guidance.
 ///
-/// Putting escalation on the base makes "a result the farmer cannot question"
-/// unconstructible, which is the same structural trick the sealed hierarchy
-/// already plays on certainty.
+/// Keeping the action on the base makes "a result with no next step"
+/// unconstructible, the same structural trick the hierarchy plays on certainty.
 sealed class DiagnosisPresentation {
   const DiagnosisPresentation({
     required this.escalationLabel,
     required this.onEscalate,
   });
 
-  /// Route to a person (D-07). Present on every state without exception.
+  /// Route to bounded next-step guidance. Present on every state.
   final String escalationLabel;
   final VoidCallback onEscalate;
 

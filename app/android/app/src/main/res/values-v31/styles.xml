@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Android 12+ owns the first launch frame. Giving it the same canvas and
+         native vector mark prevents the OS splash from falling back to stock
+         launcher treatment before Flutter paints. -->
+    <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowSplashScreenBackground">@color/kd_canvas</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/kd_splash_mark</item>
+        <item name="android:windowSplashScreenAnimationDuration">180</item>
+        <item name="android:windowBackground">@color/kd_canvas</item>
+    </style>
+    <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">@color/kd_canvas</item>
+    </style>
+</resources>

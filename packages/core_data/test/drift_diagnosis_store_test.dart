@@ -48,6 +48,7 @@ void main() {
       state: ResultState.confident,
       predictions: [TopPrediction(label: 'पातको ढुसी', confidence: 0.77)],
       modelVersion: 'm1',
+      thresholdSetVersion: 'thresholds-2026-08',
       createdAt: DateTime.utc(2026, 7, 27, 10, 30),
       cropKey: 'tomato',
       imagePath: null,
@@ -63,6 +64,7 @@ void main() {
     expect(loaded.cropKey, 'tomato');
     expect(loaded.imagePath, isNull);
     expect(loaded.modelVersion, 'm1');
+    expect(loaded.thresholdSetVersion, 'thresholds-2026-08');
   });
 
   test('round-trips every ResultState (enum stored by name)', () async {

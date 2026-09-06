@@ -4,6 +4,7 @@ library;
 export 'src/consent.dart';
 export 'src/crop.dart';
 export 'src/diagnosis.dart';
+export 'src/farm_task.dart';
 export 'src/jurisdiction.dart';
 export 'src/language.dart';
 export 'src/observation.dart';

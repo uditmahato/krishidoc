@@ -7,6 +7,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:krishidoc_app/l10n/gen/app_localizations.dart';
 import 'package:krishidoc_app/main.dart';
 import 'package:krishidoc_app/src/app_services.dart';
+import 'package:krishidoc_app/src/home_screen.dart';
 import 'package:krishidoc_app/src/providers.dart';
 
 /// Module 12 verification that only real hardware can give.
@@ -65,22 +66,24 @@ void main() {
 
   for (final locale in const [Locale('ne'), Locale('hi'), Locale('en')]) {
     for (final scale in const [1.0, 1.3, 2.0]) {
-      testWidgets(
-        'home fits on this device in ${locale.languageCode} at '
-        'x${scale.toStringAsFixed(1)}',
-        (tester) async {
-          await bootHome(tester, locale: locale, textScale: scale);
-          expect(
-            tester.takeException(),
-            isNull,
-            reason:
-                'real-font layout overflowed in ${locale.languageCode} at '
-                'scale $scale on this device',
-          );
-          // The tiles must still be there, not merely not-crashing.
-          expect(find.byType(Card), findsNWidgets(4));
-        },
-      );
+      testWidgets('home fits on this device in ${locale.languageCode} at '
+          'x${scale.toStringAsFixed(1)}', (tester) async {
+        await bootHome(tester, locale: locale, textScale: scale);
+        expect(
+          tester.takeException(),
+          isNull,
+          reason:
+              'real-font layout overflowed in ${locale.languageCode} at '
+              'scale $scale on this device',
+        );
+        // The current Work and Doctor destinations must still be usable,
+        // not merely not-crashing.
+        expect(find.byKey(homeWeatherKey), findsOneWidget);
+        await tester.tap(find.byKey(homeAskTabKey));
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.byKey(homeDetectDiseaseKey), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      });
     }
   }
 
@@ -177,7 +180,19 @@ void main() {
     final context = tester.element(find.byType(Scaffold).first);
     final expected = AppLocalizations.of(context).a11yStateConfident;
 
-    await tester.tap(find.byIcon(Icons.history_outlined));
+  await tester.tap(find.byKey(homeProfileTabKey));
+    for (var i = 0; i < 20; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+      if (find.byIcon(Icons.document_scanner_outlined).evaluate().isNotEmpty) {
+        break;
+      }
+    }
+    final scansTile = find.ancestor(
+      of: find.byIcon(Icons.document_scanner_outlined),
+      matching: find.byType(ListTile),
+    );
+    expect(scansTile, findsOneWidget);
+    await tester.tap(scansTile);
     for (var i = 0; i < 20; i++) {
       await tester.pump(const Duration(milliseconds: 100));
       if (find.bySemanticsLabel(RegExp('^$expected')).evaluate().isNotEmpty) {
