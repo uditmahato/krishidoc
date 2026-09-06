@@ -18,7 +18,7 @@ from torch.nn import functional as F
 from torch.utils.data import DataLoader
 
 from .calibration import apply_calibration, fit_calibration
-from .checkpoint import load_training_checkpoint, save_checkpoint
+from .checkpoint import initialize_finetune, load_training_checkpoint, save_checkpoint
 from .config import config_hash, find_repo_root
 from .constants import USABLE_VALIDITY_LABEL, VALIDITY_LABELS, VALIDITY_TO_INDEX
 from .data_snapshot import verify_training_data_snapshot
@@ -29,6 +29,7 @@ from .manifest import (
     parse_bool,
     read_manifest,
     source_balanced_sampler,
+    task_source_balanced_sampler,
 )
 from .metrics import compute_metrics
 from .model import CropSpecificTwoHeadModel, create_model
@@ -61,6 +62,12 @@ def train_experiment(
     seed = int(config.get("seed", 0))
     seed_everything(seed, deterministic=bool(config.get("deterministic", True)))
     device = resolve_device(device_name)
+    if config.get('require_cuda', False) and device.type != 'cuda':
+        raise ValueError('This experiment requires CUDA; CPU fallback is forbidden')
+    finetune = config.get('finetune_from')
+    sampling = config.get('sampling_strategy', 'source_balanced')
+    if sampling not in ('source_balanced', 'task_source_balanced_v1'):
+        raise ValueError(f'Unsupported sampling strategy: {sampling}')
     amp_enabled = bool(config.get("amp", True)) and device.type == "cuda"
     condition_outlier_exposure_weight = _condition_outlier_exposure_weight(config)
     unknown_condition_label = str(
@@ -176,8 +183,16 @@ def train_experiment(
     model = create_model(
         architecture,
         len(condition_labels),
-        pretrained=bool(config.get("pretrained", True)) and resume is None,
+        pretrained=bool(config.get("pretrained", True)) and resume is None and not finetune,
     ).to(device)
+    if finetune and resume is None:
+        initialize_finetune(
+            _resolve_path(finetune['path'], repo_root), model=model,
+            expected_sha256=finetune['sha256'], crop=crop,
+            architecture=architecture, condition_labels=condition_labels,
+            validity_labels=list(VALIDITY_LABELS), image_size=image_size,
+            manifest_sha256=manifest_digest,
+        )
     optimizer = _create_optimizer(model, config)
     epochs = int(config.get("epochs", 20))
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
@@ -240,7 +255,11 @@ def train_experiment(
             num_workers=int(config.get("num_workers", 0)),
             seed=seed + epoch,
             device=device,
-            sampler=source_balanced_sampler(train_frame, seed + epoch),
+            sampler=(task_source_balanced_sampler(
+                train_frame, seed + epoch,
+                config.get('samples_per_epoch', len(train_frame)),
+            ) if sampling == 'task_source_balanced_v1'
+                else source_balanced_sampler(train_frame, seed + epoch)),
         )
         train_summary = _train_one_epoch(
             model=model,
@@ -249,16 +268,18 @@ def train_experiment(
             scaler=scaler,
             device=device,
             amp_enabled=amp_enabled,
-            validity_class_weights=_class_weights(
+            validity_class_weights=(torch.ones(len(VALIDITY_LABELS), device=device)
+                if sampling == 'task_source_balanced_v1' else _class_weights(
                 train_frame["validity_label"].map(
                     {label: index for index, label in enumerate(VALIDITY_LABELS)}
                 ).to_numpy(),
                 len(VALIDITY_LABELS),
                 device,
-            ),
-            condition_class_weights=_condition_class_weights(
+            )),
+            condition_class_weights=(torch.ones(len(condition_labels), device=device)
+                if sampling == 'task_source_balanced_v1' else _condition_class_weights(
                 train_frame, condition_labels, device
-            ),
+            )),
             label_smoothing=float(config.get("label_smoothing", 0.0)),
             condition_loss_weight=float(config.get("condition_loss_weight", 1.0)),
             condition_outlier_exposure_weight=condition_outlier_exposure_weight,

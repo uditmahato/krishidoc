@@ -381,6 +381,41 @@ def source_balanced_sampler(frame: pd.DataFrame, seed: int) -> WeightedRandomSam
     )
 
 
+def task_source_balanced_weights(frame: pd.DataFrame) -> np.ndarray:
+    """Balance known conditions/invalid roles, with square-root source balancing.
+
+    Unlike equal-source sampling, a source containing mostly unknown symptoms
+    cannot consume the same budget as all three known potato conditions. Square
+    root balancing within each task avoids giving five field photos the same
+    mass as thousands. Training rows only; never resample evaluation evidence.
+    """
+    if frame.empty or not frame['split'].eq('train').all():
+        raise ValueError('Task/source sampling requires nonempty training rows only')
+    task = frame['validity_label'].astype(str).copy()
+    usable = task.eq(USABLE_VALIDITY_LABEL)
+    task.loc[usable] = 'condition:' + frame.loc[usable, 'condition_label'].astype(str)
+    keys = pd.DataFrame({'task': task, 'source': frame['source_id'].astype(str)})
+    counts = keys.groupby(['task', 'source']).size()
+    masses = counts.pow(0.5)
+    masses = masses / masses.groupby(level=0).transform('sum')
+    weights = np.asarray([
+        masses.loc[(t, s)] / counts.loc[(t, s)]
+        for t, s in keys.itertuples(index=False, name=None)
+    ], dtype=np.float64)
+    return weights / weights.mean()
+
+
+def task_source_balanced_sampler(
+    frame: pd.DataFrame, seed: int, num_samples: int,
+) -> WeightedRandomSampler:
+    if type(num_samples) is not int or num_samples <= 0:
+        raise ValueError('num_samples must be a positive integer')
+    return WeightedRandomSampler(
+        torch.as_tensor(task_source_balanced_weights(frame), dtype=torch.double),
+        num_samples=num_samples, replacement=True, generator=make_generator(seed),
+    )
+
+
 class ManifestDataset(Dataset):
     def __init__(
         self,
