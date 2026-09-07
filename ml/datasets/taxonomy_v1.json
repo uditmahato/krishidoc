@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "policy": "crop_specific_known_conditions_with_explicit_unknown",
+  "crops": {
+    "maize": {
+      "known": [
+        "maize_cercospora_leaf_spot_gray_leaf_spot",
+        "maize_common_rust",
+        "maize_northern_leaf_blight",
+        "maize_healthy"
+      ],
+      "unknown": "maize_other_unknown"
+    },
+    "potato": {
+      "known": [
+        "potato_early_blight",
+        "potato_late_blight",
+        "potato_healthy"
+      ],
+      "unknown": "potato_other_unknown"
+    },
+    "tomato": {
+      "known": [
+        "tomato_bacterial_spot",
+        "tomato_early_blight",
+        "tomato_late_blight",
+        "tomato_leaf_mold",
+        "tomato_septoria_leaf_spot",
+        "tomato_spider_mites_two_spotted_spider_mite",
+        "tomato_target_spot",
+        "tomato_yellow_leaf_curl_virus",
+        "tomato_mosaic_virus",
+        "tomato_healthy"
+      ],
+      "unknown": "tomato_other_unknown"
+    }
+  },
+  "subject_gate_labels": [
+    "target_crop_leaf",
+    "wrong_crop_leaf",
+    "non_leaf_or_unusable"
+  ],
+  "unknown_examples": [
+    "unseen disease",
+    "mixed symptoms",
+    "nutrient deficiency",
+    "pest damage outside the known taxonomy",
+    "senescence or physical injury"
+  ]
+}

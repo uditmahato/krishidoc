@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "run_name": "tomato_field_provisional_v1",
+  "seed": 20260902,
+  "manifest": "ml/data/prepared/manifest.csv",
+  "crop": "tomato",
+  "candidate_architectures": [
+    "mobilenet_v3_large",
+    "efficientnet_b0"
+  ],
+  "pretrained": true,
+  "image_size": 224,
+  "batch_size": 32,
+  "num_workers": 4,
+  "epochs": 12,
+  "freeze_backbone_epochs": 1,
+  "learning_rate": 0.0003,
+  "backbone_learning_rate_multiplier": 0.2,
+  "minimum_learning_rate": 0.000001,
+  "weight_decay": 0.0001,
+  "label_smoothing": 0.05,
+  "mixup_alpha": 0.1,
+  "amp": true,
+  "early_stopping_patience": 4,
+  "monitor": "field_macro_f1",
+  "unconfigured_conditions": "as_unknown",
+  "known_labels": [
+    "tomato_early_blight",
+    "tomato_late_blight",
+    "tomato_healthy"
+  ],
+  "unknown_label": "tomato_other_unknown",
+  "status": "provisional_public_field_data_only",
+  "promotion_allowed": false,
+  "limitations": [
+    "Seven additional tomato conditions in the product taxonomy lack supervised field coverage and are deliberately treated as open-set unknowns.",
+    "No Nepal field validation set is available; outputs must remain possible matches only."
+  ]
+}

@@ -1,45 +1,79 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
+# --- Secrets and local config (never committed) ---
+.env
+.env.*
+*.pem
+*.p12
+*.jks
+*.keystore
+key.properties
+google-services.json
+GoogleService-Info.plist
+firebase_options.dart
+service-account*.json
+*.tfvars
+!example.tfvars
 
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
-.idea/
-
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
+# --- Dart / Flutter ---
 .dart_tool/
+app/lib/l10n/gen/
+# Generated code is rebuilt locally and in CI, never committed (same policy as l10n)
+*.g.dart
+*.drift.dart
+.packages
+build/
+**/build/
 .flutter-plugins
 .flutter-plugins-dependencies
-.pub-cache/
-.pub/
-/build/
+*.g.dart.bak
+coverage/
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/ephemeral/
+**/ios/Flutter/flutter_export_environment.sh
+**/GeneratedPluginRegistrant.*
+**/android/local.properties
+**/android/.gradle/
+**/*.iml
 
-# Symbolication related
-app.*.symbols
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+.venv-mobile/
+venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.pytest-tmp*/
+.pytest_tmp*/
+.coverage
+.coverage.*
+htmlcov/
+dist/
+*.egg-info/
 
-# Obfuscation related
-app.*.map.json
+# --- Terraform ---
+**/.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
 
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+# --- IDE / OS ---
+.idea/
+.vscode/
+!.vscode/settings.shared.json
+.DS_Store
+Thumbs.db
+
+# --- Reports and artifacts (V1 committed these; V2 never will) ---
+**/reports/
+*.log
+
+# --- Local ML data, caches, runs, and exported candidates ---
+# Dataset manifests, source code, and small evaluation summaries are committed;
+# downloaded images and generated model artifacts are reproducible local state.
+/ml/data/
+/ml/cache/
+/ml/runs/
+/ml/artifacts/
+/ml/.venv/
+/app/test_assets/mobile_audit/

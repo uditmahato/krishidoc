@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "config_kind": "training",
+  "run_name": "potato_field_v4_task_balanced_20260906",
+  "seed": 20260906,
+  "manifest": "ml/data/prepared/manifest_field_v3_dg_rotation_1.csv",
+  "crop": "potato",
+  "candidate_architectures": [
+    "mobilenet_v3_large",
+    "efficientnet_b0"
+  ],
+  "pretrained": false,
+  "pretraining_weights": "torchvision_default_imagenet_1k",
+  "training_transform_recipe": "resize_then_augment_then_mean_pad_v2",
+  "image_size": 224,
+  "batch_size": 32,
+  "num_workers": 4,
+  "epochs": 4,
+  "freeze_backbone_epochs": 0,
+  "learning_rate": 0.00008,
+  "backbone_learning_rate_multiplier": 0.25,
+  "minimum_learning_rate": 0.000001,
+  "weight_decay": 0.0001,
+  "label_smoothing": 0.05,
+  "mixup_alpha": 0.1,
+  "condition_outlier_exposure_weight": 0.03,
+  "amp": true,
+  "deterministic": true,
+  "early_stopping_patience": 4,
+  "monitor": "safety_composite_v1",
+  "safety_composite_validation_contract": {
+    "schema_version": 1,
+    "minimum_field_samples_per_condition": 30,
+    "minimum_known_samples": 100,
+    "minimum_ood_samples": 100,
+    "minimum_samples_per_required_validity_label": 30,
+    "required_validity_labels": [
+      "usable_target_leaf",
+      "wrong_crop_leaf",
+      "other_plant"
+    ]
+  },
+  "unconfigured_conditions": "as_unknown",
+  "known_labels": [
+    "potato_early_blight",
+    "potato_late_blight",
+    "potato_healthy"
+  ],
+  "unknown_label": "potato_other_unknown",
+  "source_evidence_policy": "ml/datasets/source_evidence_policy_v2.json",
+  "split_policy": {
+    "method": "source_and_group_locked_with_consumed_development_rotation",
+    "train": 0.7,
+    "validation": 0.1,
+    "calibration": 0.1,
+    "test": 0.1,
+    "near_duplicate_hamming_distance": 4,
+    "locked_external_test_sources": [],
+    "future_nepal_test_source": "nepal_field_locked_v1"
+  },
+  "data_snapshot": {
+    "manifest_sha256": "8d091b81284885c2acbba46b07e41873bf2a2d0e6af5e650ec0320aaec8d4177",
+    "audit_receipt": "ml/data/prepared/audit_receipt_field_v4_task_balanced.json",
+    "audit_required_before_training": true,
+    "audit_receipt_must_match_config": true,
+    "audit_receipt_must_match_dependencies": true,
+    "audit_receipt_must_verify_images": true,
+    "sanitization_policy": "quarantine_whole_mixed_condition_components_and_exclude_flagged_development_groups",
+    "quarantine_sidecar": "ml/data/prepared/quarantine_field_v3.json",
+    "quarantine_sha256": "6fd5497d8e03a4853e34a2485516c191f2bdd66e82ae7de2f6a82cbc6b0b2ddf",
+    "quarantined_groups": 88,
+    "quarantined_rows": 306,
+    "required_artifacts": {
+      "taxonomy": {
+        "path": "ml/datasets/taxonomy_v1.json",
+        "sha256": "4ab10c2a46161a3aa34c63c8f2c705ea084054701a10c7878ee397b9c4e64efa"
+      },
+      "aliases": {
+        "path": "ml/datasets/label_aliases_v2.json",
+        "sha256": "d1a44a559daa35be950f56ca6a0cda7e59638386d9c873417e66a8f15175ee1d"
+      },
+      "source_evidence_policy": {
+        "path": "ml/datasets/source_evidence_policy_v2.json",
+        "sha256": "b9128dab14493dd6775b0b2d1393f750afb9075141a614f72100502115091ef4"
+      },
+      "sanitized_base_manifest": {
+        "path": "ml/data/prepared/manifest_field_v3_sanitized.csv",
+        "sha256": "97c57e47fd12960f5f7b4b49e25bc6da73b8391c60ff886295fd16ab425ec431"
+      },
+      "sanitized_base_audit_receipt": {
+        "path": "ml/data/prepared/audit_receipt_field_v3_sanitized.json",
+        "sha256": "171e925eccef1e8104a52804cbe1a13b13b05788499a13f605e6ea19fe3d88c5"
+      },
+      "development_fold_sidecar": {
+        "path": "ml/data/prepared/farmer_chat_india_development_folds_v3.csv",
+        "sha256": "2689d8bfff21c68acfad260a2f50702fb7a1261ecc31a38d99b6f20e980b087a"
+      },
+      "development_fold_report": {
+        "path": "ml/data/prepared/farmer_chat_india_development_folds_v3.report.json",
+        "sha256": "42966f9be019158e85497631b68ec32f8c043a44bbdddcfff5bbc6bc603e3140"
+      },
+      "development_rotation_receipt": {
+        "path": "ml/data/prepared/manifest_field_v3_dg_rotation_1.receipt.json",
+        "sha256": "dae428b66efb811a44932a232118a97dc64ac837bfbdde17576cb9b8d59b2bcb"
+      }
+    }
+  },
+  "evaluation_contract": {
+    "technical_external_test_role": "diagnostic_external_development_fold_only",
+    "technical_external_test_source": "farmer_chat_india_development_v1",
+    "selection_independent": false,
+    "promotion_eligible": false,
+    "future_locked_test_source": "nepal_field_locked_v1",
+    "reviewed_nonplant_negatives_required_for_promotion": true
+  },
+  "acceptance_gates": {
+    "minimum_field_macro_f1": 0.8,
+    "minimum_worst_known_class_recall": 0.7,
+    "maximum_expected_calibration_error": 0.08,
+    "maximum_ood_false_accept_rate_at_operating_point": 0.05,
+    "maximum_int8_model_bytes_per_crop": 8000000,
+    "maximum_p95_device_inference_ms": 500,
+    "nepal_field_gate_required_for_confident_results": true
+  },
+  "status": "research_only_field_rebalancing_ablation",
+  "promotion_allowed": false,
+  "limitations": [
+    "Digital Green folds have already been inspected and are used for training, calibration, and model selection. The technical external_test fold is diagnostic development evidence only, is not selection-independent, and cannot support promotion claims.",
+    "Central Java folders other than Healthy are broad publisher categories and supply only explicit potato_other_unknown outlier exposure; they are never interpreted as a named diagnosis.",
+    "The known condition head covers only potato early blight, late blight, and healthy. Other diseases, pests, nutrient disorders, mixed symptoms, and unsuitable images must be refused rather than coerced into those labels.",
+    "The data is dominated by public field imagery from India and Indonesia. It does not establish accuracy across Nepal's farms, varieties, altitudes, seasons, devices, languages, or field backgrounds.",
+    "No independently labelled, farm-grouped, locked Nepal evaluation set exists. Every candidate produced from this config remains research-only and must not replace the app model or provide a confirmed diagnosis.",
+    "Weights-only fine-tuning of the frozen v3 parent, using exactly the same split manifest. Four epochs and sampler policy are fixed before inspecting the new Bangladesh challenge outputs. The Bangladesh originals are excluded from all optimization and calibration. This candidate is not authorized for automatic app promotion."
+  ],
+  "sampling_strategy": "task_source_balanced_v1",
+  "samples_per_epoch": 12000,
+  "require_cuda": true,
+  "finetune_from": {
+    "path": "ml/runs/potato_field_v3_dg_rotation_1_oe003/efficientnet_b0/best.pt",
+    "sha256": "9e1854e4dabf868622abc5f21fea6cc13680c24bcdaa985560832e3843ed520a"
+  }
+}

@@ -1,0 +1,10 @@
+name: core_domain
+description: Pure Dart domain types for KrishiDoc V2. No Flutter imports (D-42).
+publish_to: none
+version: 0.1.0
+resolution: workspace
+environment:
+  sdk: ^3.8.0
+dev_dependencies:
+  lints: ^5.0.0
+  test: ^1.25.0

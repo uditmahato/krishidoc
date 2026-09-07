@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "run_name": "krishidoc_field_v1",
+  "seed": 20260804,
+  "manifest": "ml/data/prepared/manifest.csv",
+  "crops": ["maize", "potato", "tomato"],
+  "candidate_architectures": [
+    "mobilenet_v3_large",
+    "efficientnet_b0"
+  ],
+  "teacher_architecture": "convnext_tiny",
+  "pretrained": true,
+  "image_size": 224,
+  "batch_size": 32,
+  "num_workers": 4,
+  "epochs": 20,
+  "freeze_backbone_epochs": 2,
+  "learning_rate": 0.0003,
+  "backbone_learning_rate_multiplier": 0.2,
+  "weight_decay": 0.0001,
+  "label_smoothing": 0.05,
+  "mixup_alpha": 0.1,
+  "amp": true,
+  "early_stopping_patience": 5,
+  "monitor": "field_macro_f1",
+  "split_policy": {
+    "method": "source_and_group_locked",
+    "train": 0.7,
+    "validation": 0.1,
+    "calibration": 0.1,
+    "test": 0.1,
+    "near_duplicate_hamming_distance": 4,
+    "locked_external_test_sources": [
+      "farmer_chat_india"
+    ],
+    "future_nepal_test_source": "nepal_field_locked_v1"
+  },
+  "acceptance_gates": {
+    "minimum_field_macro_f1": 0.8,
+    "minimum_worst_known_class_recall": 0.7,
+    "maximum_expected_calibration_error": 0.08,
+    "maximum_ood_false_accept_rate_at_operating_point": 0.05,
+    "maximum_int8_model_bytes_per_crop": 8000000,
+    "maximum_p95_device_inference_ms": 500,
+    "nepal_field_gate_required_for_confident_results": true
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "run_name": "potato_pldd_up_provisional_v1",
+  "seed": 20260902,
+  "manifest": "ml/data/prepared/manifest_field_v2_pldd_up.csv",
+  "crop": "potato",
+  "candidate_architectures": [
+    "mobilenet_v3_large",
+    "efficientnet_b0"
+  ],
+  "pretrained": true,
+  "image_size": 224,
+  "batch_size": 32,
+  "num_workers": 4,
+  "epochs": 12,
+  "freeze_backbone_epochs": 1,
+  "learning_rate": 0.0003,
+  "backbone_learning_rate_multiplier": 0.2,
+  "minimum_learning_rate": 0.000001,
+  "weight_decay": 0.0001,
+  "label_smoothing": 0.05,
+  "mixup_alpha": 0.1,
+  "amp": true,
+  "early_stopping_patience": 4,
+  "monitor": "field_macro_f1",
+  "unconfigured_conditions": "as_unknown",
+  "known_labels": [
+    "potato_early_blight",
+    "potato_late_blight",
+    "potato_healthy"
+  ],
+  "unknown_label": "potato_other_unknown",
+  "status": "provisional_public_field_data_only",
+  "promotion_allowed": false,
+  "limitations": [
+    "Condition supervision is dominated by PLDD-UP operational fields in Uttar Pradesh, India; it is not evidence of performance in Nepal.",
+    "Filename and perceptual grouping reduces, but cannot prove the absence of repeated-plant or capture-session leakage because source session metadata is unavailable.",
+    "Unsupported potato diseases and ambiguous symptoms remain open-set unknowns, and the manifest still has no reviewed non-plant negatives.",
+    "A new locked Nepal field evaluation and physical-device export checks are required before promotion."
+  ]
+}

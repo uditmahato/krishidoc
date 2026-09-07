@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "availability": "bundled",
+  "modelId": "janaSunrise/Plant-disease-detection",
+  "modelVersion": "experimental-janasunrise-mobilenetv2-pv38-r8bff045b",
+  "decisionMode": "possibleMatchOnly",
+  "artifact": {
+    "path": "assets/models/plant_disease_experimental.tflite",
+    "bytes": 9061216,
+    "sha256": "d7cf3507569f136e8e9bdc787d4a6222661fa6035e65a6176ebe86b63164014b"
+  },
+  "source": {
+    "repository": "https://github.com/janaSunrise/Plant-disease-detection",
+    "revision": "8bff045b0845394cb4028e8b62cb8f0bf41e3ba7",
+    "artifactName": "models/plant_disease_detection.tflite",
+    "license": "MIT",
+    "licenseEvidence": "repository LICENSE at the pinned revision",
+    "citationAuthor": "Sunrit Jana"
+  },
+  "training": {
+    "dataset": "New Plant Diseases Dataset (Augmented), a PlantVillage derivative",
+    "datasetReference": "https://www.kaggle.com/datasets/vipoooool/new-plant-diseases-dataset",
+    "plantVillageReference": "https://arxiv.org/abs/1511.08060",
+    "imageCountReported": 87867,
+    "classCount": 38,
+    "environment": "controlled laboratory photographs",
+    "validationAccuracyReported": 0.9243683218955994,
+    "validationEvidence": "notebooks/plant_disease_detection_MobileNetV2.ipynb at the pinned revision; not independently reproduced by KrishiDoc",
+    "nepalFieldValidated": false
+  },
+  "input": {
+    "shape": [1, 224, 224, 3],
+    "dtype": "float32",
+    "colorOrder": "RGB",
+    "callerValueRange": [0, 1],
+    "resize": {
+      "width": 224,
+      "height": 224,
+      "preserveAspectRatio": false,
+      "interpolation": "nearest"
+    },
+    "normalizationInCaller": "pixel / 255.0",
+    "normalizationInsideModel": "none"
+  },
+  "output": {
+    "shape": [1, 38],
+    "dtype": "float32",
+    "activation": "softmax",
+    "labels": [
+      {"index": 0, "key": "apple_apple_scab", "sourceLabel": "Apple___Apple_scab"},
+      {"index": 1, "key": "apple_black_rot", "sourceLabel": "Apple___Black_rot"},
+      {"index": 2, "key": "apple_cedar_apple_rust", "sourceLabel": "Apple___Cedar_apple_rust"},
+      {"index": 3, "key": "apple_healthy", "sourceLabel": "Apple___healthy"},
+      {"index": 4, "key": "blueberry_healthy", "sourceLabel": "Blueberry___healthy"},
+      {"index": 5, "key": "cherry_powdery_mildew", "sourceLabel": "Cherry_(including_sour)___Powdery_mildew"},
+      {"index": 6, "key": "cherry_healthy", "sourceLabel": "Cherry_(including_sour)___healthy"},
+      {"index": 7, "key": "maize_cercospora_leaf_spot_gray_leaf_spot", "sourceLabel": "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot"},
+      {"index": 8, "key": "maize_common_rust", "sourceLabel": "Corn_(maize)___Common_rust_"},
+      {"index": 9, "key": "maize_northern_leaf_blight", "sourceLabel": "Corn_(maize)___Northern_Leaf_Blight"},
+      {"index": 10, "key": "maize_healthy", "sourceLabel": "Corn_(maize)___healthy"},
+      {"index": 11, "key": "grape_black_rot", "sourceLabel": "Grape___Black_rot"},
+      {"index": 12, "key": "grape_esca_black_measles", "sourceLabel": "Grape___Esca_(Black_Measles)"},
+      {"index": 13, "key": "grape_leaf_blight_isariopsis_leaf_spot", "sourceLabel": "Grape___Leaf_blight_(Isariopsis_Leaf_Spot)"},
+      {"index": 14, "key": "grape_healthy", "sourceLabel": "Grape___healthy"},
+      {"index": 15, "key": "orange_haunglongbing_citrus_greening", "sourceLabel": "Orange___Haunglongbing_(Citrus_greening)"},
+      {"index": 16, "key": "peach_bacterial_spot", "sourceLabel": "Peach___Bacterial_spot"},
+      {"index": 17, "key": "peach_healthy", "sourceLabel": "Peach___healthy"},
+      {"index": 18, "key": "pepper_bell_bacterial_spot", "sourceLabel": "Pepper,_bell___Bacterial_spot"},
+      {"index": 19, "key": "pepper_bell_healthy", "sourceLabel": "Pepper,_bell___healthy"},
+      {"index": 20, "key": "potato_early_blight", "sourceLabel": "Potato___Early_blight"},
+      {"index": 21, "key": "potato_late_blight", "sourceLabel": "Potato___Late_blight"},
+      {"index": 22, "key": "potato_healthy", "sourceLabel": "Potato___healthy"},
+      {"index": 23, "key": "raspberry_healthy", "sourceLabel": "Raspberry___healthy"},
+      {"index": 24, "key": "soybean_healthy", "sourceLabel": "Soybean___healthy"},
+      {"index": 25, "key": "squash_powdery_mildew", "sourceLabel": "Squash___Powdery_mildew"},
+      {"index": 26, "key": "strawberry_leaf_scorch", "sourceLabel": "Strawberry___Leaf_scorch"},
+      {"index": 27, "key": "strawberry_healthy", "sourceLabel": "Strawberry___healthy"},
+      {"index": 28, "key": "tomato_bacterial_spot", "sourceLabel": "Tomato___Bacterial_spot"},
+      {"index": 29, "key": "tomato_early_blight", "sourceLabel": "Tomato___Early_blight"},
+      {"index": 30, "key": "tomato_late_blight", "sourceLabel": "Tomato___Late_blight"},
+      {"index": 31, "key": "tomato_leaf_mold", "sourceLabel": "Tomato___Leaf_Mold"},
+      {"index": 32, "key": "tomato_septoria_leaf_spot", "sourceLabel": "Tomato___Septoria_leaf_spot"},
+      {"index": 33, "key": "tomato_spider_mites_two_spotted_spider_mite", "sourceLabel": "Tomato___Spider_mites Two-spotted_spider_mite"},
+      {"index": 34, "key": "tomato_target_spot", "sourceLabel": "Tomato___Target_Spot"},
+      {"index": 35, "key": "tomato_yellow_leaf_curl_virus", "sourceLabel": "Tomato___Tomato_Yellow_Leaf_Curl_Virus"},
+      {"index": 36, "key": "tomato_mosaic_virus", "sourceLabel": "Tomato___Tomato_mosaic_virus"},
+      {"index": 37, "key": "tomato_healthy", "sourceLabel": "Tomato___healthy"}
+    ]
+  },
+  "appScope": {
+    "enabledCropKeys": ["tomato", "potato", "maize"],
+    "cropScopeRequired": true,
+    "globalWinnerOutsideSelectedCrop": "outOfScope"
+  },
+  "safetyPolicy": {
+    "confidentResultsAllowed": false,
+    "chemicalAdviceAllowed": false,
+    "treatmentAdviceAllowed": false,
+    "humanConfirmationRequired": true
+  },
+  "limitations": [
+    "experimental_model",
+    "possible_matches_only",
+    "plantvillage_lab_images_only",
+    "not_nepal_field_validated",
+    "not_calibrated_for_krishidoc",
+    "no_non_plant_class",
+    "not_for_commercial_crop_decisions",
+    "no_chemical_advice"
+  ]
+}

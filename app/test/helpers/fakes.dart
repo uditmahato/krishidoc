@@ -1,0 +1,207 @@
+import 'dart:async';
+import 'dart:typed_data';
+
+import 'package:core_domain/core_domain.dart';
+import 'package:flutter/widgets.dart';
+import 'package:krishidoc_app/src/capture/camera_session.dart';
+
+/// Plain in-memory [DiagnosisStore]. Widget tests fake the ports; the real
+/// drift implementations are covered by core_data's pure-Dart suite, where
+/// the event loop is real. Driving drift through flutter_test's fake-async
+/// zone hangs (stream timers re-arm; close() never resolves), so it is
+/// banned in widget tests.
+final class FakeDiagnosisStore implements DiagnosisStore {
+  final Map<String, DiagnosisRecord> _records = {};
+  final StreamController<void> _changes = StreamController<void>.broadcast();
+  bool failOnUpsert = false;
+
+  List<DiagnosisRecord> _snapshot(int limit) {
+    final all = _records.values.toList()
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return all.take(limit).toList(growable: false);
+  }
+
+  @override
+  Future<void> upsert(DiagnosisRecord record) async {
+    if (failOnUpsert) throw StateError('diagnosis write failed');
+    _records[record.id] = record;
+    _changes.add(null);
+  }
+
+  @override
+  Future<DiagnosisRecord?> byId(String id) async => _records[id];
+
+  @override
+  Future<List<DiagnosisRecord>> recent({int limit = 50}) async =>
+      _snapshot(limit);
+
+  @override
+  Stream<List<DiagnosisRecord>> watchRecent({int limit = 50}) async* {
+    yield _snapshot(limit);
+    yield* _changes.stream.map((_) => _snapshot(limit));
+  }
+}
+
+/// Plain in-memory [ObservationStore], same discipline as the diagnosis one:
+/// widget tests fake the ports, and the real Drift implementation is covered
+/// by core_data's pure-Dart suite where the event loop is real.
+final class FakeObservationStore implements ObservationStore {
+  final Map<String, Observation> _rows = {};
+  final StreamController<void> _changes = StreamController<void>.broadcast();
+
+  List<Observation> _snapshot(int limit) {
+    final all = _rows.values.toList()
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return all.take(limit).toList(growable: false);
+  }
+
+  @override
+  Future<void> upsert(Observation observation) async {
+    _rows[observation.id] = observation;
+    _changes.add(null);
+  }
+
+  @override
+  Future<Observation?> byId(String id) async => _rows[id];
+
+  @override
+  Future<List<Observation>> recent({int limit = 50}) async => _snapshot(limit);
+
+  @override
+  Stream<List<Observation>> watchRecent({int limit = 50}) async* {
+    yield _snapshot(limit);
+    yield* _changes.stream.map((_) => _snapshot(limit));
+  }
+
+  @override
+  Future<void> delete(String id) async {
+    _rows.remove(id);
+    _changes.add(null);
+  }
+}
+
+final class FakeFarmTaskStore implements FarmTaskStore {
+  final Map<String, FarmTask> _rows = {};
+  final StreamController<void> _changes = StreamController<void>.broadcast();
+
+  List<FarmTask> _snapshot(int limit) {
+    final all = _rows.values.toList()
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return all.take(limit).toList(growable: false);
+  }
+
+  @override
+  Future<void> upsert(FarmTask task) async {
+    _rows[task.id] = task;
+    _changes.add(null);
+  }
+
+  @override
+  Future<FarmTask?> byId(String id) async => _rows[id];
+
+  @override
+  Future<List<FarmTask>> recent({int limit = 100}) async => _snapshot(limit);
+
+  @override
+  Stream<List<FarmTask>> watchRecent({int limit = 100}) async* {
+    yield _snapshot(limit);
+    yield* _changes.stream.map((_) => _snapshot(limit));
+  }
+
+  @override
+  Future<void> delete(String id) async {
+    _rows.remove(id);
+    _changes.add(null);
+  }
+}
+
+/// Scriptable [CameraSession]: the test drives frames and failures, so the
+/// screen's coaching and gating are exercised without a device.
+final class FakeCameraSession implements CameraSession {
+  FakeCameraSession({this.failOnStart = false});
+
+  final bool failOnStart;
+  final StreamController<LumaFrame> _frames =
+      StreamController<LumaFrame>.broadcast();
+
+  bool didStart = false;
+  bool didStop = false;
+  int pauseCount = 0;
+  int resumeCount = 0;
+  int captureCount = 0;
+
+  /// Bytes handed back by [capturePhoto]; tests override the preparation
+  /// step, so they need not be a real image.
+  Uint8List photoBytes = Uint8List.fromList(List<int>.filled(64, 7));
+
+  bool get hasListener => _frames.hasListener;
+
+  void emit(LumaFrame frame) => _frames.add(frame);
+
+  Future<void> close() => _frames.close();
+
+  @override
+  Future<void> start() async {
+    if (failOnStart) {
+      throw StateError('camera unavailable');
+    }
+    didStart = true;
+  }
+
+  @override
+  Stream<LumaFrame> get frames => _frames.stream;
+
+  /// Makes the shutter path throw, so tests can assert the app SAYS a capture
+  /// failed rather than silently doing nothing.
+  bool failOnCapture = false;
+
+  @override
+  Future<Uint8List> capturePhoto() async {
+    captureCount++;
+    if (failOnCapture) {
+      throw StateError('capture failed');
+    }
+    return photoBytes;
+  }
+
+  @override
+  Future<void> pause() async => pauseCount++;
+
+  @override
+  Future<void> resume() async => resumeCount++;
+
+  @override
+  Future<void> stop() async => didStop = true;
+
+  @override
+  Widget buildPreview(BuildContext context) =>
+      const ColoredBox(color: Color(0xFF000000));
+}
+
+/// Plain in-memory [SettingsStore].
+final class FakeSettingsStore implements SettingsStore {
+  FakeSettingsStore({this.writeDelay = Duration.zero});
+
+  /// Makes a write take observable time.
+  ///
+  /// The default is zero, so every existing test is unaffected. A test that
+  /// needs to prove a caller AWAITED a write rather than merely starting it
+  /// has to be able to observe the gap, and an instant fake has none.
+  final Duration writeDelay;
+
+  final Map<String, String> _values = {};
+
+  @override
+  Future<String?> read(String key) async => _values[key];
+
+  @override
+  Future<void> write(String key, String value) async {
+    if (writeDelay > Duration.zero) {
+      await Future<void>.delayed(writeDelay);
+    }
+    _values[key] = value;
+  }
+
+  @override
+  Future<void> delete(String key) async => _values.remove(key);
+}

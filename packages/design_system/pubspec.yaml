@@ -1,0 +1,15 @@
+name: design_system
+description: KrishiDoc V2 design system. Components are l10n-agnostic (strings injected by the app) and diagnosis UI is representable only with a certainty state (D-17).
+publish_to: none
+version: 0.1.0
+resolution: workspace
+environment:
+  sdk: ^3.8.0
+dependencies:
+  core_domain: ^0.1.0
+  flutter:
+    sdk: flutter
+dev_dependencies:
+  flutter_lints: ^5.0.0
+  flutter_test:
+    sdk: flutter

@@ -1,0 +1,28 @@
+[
+  {
+    "id": "raw-root",
+    "name": "Raw Data",
+    "parent_id": null
+  },
+  {
+    "id": "raw-maize",
+    "name": "Maize",
+    "parent_id": "raw-root"
+  },
+  {
+    "id": "raw-maize-rust",
+    "name": "Rust",
+    "parent_id": "raw-maize"
+  },
+  {
+    "id": "aug-root",
+    "name": "CCMT Dataset-Augmented",
+    "parent_id": null
+  },
+  {
+    "id": "aug-maize",
+    "name": "Maize",
+    "parent_id": "aug-root"
+  }
+]
+

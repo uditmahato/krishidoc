@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "name": "KrishiDoc consumed-source development-fold sidecar",
+  "join_key": ["source_id", "image_path", "sha256", "group_id"],
+  "purpose": "Deterministic cross-validation folds for source evidence already consumed during model development.",
+  "prohibitions": {
+    "promotion_eligible": false,
+    "selection_independent": false,
+    "may_be_described_as_external_test": false,
+    "may_mutate_canonical_manifest": false
+  },
+  "fold_values": ["dev_fold_1", "dev_fold_2", "dev_fold_3", "dev_fold_4", "dev_fold_5", "quarantine"],
+  "columns": {
+    "fold_schema_version": "integer schema identifier",
+    "source_id": "canonical manifest source identifier",
+    "image_path": "canonical manifest image path",
+    "sha256": "canonical image byte digest",
+    "group_id": "indivisible leakage unit",
+    "manifest_split": "original immutable manifest split; retained only for traceability",
+    "development_fold": "development fold or quarantine",
+    "fold_index": "one-based fold number; blank for quarantine",
+    "evidence_role": "always external_development",
+    "development_only": "always true",
+    "promotion_eligible": "always false",
+    "selection_independent": "always false",
+    "task_role": "role derived from canonical validity and condition labels",
+    "state_bucket": "normalized state, __rare_state__, __mixed_state__, or __quarantine__",
+    "raw_crops_json": "sorted JSON array preserving source crop observations",
+    "raw_diagnoses_json": "sorted JSON array preserving complete source diagnosis observations",
+    "diagnosis_terms_json": "normalized semicolon-separated diagnosis marginals used for balancing",
+    "raw_states_json": "sorted JSON array preserving source state observations",
+    "raw_countries_json": "sorted JSON array preserving source country observations",
+    "raw_review_count": "number of source expert-review rows for this image",
+    "metadata_status": "ok, flagged, or quarantined",
+    "metadata_flags": "semicolon-delimited row and group quality flags",
+    "group_metadata_flags": "semicolon-delimited disagreements within the group"
+  },
+  "quarantine_rule": "A missing annotation or missing critical crop, diagnosis, country, or state value quarantines the complete group_id.",
+  "conflict_rule": "Observed expert disagreements remain multi-valued and flagged; no visual or semantic adjudication is performed."
+}

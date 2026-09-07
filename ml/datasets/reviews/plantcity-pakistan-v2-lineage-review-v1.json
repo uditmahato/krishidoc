@@ -1,0 +1,350 @@
+{
+  "schema_version": 1,
+  "review_id": "plantcity-pakistan-v2-lineage-review-v1",
+  "source_id": "plantcity-pakistan-v2",
+  "source_version": 2,
+  "title": "PlantCity: Multi-crop leaf disease images from Pakistan (Version 2)",
+  "source_url": "https://data.mendeley.com/datasets/w8kh2xkspx/2",
+  "doi": "10.17632/w8kh2xkspx.2",
+  "license": {
+    "name": "Creative Commons Attribution 4.0 International",
+    "spdx": "CC-BY-4.0",
+    "url": "https://creativecommons.org/licenses/by/4.0/"
+  },
+  "reviewed_at": "2026-09-03T12:14:30+05:45",
+  "review_mode": "completed_train_and_test_cross_archive_lineage",
+  "supersedes_deferred_scope_from": "plantcity-pakistan-v2-test-review-v1",
+  "scope": {
+    "archives": [
+      "ml/data/raw/plantcity-pakistan-v2/Images/test.zip",
+      "ml/data/raw/plantcity-pakistan-v2/Images/train.zip"
+    ],
+    "extracted_trees": [
+      "ml/data/raw/plantcity-pakistan-v2/extracted/Images/test/test",
+      "ml/data/raw/plantcity-pakistan-v2/extracted/Images/train/train"
+    ],
+    "included": [
+      "Archive hashes, ZIP inventory, and archive-to-extraction parity",
+      "Complete image decoding, dimensions, encoding metadata, and filename patterns",
+      "Exact SHA-256 and conventional 64-bit DCT pHash relationships within train and across train/test",
+      "Deterministic indexed original-to-augmentation mapping for clean four-to-one numeric classes",
+      "Manual inspection of representative augmentation sequences"
+    ],
+    "excluded": [
+      "Agronomist label adjudication",
+      "Admission to any prepared manifest",
+      "Any model training, evaluation, promotion, or deployment use",
+      "Any claim of Nepal representativeness"
+    ]
+  },
+  "archive_integrity": {
+    "test": {
+      "relative_path": "Images/test.zip",
+      "byte_size": 1128347591,
+      "sha256": "db1bd5624f42aceebff4d8ff08f99257b0608ac712a8bf5bf7f1e676d68bfffa",
+      "md5": "d14401ded054bfd21208fdeb111e5fc2",
+      "zip_members": 10719,
+      "file_members": 10667,
+      "directory_members": 52,
+      "uncompressed_bytes": 1132646255
+    },
+    "train": {
+      "relative_path": "Images/train.zip",
+      "byte_size": 6127208194,
+      "sha256": "aaa016487407f0c5c1ed2c02fad189bd7945c46a15553e5ac6e67419bccaccea",
+      "md5": "0da4b022d68f6c0d8ad80ab2aada52dc",
+      "zip_members": 41658,
+      "file_members": 41606,
+      "directory_members": 52,
+      "uncompressed_bytes": 6174435200
+    },
+    "combined": {
+      "archive_bytes": 7255555785,
+      "zip_members": 52377,
+      "file_members": 52273,
+      "directory_members": 104,
+      "uncompressed_bytes": 7307081455
+    },
+    "provider_hash_match": true,
+    "duplicate_zip_member_names": 0,
+    "unsafe_zip_paths": 0,
+    "encrypted_members": 0
+  },
+  "extracted_inventory": {
+    "test": {
+      "file_count": 10667,
+      "total_bytes": 1132646255,
+      "tree_inventory_sha256": "c657238e1837a41b4352c603f79aafc06337bca5c041a4777af72979ef2ffdbe"
+    },
+    "train": {
+      "file_count": 41606,
+      "total_bytes": 6174435200,
+      "tree_inventory_sha256": "b84a7d1eeac85e7f2aa56235a492305b44c3dff70ad0c99ea05ea3cd5b2e9761"
+    },
+    "tree_digest_algorithm": "sha256(sorted utf8 relative_posix_path + NUL + decimal_byte_size + NUL + lowercase_file_sha256 + LF), v1",
+    "archive_to_extraction_missing_files": 0,
+    "archive_to_extraction_extra_files": 0,
+    "archive_to_extraction_size_mismatches": 0
+  },
+  "publisher_claim_alignment": {
+    "reported_collected_images": 10667,
+    "reported_post_augmentation_images": 52219,
+    "observed_test_images": 10667,
+    "observed_train_images": 41606,
+    "observed_combined_images": 52273,
+    "observed_minus_reported_post_augmentation": 54,
+    "interpretation": "The test count exactly equals the reported collected-image count, while train contains deterministic transformed descendants and the combined count is 54 above the reported augmented total."
+  },
+  "decode_and_encoding": {
+    "decoded_ok": 52273,
+    "decode_failures": 0,
+    "actual_formats": {
+      "JPEG": 52273
+    },
+    "pixel_modes": {
+      "RGB": 52273
+    },
+    "single_frame_images": 52273,
+    "extension_counts": {
+      "train": {
+        ".jpg": 40246,
+        ".jpeg": 1360
+      },
+      "test": {
+        ".jpg": 8415,
+        ".JPG": 1904,
+        ".jpeg": 348
+      }
+    },
+    "metadata_partition_signature": {
+      "train_exif_images": 0,
+      "test_exif_images": 115,
+      "train_progressive_jpegs": 0,
+      "test_progressive_jpegs": 43,
+      "train_icc_profile_images": 0,
+      "test_icc_profile_images": 4,
+      "test_gps_images": 4,
+      "interpretation": "The uniformly stripped and standardized train encoding versus heterogeneous test encoding is consistent with derivative export and may create a partition-domain shortcut."
+    }
+  },
+  "resolution_profile": {
+    "train_unique_width_height_pairs": 6,
+    "train_counts": {
+      "800x1000": 27014,
+      "1200x800": 7610,
+      "800x1200": 3975,
+      "1000x800": 2181,
+      "800x800": 810,
+      "1500x1000": 16
+    },
+    "test_unique_width_height_pairs": 28,
+    "test_most_common": {
+      "800x1000": 7135,
+      "1200x800": 2075,
+      "800x1200": 1078,
+      "800x800": 212,
+      "1000x800": 102
+    }
+  },
+  "class_parity": {
+    "case_sensitive_folder_sets_equal": true,
+    "train_class_count": 52,
+    "test_class_count": 52,
+    "train_files_per_class_range": [312, 1525],
+    "test_files_per_class_range": [83, 413],
+    "classes_with_exact_four_to_one_train_test_ratio": 29,
+    "exact_four_to_one_class_images": {
+      "train": 18340,
+      "test": 4585
+    },
+    "crop_counts": {
+      "apple": {"train": 2353, "test": 573},
+      "apricot": {"train": 1796, "test": 461},
+      "bean": {"train": 2568, "test": 639},
+      "cherry": {"train": 3996, "test": 999},
+      "maize": {"train": 1860, "test": 465},
+      "fig": {"train": 2291, "test": 573},
+      "grape": {"train": 6305, "test": 1575},
+      "loquat": {"train": 1293, "test": 327},
+      "pear": {"train": 2048, "test": 512},
+      "persimmon": {"train": 663, "test": 166},
+      "tomato": {"train": 12411, "test": 3369},
+      "walnut": {"train": 4022, "test": 1008}
+    }
+  },
+  "filename_profile": {
+    "train": {
+      "numeric_only": 29195,
+      "tomato_N": 12411,
+      "explicit_augmentation_token_matches": 0
+    },
+    "test": {
+      "numeric_only": 9449,
+      "tomato_N": 1156,
+      "IMG_N": 24,
+      "tomato_fusarium_N": 38,
+      "explicit_augmentation_token_matches": 0
+    },
+    "case_insensitive_exact_names_shared_within_same_class": 8178,
+    "stems_shared_within_same_class": 8454,
+    "interpretation": "Train is uniformly renumbered and filenames do not preserve a trustworthy parent identifier despite deterministic numeric blocks in many classes."
+  },
+  "deterministic_augmentation_mapping": {
+    "eligible_numeric_exact_four_to_one_classes": 27,
+    "test_parent_images": 4353,
+    "train_images_in_four_slot_blocks": 17412,
+    "mapping": {
+      "slot_1_train_index": "4*n-3",
+      "slot_1_operation": "horizontal_mirror",
+      "slot_2_train_index": "4*n-2",
+      "slot_2_operation": "vertical_mirror",
+      "slot_3_train_index": "4*n-1",
+      "slot_3_operation": "noise_or_recompression_identity",
+      "slot_4_train_index": "4*n",
+      "slot_4_operation": "rotation_observed_in_manual_samples_not_corpuswide_quantified"
+    },
+    "inverse_transform_phash_results": {
+      "evaluated_slot_1_2_3_descendants": 13059,
+      "descendants_distance_at_most_4": 13041,
+      "descendants_distance_at_most_8": 13059,
+      "parents_all_three_slots_distance_at_most_4": 4347,
+      "parents_all_three_slots_distance_at_most_8": 4353,
+      "slot_1": {"identical_phash": 4246, "distance_at_most_4": 4347, "distance_at_most_8": 4353, "maximum_distance": 8},
+      "slot_2": {"identical_phash": 4220, "distance_at_most_4": 4347, "distance_at_most_8": 4353, "maximum_distance": 8},
+      "slot_3": {"identical_phash": 3565, "distance_at_most_4": 4347, "distance_at_most_8": 4353, "maximum_distance": 8}
+    },
+    "named_example": {
+      "parent": "Corn Normal leaf/1.jpg",
+      "train_descendants": [
+        "Corn Normal leaf/1.jpg",
+        "Corn Normal leaf/2.jpg",
+        "Corn Normal leaf/3.jpg",
+        "Corn Normal leaf/4.jpg"
+      ]
+    },
+    "conclusion": "Train contains deterministic transformed descendants of test original candidates and is not an independent partition."
+  },
+  "duplicate_analysis": {
+    "method_note": "pHash is the conventional 64-bit grayscale DCT hash used by the repository. Hamming-distance links are candidate visual-dependence edges; deterministic indexing and inverse-transform checks provide direct lineage evidence.",
+    "within_train": {
+      "sha256": {
+        "duplicate_group_count": 120,
+        "duplicate_image_membership_count": 240,
+        "unique_file_sha256_count": 41486,
+        "largest_group_size": 2,
+        "cross_class_group_count": 2
+      },
+      "phash_64_dct_identical": {
+        "duplicate_group_count": 2899,
+        "duplicate_image_membership_count": 6618,
+        "largest_group_size": 5,
+        "cross_class_group_count": 26
+      },
+      "phash_64_dct_distance_at_most_4": {
+        "matching_pair_count": 6307,
+        "connected_component_count": 3922,
+        "component_image_membership_count": 9000,
+        "largest_component_size": 5,
+        "cross_class_component_count": 85
+      }
+    },
+    "cross_train_test": {
+      "sha256": {
+        "shared_digest_count": 102,
+        "matching_pair_count": 102,
+        "train_image_membership_count": 102,
+        "test_image_membership_count": 102,
+        "cross_class_pair_count": 0,
+        "all_pairs_class": "Apple black_spot",
+        "all_apple_black_spot_test_images_duplicated_in_train": true
+      },
+      "phash_64_dct_identical": {
+        "shared_value_count": 9025,
+        "matching_pair_count": 12611,
+        "train_image_membership_count": 12169,
+        "test_image_membership_count": 9212,
+        "cross_class_pair_count": 31
+      },
+      "phash_64_dct_distance_at_most_4": {
+        "matching_pair_count": 15326,
+        "same_class_pair_count": 15262,
+        "cross_class_pair_count": 64,
+        "matched_train_image_count": 14436,
+        "matched_test_image_count": 10604,
+        "matched_test_fraction": 0.9940939345645448
+      }
+    },
+    "product_scope_maize_tomato_cross_train_test": {
+      "train_images": 14271,
+      "test_images": 3834,
+      "phash_distance_at_most_4_pair_count": 7787,
+      "matched_train_image_count": 7267,
+      "matched_test_image_count": 3807,
+      "matched_test_fraction": 0.9929577464788732,
+      "matched_maize_test_images": 465,
+      "total_maize_test_images": 465,
+      "matched_tomato_test_images": 3342,
+      "total_tomato_test_images": 3369,
+      "cross_class_pair_count": 38
+    }
+  },
+  "named_contradictions": {
+    "within_train_exact_sha256": [
+      ["Cherry brown_spot/65.jpg", "Cherry Leaf Scorch/173.jpg"],
+      ["Cherry brown_spot/66.jpg", "Cherry Leaf Scorch/174.jpg"]
+    ],
+    "cross_train_test_exact_sha256_examples": [
+      ["train/Apple black_spot/395.jpg", "test/Apple black_spot/28.jpg"],
+      ["train/Apple black_spot/466.jpg", "test/Apple black_spot/99.jpg"]
+    ],
+    "cross_train_test_phash_distance_at_most_4_cross_class_examples": [
+      ["train/Corn Fungal leaf/207.jpg", "test/Corn gray leaf spot/132.jpg", 2],
+      ["train/Corn Normal leaf/411.jpg", "test/Corn holcus_ leaf spot/35.jpg", 4],
+      ["train/tomato Fusarium Wilt/tomato_253.jpg", "test/tomato_septoria_leaf/tomato_243.jpg", 0],
+      ["train/tomato verticillium wilt/tomato_035.jpg", "test/tomato_late_blight/13.JPG", 0]
+    ]
+  },
+  "decision": {
+    "review_status": "complete_not_admitted",
+    "source_admission": "not_admitted",
+    "provider_partition": "rejected_lineage_leaked_not_evaluation",
+    "train_archive": "derivative_archive_excluded_not_admitted",
+    "test_tree": "original_candidate_training_only_not_admitted",
+    "training_eligible_now": false,
+    "evaluation_eligible": false,
+    "selection_independent": false,
+    "promotion_eligible": false,
+    "nepal_evidence": false,
+    "deployment_eligible": false
+  },
+  "decision_rationale": [
+    "Deterministic indexed flip, noise/recompression, and rotation patterns prove original-to-derivative lineage across the provider boundary.",
+    "Exact byte duplicates and pHash links touch 99.41% of test images, invalidating an independent test interpretation.",
+    "Exact and perceptual components cross provider class labels, including product-relevant maize and tomato contradictions.",
+    "The train encoding is standardized and metadata-stripped relative to test, enabling a partition-domain shortcut.",
+    "Pakistan public data cannot establish performance in Nepal."
+  ],
+  "prohibited_uses": [
+    "Any prepared manifest before remediation",
+    "Provider train/test evaluation",
+    "Validation or calibration evidence",
+    "Independent internal or external test evidence",
+    "Nepal field evidence",
+    "Model selection, promotion, deployment, or phone-installation claims"
+  ],
+  "safe_handling": [
+    "Preserve both raw provider archives unchanged for provenance but exclude every train-tree image from prepared manifests and runs.",
+    "Discard the provider partition boundary and retain the test tree only as original candidates.",
+    "Before any admission, group exact duplicates, perceptual derivatives, and capture bursts and quarantine every mixed-label component in full.",
+    "Complete privacy, rights, and representative agronomist review, especially for maize and tomato class contradictions.",
+    "Assign every admitted original to a training-only group before generating reproducible on-the-fly augmentation.",
+    "Map only adjudicated maize and tomato conditions; consider other species only as reviewed wrong-crop or OOD evidence.",
+    "Re-run the fail-closed manifest audit and create a new immutable admission receipt before any experiment."
+  ],
+  "limitations": [
+    "DCT pHash can miss strong rotations and can occasionally link visually similar but unrelated images; it is not a label adjudicator.",
+    "The fourth indexed augmentation slot was manually confirmed as rotation in representative sequences but was not corpus-wide angle-normalized.",
+    "This review performs lineage and integrity analysis, not agronomic diagnosis verification.",
+    "No conclusion about Nepal field performance can be drawn from this Pakistan corpus."
+  ]
+}

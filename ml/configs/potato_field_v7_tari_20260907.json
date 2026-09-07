@@ -1,0 +1,197 @@
+{
+  "acceptance_gates": {
+    "maximum_expected_calibration_error": 0.08,
+    "maximum_int8_model_bytes_per_crop": 8000000,
+    "maximum_ood_false_accept_rate_at_operating_point": 0.05,
+    "maximum_p95_device_inference_ms": 500,
+    "minimum_field_macro_f1": 0.8,
+    "minimum_worst_known_class_recall": 0.7,
+    "nepal_field_gate_required_for_confident_results": true
+  },
+  "amp": true,
+  "backbone_learning_rate_multiplier": 0.1,
+  "batch_size": 16,
+  "calibration_maximum_subgroup_false_accept_rate": 0.05,
+  "candidate_architectures": [
+    "mobilenet_v3_large",
+    "efficientnet_b0"
+  ],
+  "condition_outlier_exposure_weight": 0.03,
+  "config_kind": "training",
+  "crop": "potato",
+  "data_snapshot": {
+    "audit_receipt": "ml/data/prepared/audit_receipt_field_v7_tari.json",
+    "audit_receipt_must_match_config": true,
+    "audit_receipt_must_match_dependencies": true,
+    "audit_receipt_must_verify_images": true,
+    "audit_required_before_training": true,
+    "manifest_sha256": "4b34847eec4c2850e31127cbcb396fde289b5df02893911d977de13ec786fb23",
+    "quarantine_sha256": "6fd5497d8e03a4853e34a2485516c191f2bdd66e82ae7de2f6a82cbc6b0b2ddf",
+    "quarantine_sidecar": "ml/data/prepared/quarantine_field_v3.json",
+    "quarantined_groups": 88,
+    "quarantined_rows": 306,
+    "required_artifacts": {
+      "aliases": {
+        "path": "ml/datasets/label_aliases_v2.json",
+        "sha256": "d1a44a559daa35be950f56ca6a0cda7e59638386d9c873417e66a8f15175ee1d"
+      },
+      "development_fold_report": {
+        "path": "ml/data/prepared/farmer_chat_india_development_folds_v3.report.json",
+        "sha256": "42966f9be019158e85497631b68ec32f8c043a44bbdddcfff5bbc6bc603e3140"
+      },
+      "development_fold_sidecar": {
+        "path": "ml/data/prepared/farmer_chat_india_development_folds_v3.csv",
+        "sha256": "2689d8bfff21c68acfad260a2f50702fb7a1261ecc31a38d99b6f20e980b087a"
+      },
+      "development_rotation_receipt": {
+        "path": "ml/data/prepared/manifest_field_v3_dg_rotation_1.receipt.json",
+        "sha256": "dae428b66efb811a44932a232118a97dc64ac837bfbdde17576cb9b8d59b2bcb"
+      },
+      "extension_receipt": {
+        "path": "ml/artifacts/potato_field_v5_20260907/extension_receipt.json",
+        "sha256": "4ee67021bec2e634b425c836d422b53adfe1982e882364cccbc9488819f93c89"
+      },
+      "new_source_acquisition": {
+        "path": "ml/data/raw/plantseg-potato-v5/acquisition_receipt.json",
+        "sha256": "a44441b868cf8e6bade92759ffdae9834133650e23cba876f0ed3d8cd53cd4cb"
+      },
+      "sanitized_base_audit_receipt": {
+        "path": "ml/data/prepared/audit_receipt_field_v3_sanitized.json",
+        "sha256": "171e925eccef1e8104a52804cbe1a13b13b05788499a13f605e6ea19fe3d88c5"
+      },
+      "sanitized_base_manifest": {
+        "path": "ml/data/prepared/manifest_field_v3_sanitized.csv",
+        "sha256": "97c57e47fd12960f5f7b4b49e25bc6da73b8391c60ff886295fd16ab425ec431"
+      },
+      "source_evidence_policy": {
+        "path": "ml/datasets/source_evidence_policy_v7.json",
+        "sha256": "902a093eb224c03ca5035963ca19855dc8076ed16ffd35230c5b384683d831fa"
+      },
+      "taxonomy": {
+        "path": "ml/datasets/taxonomy_v1.json",
+        "sha256": "4ab10c2a46161a3aa34c63c8f2c705ea084054701a10c7878ee397b9c4e64efa"
+      },
+      "v7_acquisition_0": {
+        "path": "ml/data/raw/potato-tari-8286529-early-v7/sampled/selection_receipt.json",
+        "sha256": "9fedba233889d7964001dd85d8036b01cccb2787c41ca1ee09b95df43728baed"
+      },
+      "v7_acquisition_1": {
+        "path": "ml/data/raw/potato-tari-8286529-healthy-v7/sampled/selection_receipt.json",
+        "sha256": "c14825c98d402750e8b0e4098eabf62f3e26d5937a1a528cd51a4ee3ded0f607"
+      },
+      "v7_acquisition_2": {
+        "path": "ml/data/raw/potato-tari-8286529-late-v7/sampled/selection_receipt.json",
+        "sha256": "8ca726e900e2e9e54060c4333bacba9417d68ed3e9ed596a4dd2ddca6222e70c"
+      },
+      "v7_extension": {
+        "path": "ml/artifacts/potato_field_v7_20260907/extension_receipt.json",
+        "sha256": "c125375131e39035f8fc4147e1ae1c13f8c12b59c7db4fa85463c88c11c4ae31"
+      },
+      "v7_geometric_audit": {
+        "path": "ml/artifacts/potato_field_v7_20260907/geometric_duplicate_audit.json",
+        "sha256": "a272a4e02a3640c6b8df0d7b3f8d8243adb5ae6538c7d46e697c435bd1b887f5"
+      },
+      "v7_inventory": {
+        "path": "ml/artifacts/potato_field_v7_20260907/inventory.json",
+        "sha256": "249fef0b8dd0cd14042913e508beabff03581f2f2411182ab03dc5b7f0132f83"
+      },
+      "v7_source_registry": {
+        "path": "ml/datasets/potato_field_v7_sources.json",
+        "sha256": "f500b1d27a75cd5c2ca664a32c2b42d36e6922b78f0f4bfbefae2c0fd7804c9a"
+      },
+      "v7_visual_review": {
+        "path": "ml/datasets/potato_v7_visual_review.json",
+        "sha256": "a123c5d31ef9ac96c7ee39cf680409dcf455924b1298afdca65a82a84ba1ccdf"
+      },
+      "visual_review": {
+        "path": "ml/datasets/plantseg_potato_review_20260907.json",
+        "sha256": "ef895a5c81b9b31dfc82189d1643a495b6d3b193dc795a6c0833fcee9af0e5b8"
+      }
+    },
+    "sanitization_policy": "quarantine_whole_mixed_condition_components_and_exclude_flagged_development_groups"
+  },
+  "deterministic": true,
+  "early_stopping_patience": 4,
+  "epochs": 3,
+  "evaluation_contract": {
+    "future_locked_test_source": "nepal_field_locked_v1",
+    "promotion_eligible": false,
+    "reviewed_nonplant_negatives_required_for_promotion": true,
+    "selection_independent": false,
+    "technical_external_test_role": "diagnostic_external_development_fold_only",
+    "technical_external_test_source": "farmer_chat_india_development_v1"
+  },
+  "finetune_from": {
+    "parent_manifest": {
+      "path": "ml/data/prepared/manifest_field_v3_dg_rotation_1.csv",
+      "sha256": "8d091b81284885c2acbba46b07e41873bf2a2d0e6af5e650ec0320aaec8d4177"
+    },
+    "path": "ml/runs/potato_field_v3_dg_rotation_1_oe003/efficientnet_b0/best.pt",
+    "sha256": "9e1854e4dabf868622abc5f21fea6cc13680c24bcdaa985560832e3843ed520a"
+  },
+  "freeze_backbone_batch_norm": true,
+  "freeze_backbone_epochs": 0,
+  "image_size": 224,
+  "known_labels": [
+    "potato_early_blight",
+    "potato_late_blight",
+    "potato_healthy"
+  ],
+  "label_smoothing": 0.05,
+  "learning_rate": 5e-05,
+  "limitations": [
+    "No app promotion: new test is only group-held-out within a training source, not source-independent or Nepal validation.",
+    "SIFT-geometric duplicate screening is not verified physical-leaf identity; residual duplicate risk remains. Healthy source images are predominantly close-ups.",
+    "New data labels are publisher-reported pathologist-validated; KrishiDoc visual screening is not clinical adjudication.",
+    "No quarantined Zenodo 17553016 samples admitted. No old test or calibration rows moved into training.",
+    "Only nine usable unknown-condition calibration examples remain: separate cap and explicit small-sample flag, not a safety guarantee.",
+    "All previous 749 challenge images remain excluded from additions and are consumed diagnostics only."
+  ],
+  "manifest": "ml/data/prepared/manifest_field_v7_tari.csv",
+  "minimum_learning_rate": 1e-06,
+  "mixup_alpha": 0.1,
+  "monitor": "source_balanced_safety_v1",
+  "monitor_source_ids": [
+    "pldd-up",
+    "plantseg_potato_v5",
+    "potato_tari_8286529_v7"
+  ],
+  "num_workers": 4,
+  "pretrained": false,
+  "pretraining_weights": "torchvision_default_imagenet_1k",
+  "promotion_allowed": false,
+  "require_cuda": true,
+  "run_name": "potato_field_v7_tari_20260907",
+  "safety_composite_validation_contract": {
+    "minimum_field_samples_per_condition": 30,
+    "minimum_known_samples": 100,
+    "minimum_ood_samples": 100,
+    "minimum_samples_per_required_validity_label": 30,
+    "required_validity_labels": [
+      "usable_target_leaf",
+      "wrong_crop_leaf",
+      "other_plant"
+    ],
+    "schema_version": 1
+  },
+  "samples_per_epoch": 12000,
+  "sampling_strategy": "task_source_balanced_v1",
+  "schema_version": 1,
+  "seed": 20260909,
+  "source_evidence_policy": "ml/datasets/source_evidence_policy_v7.json",
+  "split_policy": {
+    "calibration": 0.1,
+    "future_nepal_test_source": "nepal_field_locked_v1",
+    "locked_external_test_sources": [],
+    "method": "source_and_group_locked_with_consumed_development_rotation",
+    "near_duplicate_hamming_distance": 4,
+    "test": 0.1,
+    "train": 0.7,
+    "validation": 0.1
+  },
+  "status": "research_only_bn_frozen_full_adaptation",
+  "training_transform_recipe": "resize_then_augment_then_mean_pad_v2",
+  "unconfigured_conditions": "as_unknown",
+  "unknown_label": "potato_other_unknown",
+  "weight_decay": 0.0001
+}

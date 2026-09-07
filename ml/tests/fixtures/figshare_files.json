@@ -1,0 +1,17 @@
+[
+  {
+    "id": 9001,
+    "name": "Maize_Dataset.zip",
+    "size": 6,
+    "computed_md5": "e80b5017098950fc58aad83c8c14978e",
+    "download_url": "https://figshare.example/files/9001"
+  },
+  {
+    "id": 9002,
+    "name": "README.txt",
+    "size": 4,
+    "computed_md5": "098f6bcd4621d373cade4e832627b4f6",
+    "download_url": "https://figshare.example/files/9002"
+  }
+]
+

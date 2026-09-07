@@ -1,0 +1,116 @@
+name: ci
+
+on:
+  push:
+    branches: [main, v2]
+  pull_request:
+    branches: [main, v2]
+
+permissions:
+  contents: read
+
+jobs:
+  secret-scan:
+    name: secret scan (gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  repo-hygiene:
+    name: repo hygiene
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: forbid tracked artifacts and secret-shaped files
+        run: |
+          set -e
+          violations=$(git ls-files | grep -E '(^|/)(build|\.dart_tool|__pycache__|\.terraform)(/|$)|\.(jks|keystore|pem|p12|tfstate)$|(^|/)(\.env(\..*)?|key\.properties|google-services\.json|GoogleService-Info\.plist)$' || true)
+          if [ -n "$violations" ]; then
+            echo "Forbidden files tracked in git:"; echo "$violations"; exit 1
+          fi
+      - name: ADR index exists and is non-empty
+        run: test -s docs/adr/ADR-INDEX.md
+      - name: Living Project Memory exists
+        run: test -s docs/PROJECT_MEMORY.md
+
+  flutter:
+    name: flutter (format, analyze, purity, tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.32.7"
+          channel: stable
+          cache: true
+      - name: sqlite for pure-Dart drift tests
+        run: sudo apt-get update -q && sudo apt-get install -y -q libsqlite3-dev
+      - run: flutter pub get
+      - name: format check (before codegen so generated files are absent)
+        run: dart format --output=none --set-exit-if-changed packages app/lib/src app/lib/main.dart app/test
+      - run: flutter gen-l10n
+        working-directory: app
+      - run: dart run build_runner build --delete-conflicting-outputs
+        working-directory: packages/core_data
+      - run: flutter analyze --fatal-infos
+      - name: no Flutter imports in pure core packages (D-42)
+        run: |
+          if grep -rn "package:flutter" packages/core_domain packages/core_data packages/capture packages/inference --include="*.dart"; then
+            echo "core packages must stay Flutter-free (D-42)"; exit 1
+          fi
+      - name: INTERNET permission in MAIN manifest (V1 regression guard)
+        run: grep -q 'android.permission.INTERNET' app/android/app/src/main/AndroidManifest.xml
+      - run: dart test
+        working-directory: packages/core_domain
+      - run: dart test
+        working-directory: packages/core_data
+      - run: dart test
+        working-directory: packages/capture
+      - run: dart test
+        working-directory: packages/inference
+      - run: flutter test
+        working-directory: packages/design_system
+      - run: flutter test
+        working-directory: app
+
+  python:
+    name: python (ruff, mypy, pytest)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: uv sync --frozen
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - name: module boundaries (D-26)
+        run: |
+          if grep -rn "from krishidoc.modules" src/krishidoc/platform; then
+            echo "platform must not import a domain module (D-26)"; exit 1
+          fi
+      - name: no password fields in the API (D-13)
+        # Matches password used as a field, key, or assignment, not prose
+        # about the decision. V1 shipped a login that promised an account it
+        # could not create and a reset that accepted a hardcoded code; this
+        # system has no such concept to get wrong.
+        run: |
+          if grep -rniE "password[[:space:]]*[:=]|[\"']password[\"']" src/krishidoc; then
+            echo "this system has no passwords (D-13)"; exit 1
+          fi
+      - run: uv run pytest -q
+
+# OpenAPI diff, budget, and eval-harness jobs are added by the modules that
+# create the artifacts they check.

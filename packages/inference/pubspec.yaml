@@ -1,0 +1,12 @@
+name: inference
+description: "Pure Dart inference decisions for KrishiDoc V2. Model pack metadata, calibration, and the tri-state prediction resolver (D-15, D-17, D-18). No Flutter imports (D-42); the model runtime sits behind a port."
+publish_to: none
+version: 0.1.0
+resolution: workspace
+environment:
+  sdk: ^3.8.0
+dependencies:
+  core_domain: ^0.1.0
+dev_dependencies:
+  lints: ^5.0.0
+  test: ^1.25.0

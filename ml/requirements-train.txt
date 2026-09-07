@@ -1,0 +1,19 @@
+# The CUDA torch/torchvision pair is supplied by the machine-specific PyTorch
+# index or the bootstrap environment documented in README.md.
+# NumPy 1.26 keeps ABI compatibility with the CUDA/PyTorch Anaconda bootstrap
+# and its compiled SciPy stack on Windows. A clean CI image may update the
+# numerical stack together, but must not mix NumPy-1.x binaries with NumPy 2.
+numpy==1.26.4
+pandas==2.3.0
+Pillow==11.2.1
+scikit-learn==1.6.1
+timm==1.0.15
+tqdm==4.67.1
+requests==2.32.3
+huggingface-hub==0.32.4
+pyarrow==20.0.0
+pytest==8.3.5
+# Verified interchange export and CPU parity/host benchmark. These do not make
+# an ONNX candidate compatible with the Flutter application's TFLite runtime.
+onnx==1.18.0
+onnxruntime==1.22.0
