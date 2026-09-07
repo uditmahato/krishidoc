@@ -1,10 +1,19 @@
 # Living Project Memory
 
-**Protocol:** updated at every major milestone close (minimum); consulted before any new decision; a recorded decision is changed only by an explicit superseding ADR. This repo copy is authoritative through D-60.
+**Protocol:** updated at every major milestone close (minimum); consulted before any new decision; a recorded decision is changed only by an explicit superseding ADR. This repo copy is authoritative through D-61.
 
 ## Architecture decisions
 
-Registry: [adr/ADR-INDEX.md](adr/ADR-INDEX.md) (D-00..D-60). Full rationale: the design review meeting and external audit documents (delivered 2026-07-27), plus the linked per-decision ADRs. Per-module ADR files are written before their module's code.
+Registry: [adr/ADR-INDEX.md](adr/ADR-INDEX.md) (D-00..D-61). Full rationale: the design review meeting and external audit documents (delivered 2026-07-27), plus the linked per-decision ADRs. Per-module ADR files are written before their module's code.
+
+## Main branch promotion (2026-09-07)
+
+The owner explicitly requested replacing legacy `main` with the merged V2 app.
+[D-61](adr/ADR-0061-main-development-trunk.md) makes `main` the development trunk
+and GitHub default, superseding all earlier `v2`-trunk instructions. The
+promotion preserves both histories, retains `v2` as a reference and saves old
+`main` at `codex/legacy-main-before-v2-20260907`. CI and contributor instructions
+now support `main`. This does not promote V7 or change application behaviour.
 
 ## Potato new-source experiments (2026-09-07)
 

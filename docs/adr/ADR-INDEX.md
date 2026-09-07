@@ -57,7 +57,7 @@ Status codes: A = accepted; A* = accepted as amended (by the referenced decision
 | D-48 | Account continuity: device-key rebind with cooldown; dormant-account second signal | A |
 | D-49 | Content ops workstream: pinned launch scope, partnerships, velocity metric, registry cadence | A |
 | D-50 | Audit sweep: op-log compaction, sync admission control, single-region posture, Devanagari FTS, cost | A |
-| D-51 | V2 lives on orphan branch `v2` of the existing repo; V1 branches archived read-only; default-branch flip at first release | A |
+| D-51 | V2 lives on orphan branch `v2` of the existing repo; V1 branches archived read-only; default-branch flip at first release | S (D-61) |
 | D-52 | Sample inference stand-in: deterministic, pack-specified, marked `sample-` in `modelVersion` for the life of every record; no distribution and no treatment content while wired ([ADR-0052](ADR-0052-sample-inference-standin.md)) | A* (D-56; release now uses the experimental model, sample rules remain in debug/tests) |
 | D-53 | First run asks for the language off the single existing settings key; order pinned `ne, hi, en` on every device; the device locale is never a hint ([ADR-0053](ADR-0053-first-run-language-choice.md)) | A |
 | D-54 | Endonyms are non-translatable ARB keys rendered with their own script metrics, never Dart constants and never the ambient theme ([ADR-0054](ADR-0054-endonyms-as-arb-keys.md)) | A |
@@ -67,3 +67,4 @@ Status codes: A = accepted; A* = accepted as amended (by the referenced decision
 | D-58 | Field-model development uses licensed, provenance-tracked, group-isolated data; crop-specific raw-logit int8 packs may replace the experimental model only after field, OOD, calibration, quantization and device gates ([ADR-0058](ADR-0058-field-model-training-and-promotion.md)) | A |
 | D-59 | System gallery import and automatic crop suggestions with photo review, manual correction and unchanged disease rejection ([ADR-0059](ADR-0059-gallery-and-crop-suggestions.md)) | A |
 | D-60 | Fixed bottom gallery/capture controls, explicit blur-only override, training-compatible potato resize and isolated diagnostic APKs ([ADR-0060](ADR-0060-capture-audit-and-training-resize.md)) | A |
+| D-61 | Promote the V2 application to `main`, preserve both histories and legacy reference, and target future PRs at `main` ([ADR-0061](ADR-0061-main-development-trunk.md)) | A |

@@ -105,7 +105,7 @@ versioned. Follow the model notices before redistributing them.
 From a fresh clone of the development branch:
 
 ```sh
-git clone --branch v2 https://github.com/uditmahato/krishidoc.git
+git clone --branch main https://github.com/uditmahato/krishidoc.git
 cd krishidoc
 flutter pub get
 cd packages/core_data
@@ -180,9 +180,11 @@ evaluation evidence. Conversion dependencies are isolated from training.
 
 ## Branches and contribution
 
-`v2` is the active development trunk; feature PRs target it. `main` and `dev`
-contain legacy V1 code and are retained for reference. GitHub may still open
-`main` by default: select `v2` to inspect the current development application.
+`main` is the active development trunk and GitHub default; feature PRs target
+it. The V2 application was promoted to `main` on 2026-09-07 without discarding
+either branch's history. `v2` retains the pre-promotion development snapshot.
+Legacy V1 is preserved in `dev` and `codex/legacy-main-before-v2-20260907`.
+See [the branch promotion decision](docs/adr/ADR-0061-main-development-trunk.md).
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), the
 [architecture decision index](docs/adr/ADR-INDEX.md) and

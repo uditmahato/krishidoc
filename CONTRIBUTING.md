@@ -2,10 +2,10 @@
 
 ## Workflow
 
-Trunk-based on `v2`. Branches are short-lived (target ≤ 3 days), squash-merged by PR:
+Trunk-based on `main` (D-61). Branches are short-lived (target ≤ 3 days), squash-merged by PR:
 
 - `feat/<scope>-<slug>`, `fix/<scope>-<slug>`, `infra/<slug>`, `content/<slug>`, `docs/<slug>`
-- Emergency: `hotfix/<slug>` from the release tag, cherry-picked back to `v2`
+- Emergency: `hotfix/<slug>` from the release tag, cherry-picked back to `main`
 - No long-lived integration branches. V1 died on one; ADR-0000 records the lesson.
 
 ## Commits
