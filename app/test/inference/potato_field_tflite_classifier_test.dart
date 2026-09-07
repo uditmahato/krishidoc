@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:core_domain/core_domain.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as image_lib;
 import 'package:inference/inference.dart';
@@ -38,6 +39,25 @@ Uint8List _solidPng(int width, int height, int red, int green, int blue) {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  test(
+    'V7 opt-in selects stricter calibration, not just different weights',
+    () async {
+      final result = await PotatoFieldTfliteClassifier(
+        runner: _FakePotatoRunner(
+          const PotatoFieldRawOutput(
+            validityLogits: [3, 0, 0, 0, 0],
+            conditionLogits: [8, 0, 0],
+          ),
+        ),
+      ).gatedLogits(_solidPng(64, 64, 0, 180, 0));
+      expect(result.accepted, !PotatoFieldResearchPack.useV7);
+      expect(
+        potatoFieldModelAsset.contains('_v7_'),
+        PotatoFieldResearchPack.useV7,
+      );
+    },
+  );
 
   test('preprocessor letterboxes and applies ImageNet normalization', () {
     final values = const PotatoFieldImagePreprocessor().prepare(
@@ -134,8 +154,8 @@ void main() {
 
   test('bundled metadata matches the frozen model and safety policy', () async {
     final candidates = [
-      File('app/assets/models/potato_field_v3_efficientnet_b0.metadata.json'),
-      File('assets/models/potato_field_v3_efficientnet_b0.metadata.json'),
+      File('app/$potatoFieldMetadataAsset'),
+      File(potatoFieldMetadataAsset),
     ];
     final metadataFile = candidates.firstWhere((file) => file.existsSync());
     final metadata =
@@ -152,6 +172,34 @@ void main() {
       PotatoFieldResearchPack.thresholdSetVersion,
     );
     expect(artifact['sha256'], PotatoFieldResearchPack.artifactSha256);
+    final binary = File(
+      '${metadataFile.parent.path}/${(artifact['path'] as String).split('/').last}',
+    );
+    expect(
+      sha256.convert(await binary.readAsBytes()).toString(),
+      artifact['sha256'],
+    );
+    final calibration = metadata['calibration'] as Map<String, dynamic>;
+    expect(
+      calibration['validityTemperature'],
+      PotatoFieldResearchPack.validityTemperature,
+    );
+    expect(
+      calibration['conditionTemperature'],
+      PotatoFieldResearchPack.conditionTemperature,
+    );
+    expect(
+      calibration['validityProbabilityMin'],
+      PotatoFieldResearchPack.validityProbabilityMin,
+    );
+    expect(
+      calibration['conditionProbabilityMin'],
+      PotatoFieldResearchPack.conditionProbabilityMin,
+    );
+    expect(
+      calibration['conditionEnergyMax'],
+      PotatoFieldResearchPack.conditionEnergyMax,
+    );
     expect(
       (outputs[0] as Map<String, dynamic>)['labels'],
       PotatoFieldResearchPack.validityLabelKeys,
@@ -163,6 +211,15 @@ void main() {
     expect(safety['confidentResultsAllowed'], isFalse);
     expect(safety['validityGateRequired'], isTrue);
     expect(limitations, contains('not_nepal_field_validated'));
-    expect(limitations, contains('physical_device_latency_not_yet_measured'));
+    if (PotatoFieldResearchPack.useV7) {
+      final native = metadata['nativeValidation'] as Map<String, dynamic>;
+      expect(native['photoCount'], 79);
+      expect(native['processingErrors'], 0);
+      expect(native['gateDisagreements'], 0);
+      expect(native['promotionEligible'], isFalse);
+      expect(limitations, contains('single_device_latency_only'));
+    } else {
+      expect(limitations, contains('physical_device_latency_not_yet_measured'));
+    }
   });
 }

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "paper": "https://doi.org/10.1016/j.dib.2025.111549",
+  "label_evidence": "Paper reports plant-pathologist validation for original Zenodo 8286529. This is publisher-reported validation, not independent clinical verification by KrishiDoc. Do not attribute it to Zenodo 17553016.",
+  "license": "CC-BY-4.0",
+  "sources": [
+    {
+      "id": "potato-tari-8286529-early-v7",
+      "landing_url": "https://zenodo.org/records/8286529",
+      "condition_label": "potato_early_blight",
+      "acquisition": {"url": "https://zenodo.org/api/records/8286529/files/earlyblt.zip/content", "expected_size": 2002133904, "expected_md5": "b548e41ecf600700d75ec51ac5bdd293"}
+    },
+    {
+      "id": "potato-tari-8286529-healthy-v7",
+      "landing_url": "https://zenodo.org/records/8286529",
+      "condition_label": "potato_healthy",
+      "acquisition": {"url": "https://zenodo.org/api/records/8286529/files/healthy.zip/content", "expected_size": 2725288552, "expected_md5": "06d7c7f1c0ef778bb8dd0dd4786ef57f"}
+    },
+    {
+      "id": "potato-tari-8286529-late-v7",
+      "landing_url": "https://zenodo.org/records/8286529",
+      "condition_label": "potato_late_blight",
+      "acquisition": {"url": "https://zenodo.org/api/records/8286529/files/lateblt.zip/content", "expected_size": 2439344884, "expected_md5": "59f0e1dbe4a223bc7921e1766edd4f23"}
+    }
+  ]
+}

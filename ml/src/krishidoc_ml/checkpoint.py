@@ -19,8 +19,9 @@ def initialize_finetune(
 ) -> dict[str, str]:
     """Weights-only initialization; never reuse optimizer/RNG or call it resume.
 
-    This first fine-tuning path requires the unchanged split manifest. Adding
-    data later requires explicit ancestry/leakage review, not a silent override.
+    The supplied manifest identity must match the parent checkpoint. The
+    pipeline separately verifies append-only ancestry and the full combined
+    image audit when a new-source manifest extension is explicitly configured.
     """
     actual = file_sha256(path)
     if actual != expected_sha256:

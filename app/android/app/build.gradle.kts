@@ -29,8 +29,16 @@ android {
         // Real-device audits must not replace or uninstall the farmer's app.
         val modelAudit = providers.gradleProperty("target").orNull
             ?.contains("labelled_model_audit") == true
-        applicationId = if (modelAudit) "com.krishidoc.app.modelaudit" else "com.krishidoc.app"
-        manifestPlaceholders["appLabel"] = if (modelAudit) "KrishiDoc Model Audit" else "KrishiDoc"
+        val v7Audit = providers.gradleProperty("target").orNull
+            ?.contains("labelled_model_audit_v7") == true
+        val v7Test = providers.gradleProperty("target").orNull
+            ?.contains("main_potato_v7") == true
+        applicationId = if (v7Audit) "com.krishidoc.app.v7audit"
+            else if (v7Test) "com.krishidoc.app.v7test"
+            else if (modelAudit) "com.krishidoc.app.modelaudit" else "com.krishidoc.app"
+        manifestPlaceholders["appLabel"] = if (v7Audit) "KrishiDoc V7 Audit"
+            else if (v7Test) "KrishiDoc V7 Test"
+            else if (modelAudit) "KrishiDoc Model Audit" else "KrishiDoc"
         // The official TensorFlow Lite Flutter runtime requires Android 8.0.
         // Keeping API 23 here would produce an APK that installs but cannot
         // load the disease model on Android 6/7 devices.

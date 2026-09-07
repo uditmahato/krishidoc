@@ -3,6 +3,7 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:inference/inference.dart';
 
 import 'l10n/gen/app_localizations.dart';
 import 'src/app_services.dart';
@@ -144,7 +145,14 @@ class _KrishiDocAppState extends ConsumerState<KrishiDocApp> {
         // theme is restated here once the answer exists.
         builder: (context, child) => Theme(
           data: kdLightTheme(locale: Localizations.localeOf(context)),
-          child: child!,
+          child: PotatoFieldResearchPack.useV7
+              ? Banner(
+                  message: 'V7 RESEARCH',
+                  location: BannerLocation.topEnd,
+                  color: Colors.deepOrange,
+                  child: child!,
+                )
+              : child!,
         ),
         routerConfig: _router,
         locale: _locale,

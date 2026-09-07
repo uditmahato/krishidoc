@@ -1,0 +1,68 @@
+{
+  "aliases": {
+    "digigreen-crop-disease-images": "farmer_chat_india",
+    "farmer_chat_india_development_v1": "farmer_chat_india",
+    "potato_central_java": "potato-central-java"
+  },
+  "description": "V7 source extension; all existing evidence restrictions retained",
+  "policy_id": "krishidoc-source-evidence-v7",
+  "schema_version": 1,
+  "sources": {
+    "farmer_chat_india": {
+      "evidence_role": "external_development",
+      "promotion_eligible": false,
+      "reason": "This source has already been inspected and used to diagnose domain shift and choose subsequent data and modelling work. It is development evidence, not an untouched promotion holdout.",
+      "selection_independent": false,
+      "title": "Digital Green Crop Disease Expert Annotations"
+    },
+    "maize-figshare-29298275": {
+      "evidence_role": "training_or_internal_development",
+      "promotion_eligible": false,
+      "reason": "This source is admitted for training/internal development and cannot provide independent promotion evidence.",
+      "selection_independent": false,
+      "title": "Maize Leaf Dataset on Figshare"
+    },
+    "nepal_field_locked_v1": {
+      "evidence_role": "external_test",
+      "promotion_eligible": true,
+      "reason": "This reserved source identifier may provide promotion evidence only when the report also proves the source is locked, disjoint from internal sources, and passes every configured Nepal and quality gate.",
+      "selection_independent": true,
+      "title": "Future locked Nepal field evaluation source"
+    },
+    "plantseg_potato_v5": {
+      "evidence_role": "training_or_internal_development",
+      "promotion_eligible": false,
+      "reason": "This source contributes training; even untouched group-held-out images do not establish source-independent Nepal performance.",
+      "selection_independent": false,
+      "title": "plantseg_potato_v5"
+    },
+    "pldd-up": {
+      "evidence_role": "training_or_internal_development",
+      "promotion_eligible": false,
+      "reason": "This source contributes potato training and internal grouped splits; source-shared evaluation is not independent external evidence.",
+      "selection_independent": false,
+      "title": "PLDD-UP"
+    },
+    "potato-central-java": {
+      "evidence_role": "training_or_internal_development",
+      "promotion_eligible": false,
+      "reason": "This source is admitted only as training-time field-domain and explicit unknown-condition exposure; it cannot provide independent evaluation or Nepal promotion evidence.",
+      "selection_independent": false,
+      "title": "Central Java potato leaf field dataset"
+    },
+    "potato_tari_8286529_v7": {
+      "evidence_role": "training_or_internal_development",
+      "promotion_eligible": false,
+      "reason": "This source contributes training; even untouched group-held-out images do not establish source-independent Nepal performance.",
+      "selection_independent": false,
+      "title": "potato_tari_8286529_v7"
+    },
+    "tom2024-original": {
+      "evidence_role": "training_or_internal_development",
+      "promotion_eligible": false,
+      "reason": "This source contributes training and internal grouped splits and cannot provide independent promotion evidence.",
+      "selection_independent": false,
+      "title": "TOM2024 originals"
+    }
+  }
+}
