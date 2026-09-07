@@ -18,17 +18,19 @@ from torch.nn import functional as F
 from torch.utils.data import DataLoader
 
 from .calibration import apply_calibration, fit_calibration
-from .checkpoint import load_training_checkpoint, save_checkpoint
+from .checkpoint import initialize_finetune, load_training_checkpoint, save_checkpoint
 from .config import config_hash, find_repo_root
 from .constants import USABLE_VALIDITY_LABEL, VALIDITY_LABELS, VALIDITY_TO_INDEX
 from .data_snapshot import verify_training_data_snapshot
 from .evidence import resolve_source_evidence
+from .finetune_data import verify_manifest_extension
 from .manifest import (
     ManifestDataset,
     deterministic_limit,
     parse_bool,
     read_manifest,
     source_balanced_sampler,
+    task_source_balanced_sampler,
 )
 from .metrics import compute_metrics
 from .model import CropSpecificTwoHeadModel, create_model
@@ -40,6 +42,8 @@ from .transforms import build_transform
 _SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
 
 SAFETY_COMPOSITE_MONITOR = "safety_composite_v1"
+SOURCE_RECALL_MONITOR = "source_balanced_condition_recall_v1"
+SOURCE_SAFETY_MONITOR = "source_balanced_safety_v1"
 SAFETY_COMPOSITE_WEIGHTS: dict[str, float] = {
     "field_condition_macro_f1": 0.50,
     "validity_balanced_accuracy": 0.25,
@@ -61,6 +65,17 @@ def train_experiment(
     seed = int(config.get("seed", 0))
     seed_everything(seed, deterministic=bool(config.get("deterministic", True)))
     device = resolve_device(device_name)
+    if config.get('require_cuda', False) and device.type != 'cuda':
+        raise ValueError('This experiment requires CUDA; CPU fallback is forbidden')
+    finetune = config.get('finetune_from')
+    training_mode = config.get("training_mode", "full")
+    if training_mode not in {"full", "condition_head_only"}:
+        raise ValueError("Unsupported training_mode")
+    if training_mode == "condition_head_only" and not finetune:
+        raise ValueError("Condition-only training requires a pinned parent checkpoint")
+    sampling = config.get('sampling_strategy', 'source_balanced')
+    if sampling not in ('source_balanced', 'task_source_balanced_v1'):
+        raise ValueError(f'Unsupported sampling strategy: {sampling}')
     amp_enabled = bool(config.get("amp", True)) and device.type == "cuda"
     condition_outlier_exposure_weight = _condition_outlier_exposure_weight(config)
     unknown_condition_label = str(
@@ -91,12 +106,24 @@ def train_experiment(
 
     manifest_path = _resolve_path(config["manifest"], repo_root)
     manifest_digest = file_sha256(manifest_path)
-    verify_training_data_snapshot(
+    verified_snapshot = verify_training_data_snapshot(
         config=config,
         manifest_path=manifest_path,
         repo_root=repo_root,
         manifest_sha256=manifest_digest,
     )
+    parent_manifest_digest = manifest_digest
+    if finetune and finetune.get('parent_manifest'):
+        snapshot = config.get('data_snapshot', {})
+        if verified_snapshot is None or not all(snapshot.get(flag) is True for flag in (
+            'audit_required_before_training', 'audit_receipt_must_verify_images',
+            'audit_receipt_must_match_config', 'audit_receipt_must_match_dependencies',
+        )):
+            raise ValueError('Manifest extension requires the full strict combined-data audit')
+        parent = finetune['parent_manifest']
+        parent_manifest_digest = verify_manifest_extension(
+            _resolve_path(parent['path'], repo_root), manifest_path, parent['sha256'],
+        )
     image_root = _resolve_path(config.get("image_root", repo_root), repo_root)
     output = Path(output_dir).resolve()
     output.mkdir(parents=True, exist_ok=True)
@@ -140,11 +167,13 @@ def train_experiment(
             f"training rows contain no usable {unknown_condition_label!r} examples"
         )
     monitor_name = str(config.get("monitor", "condition_macro_f1"))
+    if monitor_name == SOURCE_RECALL_MONITOR and training_mode != "condition_head_only":
+        raise ValueError("Source-recall selection requires a frozen validity path")
     _assert_training_coverage(
         train_frame,
         validation_frame,
         condition_labels,
-        monitor_name=monitor_name,
+        monitor_name=SAFETY_COMPOSITE_MONITOR if monitor_name in {SOURCE_RECALL_MONITOR, SOURCE_SAFETY_MONITOR} else monitor_name,
         safety_composite_validation_contract=config.get(
             "safety_composite_validation_contract"
         ),
@@ -176,8 +205,25 @@ def train_experiment(
     model = create_model(
         architecture,
         len(condition_labels),
-        pretrained=bool(config.get("pretrained", True)) and resume is None,
+        pretrained=bool(config.get("pretrained", True)) and resume is None and not finetune,
     ).to(device)
+    if finetune and resume is None:
+        initialize_finetune(
+            _resolve_path(finetune['path'], repo_root), model=model,
+            expected_sha256=finetune['sha256'], crop=crop,
+            architecture=architecture, condition_labels=condition_labels,
+            validity_labels=list(VALIDITY_LABELS), image_size=image_size,
+            manifest_sha256=parent_manifest_digest,
+        )
+    if training_mode == "condition_head_only":
+        model.set_condition_head_only()
+    freeze_bn = config.get("freeze_backbone_batch_norm", False)
+    if type(freeze_bn) is not bool:
+        raise ValueError("freeze_backbone_batch_norm must be a boolean")
+    if freeze_bn:
+        if not finetune:
+            raise ValueError("Frozen BN adaptation requires a pinned parent checkpoint")
+        model.set_backbone_batch_norm_frozen()
     optimizer = _create_optimizer(model, config)
     epochs = int(config.get("epochs", 20))
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
@@ -240,7 +286,11 @@ def train_experiment(
             num_workers=int(config.get("num_workers", 0)),
             seed=seed + epoch,
             device=device,
-            sampler=source_balanced_sampler(train_frame, seed + epoch),
+            sampler=(task_source_balanced_sampler(
+                train_frame, seed + epoch,
+                config.get('samples_per_epoch', len(train_frame)),
+            ) if sampling == 'task_source_balanced_v1'
+                else source_balanced_sampler(train_frame, seed + epoch)),
         )
         train_summary = _train_one_epoch(
             model=model,
@@ -249,16 +299,18 @@ def train_experiment(
             scaler=scaler,
             device=device,
             amp_enabled=amp_enabled,
-            validity_class_weights=_class_weights(
+            validity_class_weights=(torch.ones(len(VALIDITY_LABELS), device=device)
+                if sampling == 'task_source_balanced_v1' else _class_weights(
                 train_frame["validity_label"].map(
                     {label: index for index, label in enumerate(VALIDITY_LABELS)}
                 ).to_numpy(),
                 len(VALIDITY_LABELS),
                 device,
-            ),
-            condition_class_weights=_condition_class_weights(
+            )),
+            condition_class_weights=(torch.ones(len(condition_labels), device=device)
+                if sampling == 'task_source_balanced_v1' else _condition_class_weights(
                 train_frame, condition_labels, device
-            ),
+            )),
             label_smoothing=float(config.get("label_smoothing", 0.0)),
             condition_loss_weight=float(config.get("condition_loss_weight", 1.0)),
             condition_outlier_exposure_weight=condition_outlier_exposure_weight,
@@ -271,6 +323,15 @@ def train_experiment(
         validation_metrics = compute_metrics(
             **_metric_arguments(validation_predictions, condition_labels)
         )
+        source_diagnostics = _validation_source_diagnostics(validation_predictions, condition_labels)
+        if monitor_name == SOURCE_RECALL_MONITOR:
+            validation_metrics[SOURCE_RECALL_MONITOR] = _source_balanced_recall(
+                source_diagnostics, config.get("monitor_source_ids", []),
+            )
+        if monitor_name == SOURCE_SAFETY_MONITOR:
+            validation_metrics[SOURCE_SAFETY_MONITOR] = _source_balanced_safety_value(
+                validation_metrics, source_diagnostics, config.get("monitor_source_ids", []),
+            )
         monitored = _monitor_value(validation_metrics, monitor_name)
         improved = monitored is not None and monitored > best_metric + float(
             config.get("early_stopping_min_delta", 1e-4)
@@ -287,6 +348,7 @@ def train_experiment(
             "learning_rates": [group["lr"] for group in optimizer.param_groups],
             "train": train_summary,
             "validation": validation_metrics,
+            "validation_source_diagnostics": source_diagnostics,
             "monitor": {"name": monitor_name, "value": monitored},
             "improved": improved,
             "elapsed_seconds": time.monotonic() - started,
@@ -381,6 +443,50 @@ def calibrate_checkpoint(
         )
     bundle = load_model_bundle(checkpoint_path, device_name=device_name)
     effective_config = config or bundle["checkpoint"]["config"]
+    calibration_constraints = {}
+    inherited_validity = None
+    if effective_config.get("training_mode") == "condition_head_only":
+        root = find_repo_root(checkpoint_path)
+        parent_spec = effective_config["finetune_from"]
+        parent_path = _resolve_path(parent_spec["path"], root)
+        if file_sha256(parent_path) != parent_spec["sha256"]:
+            raise ValueError("Frozen-validity parent checkpoint changed")
+        parent = torch.load(parent_path, map_location="cpu", weights_only=False)
+        current = bundle["checkpoint"]
+        for key in ("crop", "architecture", "image_size", "validity_labels", "condition_labels"):
+            if current[key] != parent[key]:
+                raise ValueError(f"Frozen-validity parent {key} differs")
+        if current["model_state"].keys() != parent["model_state"].keys() or any(
+            not torch.equal(value, parent["model_state"][key])
+            for key, value in current["model_state"].items()
+            if not key.startswith("condition_head.")
+        ):
+            raise ValueError("Frozen validity path weights or buffers changed")
+        inherited_validity = effective_config["frozen_validity_calibration"]
+        inherited_path = _resolve_path(inherited_validity["path"], root)
+        if file_sha256(inherited_path) != inherited_validity["sha256"]:
+            raise ValueError("Inherited validity calibration changed")
+        parent_calibration = json.loads(inherited_path.read_text())
+        _validate_calibration_artifact_identity(
+            parent_calibration, checkpoint=parent,
+            checkpoint_sha256=parent_spec["sha256"],
+            manifest_sha256=parent["manifest_sha256"],
+            effective_config_sha256=parent["config_hash"],
+        )
+        calibration_constraints = {
+            "fixed_validity_temperature": parent_calibration["validity_temperature"],
+            "validity_probability_min_floor": parent_calibration["thresholds"]["validity_probability_min"],
+        }
+    frozen_bn_verified = False
+    if effective_config.get("freeze_backbone_batch_norm") is True:
+        root = find_repo_root(checkpoint_path)
+        parent_spec = effective_config["finetune_from"]
+        parent_path = _resolve_path(parent_spec["path"], root)
+        if file_sha256(parent_path) != parent_spec["sha256"]:
+            raise ValueError("Frozen BN parent identity changed")
+        parent = torch.load(parent_path, map_location="cpu", weights_only=False)
+        _verify_frozen_batch_norm_state(bundle["checkpoint"], parent)
+        frozen_bn_verified = True
     predictions = _predict_for_checkpoint(
         bundle=bundle,
         config=effective_config,
@@ -393,6 +499,8 @@ def calibrate_checkpoint(
         validity_targets=predictions["validity_targets"],
         condition_targets=predictions["condition_targets"],
         target_false_accept_rate=target_false_accept_rate,
+        maximum_subgroup_false_accept_rate=effective_config.get("calibration_maximum_subgroup_false_accept_rate"),
+        **calibration_constraints,
     )
     calibration.update(
         {
@@ -404,8 +512,28 @@ def calibrate_checkpoint(
             "config_sha256": predictions["effective_config_sha256"],
         }
     )
+    if inherited_validity is not None:
+        calibration["frozen_validity_calibration"] = inherited_validity
+        calibration["validity_path_state_verified_identical"] = True
+    if frozen_bn_verified:
+        calibration["backbone_batch_norm_state_verified_identical"] = True
     write_json_atomic(output_path, calibration)
     return calibration
+
+
+def _verify_frozen_batch_norm_state(checkpoint, parent):
+    for key in ("crop", "architecture", "image_size", "condition_labels", "validity_labels"):
+        if checkpoint[key] != parent[key]:
+            raise ValueError("Frozen BN model identity mismatch")
+    before, after = parent["model_state"], checkpoint["model_state"]
+    prefixes = [k[:-len("running_mean")] for k in before if k.startswith("backbone.") and k.endswith("running_mean")]
+    if not prefixes:
+        raise ValueError("No backbone BN state to verify")
+    for prefix in prefixes:
+        for suffix in ("weight", "bias", "running_mean", "running_var", "num_batches_tracked"):
+            key = prefix + suffix
+            if key not in after or not torch.equal(before[key], after[key]):
+                raise ValueError(f"Frozen backbone BN state changed: {key}")
 
 
 def evaluate_checkpoint(
@@ -482,6 +610,46 @@ def evaluate_checkpoint(
         calibrated,
     )
     return report
+
+
+def _validation_source_diagnostics(predictions: dict[str, Any], labels: list[str]) -> dict[str, Any]:
+    """Expose small-source failures hidden by aggregate metrics; no selection use."""
+    if not predictions.get("source_id"):
+        return {}
+    sources = np.asarray(predictions["source_id"])
+    target = np.asarray(predictions["condition_targets"])
+    raw = np.asarray(predictions["condition_logits"]).argmax(1)
+    validity_target = np.asarray(predictions["validity_targets"])
+    validity_raw = np.asarray(predictions["validity_logits"]).argmax(1)
+    known = (target >= 0) & (validity_target == VALIDITY_TO_INDEX[USABLE_VALIDITY_LABEL])
+    result = {}
+    for source in sorted(set(sources)):
+        mask = sources == source
+        result[str(source)] = {
+            "total": int(mask.sum()),
+            "validity_correct": int((mask & (validity_raw == validity_target)).sum()),
+            "raw_condition": {
+                label: {"count": int((mask & known & (target == i)).sum()),
+                        "correct": int((mask & known & (target == i) & (raw == i)).sum())}
+                for i, label in enumerate(labels)
+            },
+            "note": "Validation diagnostics, not held-out results or calibrated app acceptance",
+        }
+    return result
+
+
+def _source_balanced_recall(diagnostics: dict[str, Any], source_ids: list[str]) -> float:
+    """Equal-source recall, requiring >=2 classes with >=10 examples per source."""
+    if len(set(source_ids)) != len(source_ids) or len(source_ids) < 2:
+        raise ValueError("Source monitor needs at least two distinct declared sources")
+    scores = []
+    for source in source_ids:
+        classes = diagnostics.get(source, {}).get("raw_condition", {})
+        eligible = [r for r in classes.values() if r["count"] >= 10]
+        if len(eligible) < 2:
+            raise ValueError(f"Source monitor has insufficient multi-class coverage: {source}")
+        scores.append(float(np.mean([r["correct"] / r["count"] for r in eligible])))
+    return float(np.mean(scores))
 
 
 def load_model_bundle(
@@ -690,12 +858,15 @@ def _train_one_epoch(
                     * condition_outlier_exposure_loss
                 )
 
-        scaler.scale(loss).backward()
-        if gradient_clip_norm > 0:
-            scaler.unscale_(optimizer)
-            torch.nn.utils.clip_grad_norm_(model.parameters(), gradient_clip_norm)
-        scaler.step(optimizer)
-        scaler.update()
+        # A frozen-validity batch can contain no trainable condition targets.
+        # Do not manufacture gradients or apply AdamW decay on such a batch.
+        if loss.requires_grad:
+            scaler.scale(loss).backward()
+            if gradient_clip_norm > 0:
+                scaler.unscale_(optimizer)
+                torch.nn.utils.clip_grad_norm_(model.parameters(), gradient_clip_norm)
+            scaler.step(optimizer)
+            scaler.update()
 
         count = len(validity_targets)
         total_samples += count
@@ -1020,6 +1191,8 @@ def _monitor_value(metrics: dict[str, Any], monitor: str) -> float | None:
 
     condition = metrics["condition"]
     aliases = {
+        SOURCE_RECALL_MONITOR: metrics.get(SOURCE_RECALL_MONITOR),
+        SOURCE_SAFETY_MONITOR: metrics.get(SOURCE_SAFETY_MONITOR),
         "field_macro_f1": condition.get("field_macro_f1"),
         "condition_macro_f1": condition.get("macro_f1"),
         "macro_f1": condition.get("macro_f1"),
@@ -1036,6 +1209,16 @@ def _monitor_value(metrics: dict[str, Any], monitor: str) -> float | None:
             f"Monitor metric {monitor!r} is unavailable for this validation split"
         )
     return float(value)
+
+
+def _source_balanced_safety_value(metrics, source_diagnostics, source_ids):
+    """Apply the existing safety weights to an equal-source disease component."""
+    balanced = _source_balanced_recall(source_diagnostics, source_ids)
+    selection_metrics = {
+        **metrics,
+        "condition": {**metrics["condition"], "field_macro_f1": balanced},
+    }
+    return _safety_composite_monitor_value(selection_metrics)
 
 
 def _safety_composite_monitor_value(metrics: Mapping[str, Any]) -> float:

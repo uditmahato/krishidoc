@@ -66,3 +66,15 @@ potato leaves. Public field evidence is dominated by India and Indonesia and
 does not constitute independent Nepal validation. The app therefore presents
 only experimental possible matches and applies a separate validity/OOD refusal
 gate. It must not confirm a diagnosis or recommend a chemical treatment.
+
+KrishiDoc potato V7 opt-in research test model
+Artifact SHA-256: f3119558c3c4c43522a45794341546fdaffef65e5c5c57272a557d23800ea099
+Fine-tuned from the above V3 model; research-only, not approved as its default replacement.
+Added Tanzania imagery: Laizer, Mduma, Machuve, Lyimo, Babirye, Swai and Siwingwa,
+Irish Potato Imagery Dataset, https://doi.org/10.5281/zenodo.8286529 (CC BY 4.0).
+Source paper: https://doi.org/10.1016/j.dib.2025.111549.
+Additional PlantSeg provenance and upstream image-rights limitations:
+https://zenodo.org/records/14935094; ml/datasets/potato_field_expansion_20260906.json.
+Full experiment, source restrictions and refusal regressions:
+docs/POTATO_FIELD_V7_EXPERIMENT_2026-09-07.md.
+Possible matches only. No Nepal validation or chemical/treatment authorization.

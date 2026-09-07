@@ -9,7 +9,9 @@ class MainActivity : FlutterActivity() {
         super.onCreate(savedInstanceState)
         // Diagnostic-only: keep the test visible without changing the phone's
         // global sleep setting or any behaviour of the farmer's normal app.
-        if (packageName == "com.krishidoc.app.modelaudit") {
+        if (packageName == "com.krishidoc.app.modelaudit" ||
+            packageName == "com.krishidoc.app.v7audit" ||
+            packageName == "com.krishidoc.app.v7test") {
             window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
     }

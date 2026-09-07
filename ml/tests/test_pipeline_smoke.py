@@ -33,8 +33,9 @@ class _TinyTwoHead(torch.nn.Module):
             parameter.requires_grad = trainable
 
 
+@pytest.mark.parametrize('sampling', ['source_balanced', 'task_source_balanced_v1'])
 def test_one_epoch_writes_receipt_metrics_and_resumable_checkpoint(
-    tmp_path: Path, monkeypatch
+    tmp_path: Path, monkeypatch, sampling: str
 ) -> None:
     rows = []
     specifications = [
@@ -89,6 +90,7 @@ def test_one_epoch_writes_receipt_metrics_and_resumable_checkpoint(
         "label_smoothing": 0.0,
         "early_stopping_patience": 2,
         "monitor": "condition_macro_f1",
+        "sampling_strategy": sampling,
     }
     monkeypatch.setattr(
         pipeline,

@@ -6,6 +6,7 @@ import argparse
 import csv
 import json
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -172,6 +173,27 @@ def _truth_value(value: str) -> bool | None:
     return None
 
 
+def _verify_image_job(job: tuple[Path, str, str, str]) -> list[str]:
+    image_path, sha256, phash, prefix = job
+    try:
+        with Image.open(image_path) as image:
+            image.verify()
+        actual_sha256 = compute_sha256(image_path)
+        actual_phash = compute_phash(image_path)
+    except (OSError, ValueError, UnidentifiedImageError, RuntimeError) as error:
+        return [f"{prefix}: corrupt/unreadable image {image_path}: {error}"]
+    errors = []
+    if actual_sha256 != sha256:
+        errors.append(
+            f"{prefix}: SHA256 mismatch for {image_path}; file changed after preparation"
+        )
+    if actual_phash != phash:
+        errors.append(
+            f"{prefix}: pHash mismatch for {image_path}; file changed after preparation"
+        )
+    return errors
+
+
 def audit_manifest(
     manifest_path: Path,
     taxonomy_path: Path,
@@ -181,10 +203,13 @@ def audit_manifest(
     near_duplicate_distance: int = 4,
     verify_images: bool = True,
     image_root: Path | None = None,
+    image_workers: int = 1,
 ) -> dict[str, Any]:
     """Audit a manifest and return counts, or raise with all discovered faults."""
     if not 0 <= near_duplicate_distance <= 64:
         raise ManifestAuditError("near-duplicate distance must be between 0 and 64")
+    if type(image_workers) is not int or not 1 <= image_workers <= 16:
+        raise ManifestAuditError("image_workers must be an integer between 1 and 16")
     rows = _read_manifest(manifest_path)
     taxonomy = _load_json(taxonomy_path, "taxonomy")
     crops, all_conditions = _allowed_taxonomy(taxonomy)
@@ -206,6 +231,7 @@ def audit_manifest(
     )
 
     errors: list[str] = []
+    image_jobs: list[tuple[Path, str, str, str]] = []
     paths_seen: dict[Path, int] = {}
     group_splits: dict[str, set[str]] = defaultdict(set)
     group_condition_rows: dict[str, dict[str, list[int]]] = defaultdict(
@@ -335,24 +361,21 @@ def audit_manifest(
             errors.append(f"{prefix}: missing image {image_path}")
             continue
         if verify_images:
-            try:
-                with Image.open(image_path) as image:
-                    image.verify()
-                actual_sha256 = compute_sha256(image_path)
-                actual_phash = compute_phash(image_path)
-            except (OSError, ValueError, UnidentifiedImageError, RuntimeError) as error:
-                errors.append(
-                    f"{prefix}: corrupt/unreadable image {image_path}: {error}"
-                )
-                continue
-            if actual_sha256 != sha256:
-                errors.append(
-                    f"{prefix}: SHA256 mismatch for {image_path}; file changed after preparation"
-                )
-            if actual_phash != phash:
-                errors.append(
-                    f"{prefix}: pHash mismatch for {image_path}; file changed after preparation"
-                )
+            image_jobs.append((image_path, sha256, phash, prefix))
+
+    # Only independent image checks are parallelized. Structural/group/split
+    # checks remain unchanged; map preserves deterministic manifest error order.
+    if image_jobs:
+        with ThreadPoolExecutor(max_workers=image_workers) as pool:
+            for completed, image_errors in enumerate(
+                pool.map(_verify_image_job, image_jobs), 1
+            ):
+                errors.extend(image_errors)
+                if image_workers > 1 and completed % 1000 == 0:
+                    print(
+                        f"Verified image bytes/decode/pHash: {completed}/{len(image_jobs)}",
+                        flush=True,
+                    )
 
     for split in REQUIRED_SPLITS:
         if split_counts[split] == 0:
@@ -449,6 +472,7 @@ def _parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--config", type=Path, default=Path("ml/configs/field_v1.json"))
     parser.add_argument("--near-duplicate-distance", type=int)
+    parser.add_argument("--image-workers", type=int, default=1)
     parser.add_argument(
         "--image-root",
         type=Path,
@@ -491,12 +515,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         near_duplicate_distance=distance,
         verify_images=not arguments.skip_image_verification,
         image_root=arguments.image_root,
+        image_workers=arguments.image_workers,
     )
     receipt = {
         "schema_version": 1,
         "status": "passed",
         "audited_at_utc": datetime.now(timezone.utc).isoformat(),
         "image_verification": not arguments.skip_image_verification,
+        "image_workers": arguments.image_workers,
         "near_duplicate_hamming_distance": distance,
         "manifest": {
             "path": str(arguments.manifest.resolve()),

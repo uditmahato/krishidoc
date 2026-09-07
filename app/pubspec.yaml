@@ -19,6 +19,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   flutter_riverpod: ^2.6.0
+  crypto: ^3.0.6
   go_router: ^15.0.0
   html: ^0.15.5
   http: ^1.3.0
@@ -47,3 +48,5 @@ flutter:
     - assets/models/plant_disease_experimental.tflite
     - assets/models/potato_field_v3_efficientnet_b0.metadata.json
     - assets/models/potato_field_v3_efficientnet_b0_float32.tflite
+    - assets/models/potato_field_v7_efficientnet_b0.metadata.json
+    - assets/models/potato_field_v7_efficientnet_b0_float32.tflite

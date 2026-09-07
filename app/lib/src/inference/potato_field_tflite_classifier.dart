@@ -8,8 +8,12 @@ import 'package:tflite_flutter/tflite_flutter.dart';
 
 import 'training_resize.dart';
 
-const String potatoFieldModelAsset =
-    'assets/models/potato_field_v3_efficientnet_b0_float32.tflite';
+const String potatoFieldModelAsset = PotatoFieldResearchPack.useV7
+    ? 'assets/models/potato_field_v7_efficientnet_b0_float32.tflite'
+    : 'assets/models/potato_field_v3_efficientnet_b0_float32.tflite';
+const String potatoFieldMetadataAsset = PotatoFieldResearchPack.useV7
+    ? 'assets/models/potato_field_v7_efficientnet_b0.metadata.json'
+    : 'assets/models/potato_field_v3_efficientnet_b0.metadata.json';
 
 final class PotatoFieldModelContractException implements Exception {
   const PotatoFieldModelContractException(this.message);

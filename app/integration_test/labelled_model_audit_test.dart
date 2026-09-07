@@ -5,6 +5,7 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:capture/capture.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:inference/inference.dart';
@@ -33,15 +34,40 @@ Future<List<Map<String, dynamic>>> runLabelledModelAudit({
   void Function(int completed, int total)? onProgress,
 }) async {
   const assetRoot = 'test_assets/mobile_audit/';
-  final fixture =
-      jsonDecode(await rootBundle.loadString('${assetRoot}manifest.json'))
-          as Map<String, dynamic>;
+  final destination = await getExternalStorageDirectory();
+  if (destination == null) throw StateError('No external app report directory');
+  const externalInputs = bool.fromEnvironment('KD_AUDIT_EXTERNAL');
+  Future<Uint8List> loadInput(String name) async {
+    if (externalInputs) {
+      if (name.contains('..') || name.contains('/') || name.contains('\\')) {
+        throw StateError('Audit input must be a plain file name');
+      }
+      return File('${destination.path}/v7_inputs/$name').readAsBytes();
+    }
+    final data = await rootBundle.load('$assetRoot$name');
+    return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+  }
+
+  final fixtureBytes = await loadInput('manifest.json');
+  final fixture = jsonDecode(utf8.decode(fixtureBytes)) as Map<String, dynamic>;
   final samples = fixture['samples'] as List<dynamic>;
+  final modelBytes = await rootBundle.load(potatoFieldModelAsset);
+  final modelHash = sha256
+      .convert(
+        modelBytes.buffer.asUint8List(
+          modelBytes.offsetInBytes,
+          modelBytes.lengthInBytes,
+        ),
+      )
+      .toString();
+  if (modelHash != PotatoFieldResearchPack.artifactSha256 ||
+      (fixture['expected_potato_sha256'] != null &&
+          fixture['expected_potato_sha256'] != modelHash)) {
+    throw StateError('Bundled potato artifact does not match the audit');
+  }
   final global = TfliteExperimentalTensorRunner();
   final potato = TflitePotatoFieldTensorRunner();
   final rows = <Map<String, dynamic>>[];
-  final destination = await getExternalStorageDirectory();
-  if (destination == null) throw StateError('No external app report directory');
   final reportFile = File('${destination.path}/labelled_model_audit.json');
   Future<void> save() => reportFile
       .writeAsString(
@@ -49,6 +75,8 @@ Future<List<Map<String, dynamic>>> runLabelledModelAudit({
           'schema_version': 1,
           'platform': Platform.operatingSystem,
           'potato_model': PotatoFieldResearchPack.modelVersion,
+          'potato_artifact_sha256': modelHash,
+          'fixture_sha256': sha256.convert(fixtureBytes).toString(),
           'global_model': ExperimentalPlantPack.modelVersion,
           'selection_independent': false,
           'promotion_eligible': false,
@@ -68,11 +96,11 @@ Future<List<Map<String, dynamic>>> runLabelledModelAudit({
     };
     final timer = Stopwatch()..start();
     try {
-      final asset = await rootBundle.load('$assetRoot${sample['file']}');
-      final original = asset.buffer.asUint8List(
-        asset.offsetInBytes,
-        asset.lengthInBytes,
-      );
+      final original = await loadInput(sample['file'] as String);
+      row['image_sha256'] = sha256.convert(original).toString();
+      if (row['image_sha256'] != sample['sha256']) {
+        throw StateError('Audit input bytes changed');
+      }
       final prepared = await Isolate.run(
         () => const ImageProcessor().prepare(original),
       );
@@ -110,9 +138,14 @@ Future<List<Map<String, dynamic>>> runLabelledModelAudit({
         row['global_scoped_state'] = globalOutcome.state.name;
         row['global_scoped_top'] = globalOutcome.ranked.firstOrNull?.label;
       }
-      final raw = await potato.run(
-        const PotatoFieldImagePreprocessor().prepare(prepared),
+      final potatoInput = const PotatoFieldImagePreprocessor().prepare(
+        prepared,
       );
+      final nativeTimer = Stopwatch()..start();
+      final raw = await potato.run(potatoInput);
+      nativeTimer.stop();
+      row['potato_model_ms'] = nativeTimer.elapsedMicroseconds / 1000;
+      row['potato_cold_start'] = rows.isEmpty;
       final result = await ClassificationService(
         classifier: PotatoFieldTfliteClassifier(runner: _PotatoOutput(raw)),
         pack: PotatoFieldResearchPack.pack,
@@ -121,13 +154,11 @@ Future<List<Map<String, dynamic>>> runLabelledModelAudit({
       row['potato_condition'] = raw.conditionLogits;
       row['potato_state'] = result.state.name;
       row['potato_top'] = result.ranked.firstOrNull?.label;
-      final referenceAsset = await rootBundle.load(
-        '$assetRoot${sample['reference_file']}',
-      );
-      final reference = referenceAsset.buffer.asUint8List(
-        referenceAsset.offsetInBytes,
-        referenceAsset.lengthInBytes,
-      );
+      final reference = await loadInput(sample['reference_file'] as String);
+      if (sample['reference_sha256'] != null &&
+          sha256.convert(reference).toString() != sample['reference_sha256']) {
+        throw StateError('Reference image bytes changed');
+      }
       final refRaw = await potato.run(
         const PotatoFieldImagePreprocessor().prepare(reference),
       );

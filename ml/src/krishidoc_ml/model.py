@@ -27,6 +27,8 @@ class CropSpecificTwoHeadModel(nn.Module):
             raise ValueError("A condition head requires at least two classes")
         self.architecture = architecture
         self.num_condition_classes = int(num_condition_classes)
+        self.condition_head_only = False
+        self.backbone_batch_norm_frozen = False
 
         if architecture == "mobilenet_v3_large":
             weights = models.MobileNet_V3_Large_Weights.DEFAULT if pretrained else None
@@ -63,7 +65,35 @@ class CropSpecificTwoHeadModel(nn.Module):
 
     def set_backbone_trainable(self, trainable: bool) -> None:
         for parameter in self.backbone.parameters():
-            parameter.requires_grad = trainable
+            parameter.requires_grad = trainable and not self.condition_head_only
+        if self.backbone_batch_norm_frozen:
+            self.set_backbone_batch_norm_frozen()
+
+    def set_backbone_batch_norm_frozen(self) -> None:
+        """Keep the parent's BN affine parameters and running statistics fixed."""
+        self.backbone_batch_norm_frozen = True
+        for module in self.backbone.modules():
+            if isinstance(module, nn.modules.batchnorm._BatchNorm):
+                module.eval()
+                for parameter in module.parameters():
+                    parameter.requires_grad = False
+
+    def set_condition_head_only(self) -> None:
+        """Freeze the complete validity path, including BN buffers and dropout."""
+        self.condition_head_only = True
+        for name, parameter in self.named_parameters():
+            parameter.requires_grad = name.startswith("condition_head.")
+        self.train(self.training)
+
+    def train(self, mode: bool = True):
+        super().train(mode)
+        if self.condition_head_only:
+            self.backbone.eval()
+            self.shared.eval()
+            self.validity_head.eval()
+        if self.backbone_batch_norm_frozen:
+            self.set_backbone_batch_norm_frozen()
+        return self
 
 
 def create_model(

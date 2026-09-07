@@ -2,6 +2,13 @@
 
 The KrishiDoc V2 farmer app (Android-first). See the repo root README for the branch model and `docs/` for decisions.
 
+- V7 potato testing is opt-in: from this directory run
+  `flutter run --release --target lib/main_potato_v7.dart --dart-define=KRISHIDOC_POTATO_V7=true`.
+  This installs **KrishiDoc V7 Test** separately from the original app. Select
+  Potato manually; automatic crop suggestions still use the old global model.
+  V7 passed a 79-photo native execution/parity audit but still makes disease
+  errors and has not replaced V3 by default. See the
+  [device report](../docs/POTATO_V7_MOBILE_TEST_2026-09-07.md).
 - Run: `flutter run` (from this directory). `flutter pub get` at the repo root resolves the whole workspace.
 - Localization: ARB sources in `lib/l10n/`; generated code lands in `lib/l10n/gen/` (gitignored) via `flutter gen-l10n`. Launch languages en/ne/hi (D-06); farmer-facing strings ship only after the native agronomist review gate (D-35).
 - Release builds use a calibrated dual-head EfficientNet-B0 field candidate

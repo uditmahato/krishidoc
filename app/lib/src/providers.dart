@@ -23,7 +23,7 @@ import 'inference/crop_suggestion.dart';
 /// `--dart-define=KRISHIDOC_EXPERIMENTAL_MODEL=true`.
 const bool useExperimentalPlantModel = bool.fromEnvironment(
   'KRISHIDOC_EXPERIMENTAL_MODEL',
-  defaultValue: kReleaseMode,
+  defaultValue: kReleaseMode || PotatoFieldResearchPack.useV7,
 );
 
 /// Overridden at the root (main or test pump); reading it unoverridden is a

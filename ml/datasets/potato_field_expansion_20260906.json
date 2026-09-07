@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "raw_data_policy": {"default_root": "ml/data/raw", "committed": false},
+  "sources": [
+    {
+      "id": "potato-holeta-locked",
+      "title": "Natnael Tilahun: Potato Leaf (Healthy and Late Blight), version 2",
+      "status": "preferred",
+      "default_selected": false,
+      "priority": 1,
+      "crops": ["potato"],
+      "geography": ["Holeta, Ethiopia"],
+      "landing_url": "https://data.mendeley.com/datasets/v4w72bsts5/2",
+      "license": {"spdx": "CC-BY-4.0"},
+      "provenance_warnings": ["Whole-source reserved evaluation: do not use images, embeddings, labels or results for candidate training, calibration or checkpoint selection. Acquisition and duplicate-quality checks only until candidate is frozen.", "Publisher reports 63 late blight and 363 healthy photos collected with two plant pathologists. Actual inventory must be verified. Not Nepal validation; no early blight class."],
+      "acquisition": {"provider": "mendeley", "dataset_id": "v4w72bsts5", "version": 2, "mode": "zip", "extract": true}
+    },
+    {
+      "id": "potato-tanzania-early9",
+      "title": "Mduma and Mtali: Irish Potato Leaf Image Dataset, early blight archive 9",
+      "status": "preferred", "default_selected": false, "priority": 2,
+      "crops": ["potato"], "geography": ["Tanzania; source authorship, capture metadata to verify"],
+      "landing_url": "https://zenodo.org/records/17553016", "license": {"spdx": "CC-BY-4.0"},
+      "provenance_warnings": ["Training/development source only; retain capture/duplicate groups within splits. Archive subset is not the complete dataset. Publisher label is not independent expert review by this project."],
+      "acquisition": {"provider": "http", "url": "https://zenodo.org/records/17553016/files/EARLYBLT_9.zip?download=1", "filename": "EARLYBLT_9.zip", "expected_size": 1841750255, "expected_md5": "f910e538eab07ff73ce04be864cfcb9e", "extract": true}
+    },
+    {
+      "id": "potato-tanzania-healthy6",
+      "title": "Mduma and Mtali: Irish Potato Leaf Image Dataset, healthy archive 6",
+      "status": "preferred", "default_selected": false, "priority": 3,
+      "crops": ["potato"], "geography": ["Tanzania; source authorship, capture metadata to verify"],
+      "landing_url": "https://zenodo.org/records/17553016", "license": {"spdx": "CC-BY-4.0"},
+      "provenance_warnings": ["Training/development source only; retain capture/duplicate groups within splits. Archive subset is not the complete dataset."],
+      "acquisition": {"provider": "http", "url": "https://zenodo.org/records/17553016/files/HEALTHY_6.zip?download=1", "filename": "HEALTHY_6.zip", "expected_size": 513156605, "expected_md5": "7d3f17811268f843301ff76b6960e6f1", "extract": true}
+    },
+    {
+      "id": "potato-tanzania-late6",
+      "title": "Mduma and Mtali: Irish Potato Leaf Image Dataset, late blight archive 6",
+      "status": "preferred", "default_selected": false, "priority": 4,
+      "crops": ["potato"], "geography": ["Tanzania; source authorship, capture metadata to verify"],
+      "landing_url": "https://zenodo.org/records/17553016", "license": {"spdx": "CC-BY-4.0"},
+      "provenance_warnings": ["Training/development source only; retain capture/duplicate groups within splits. Archive subset is not the complete dataset."],
+      "acquisition": {"provider": "http", "url": "https://zenodo.org/records/17553016/files/LATEBLT_6.zip?download=1", "filename": "LATEBLT_6.zip", "expected_size": 138650858, "expected_md5": "bd170633716f387cc6df8fae431f1877", "extract": true}
+    }
+  ]
+}
